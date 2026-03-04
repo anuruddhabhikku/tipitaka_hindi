@@ -1,0 +1,812 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"rūparāgo": "1 <i>masc</i> passion for material existence; desire for worldly existence [masc,]<br>2 <i>masc</i> craving for material form; desire for sights [masc,]", "abhiññāya": "1 <i>adj</i> with direct knowledge; with experiential understanding; with realization [adj, in s, from abhiññā] ‹ अभिञ्ञा (lit. completely knowing)<br>2 <i>fem</i> direct knowledge; higher understanding; specialized knowledge [fem, abstr, from abhijānāti] ‹ अभिजानाति (lit. complete knowledge)<br>3 <i>fem</i> psychic power; supernormal ability [fem, abstr, from abhijānāti] ‹ अभिजानाति (lit. complete knowledge)<br>4 <i>ger</i> directly knowing; understanding experientially [ger of abhijānāti] ‹ अभिजानाति (lit. completely knowing)", "hoti": "1 <i>pr</i> is; becomes [pr]<br>2 <i>pr</i> exists (for) [pr]<br>3 <i>pr</i> stays; remains; continues to be [pr] (lit. is)", "kāmaguṇā": "1 <i>masc</i> object of sensual pleasure [masc,] (lit. sensual strings)<br>2 <i>masc</i> sensual stimulation; sensual pleasure [masc,] (lit. sensual strings)<br>3 <i>nt</i> object of sensual pleasure [nt,] (lit. sensual strings)", "pahānāya": "1 <i>nt</i> giving up; letting go; removal; abandoning (of) [nt, act, from pajahati] ‹ pajahati (lit. actively abandoning)", "honti": "1 <i>pr</i> is; becomes [pr]<br>2 <i>pr</i> exists (for) [pr]<br>3 <i>pr</i> stays; remains; continues to be [pr] (lit. is)<br>4 <i>prp</i> [prp of hoti] ‹ hoti<br>5 <i>prp</i> becoming [prp of hoti] ‹ hoti", "balaṃ": "1 <i>nt</i> strength; power; might [nt] ‹ √bal<br>2 <i>nt</i> mental power; Dhamma strength ‹ √bal (lit. strength)<br>3 <i>nt</i> army; military force [nt] ‹ √bal (lit. strength)<br>4 <i>nt</i> financial ability; resources [nt] ‹ √bal (lit. strength)", "pañcuddhambhāgiyāni": "1 <i>adj</i> five higher [adj,] (lit. five connected to the upper part)", "dukkhatā": "1 <i>fem</i> fact of suffering; unsatisfactoriness [fem, abstr, from dukkha] ‹ dukkha (lit. suffering state)", "anusayena": "1 <i>masc</i> underlying tendency (to); inherent inclination (to); dormant disposition (towards); propensity (to) [masc, from anusayati] ‹ anusayati (lit. sleeping alongside)", "pācīnaninnā": "1 <i>adj</i> sloping to the east; slanting eastwards [adj,]", "uddhambhāgiyānaṃ": "1 <i>adj</i> higher; upper [adj,] (lit. connected to the upper part)", "balāni": "1 <i>nt</i> strength; power; might [nt] ‹ √bal<br>2 <i>nt</i> mental power; Dhamma strength ‹ √bal (lit. strength)<br>3 <i>nt</i> army; military force [nt] ‹ √bal (lit. strength)<br>4 <i>nt</i> financial ability; resources [nt] ‹ √bal (lit. strength)", "tena": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> with him; by him; with that; by that [pron, masc & nt instr sg of ta] ‹ ta<br>4 <i>ind</i> thereby; because of that; on that account [ind, adv, instr sg of ta] ‹ ta (lit. by that; with that)<br>5 <i>ind</i> there [ind, adv, instr sg of ta] ‹ ta", "nibbānapabbhāroti": "1 <i>adj</i> slanting to Nibbāna; sloping to Nibbāna; inclining to Nibbāna [adj,]", "paññābalaṃ": "1 <i>nt</i> power that is insight; strength of intelligence [nt,]", "dvādasamaṃ": "1 <i>ordi</i> twelfth (12th) [ordin of dvādasa,] ‹ द्वादस", "ganthā": "1 <i>masc</i> (mental) tie; knot; bond [masc, from gantheti] ‹ gantheti<br>2 <i>masc</i> book; text [masc, from gantheti] ‹ gantheti (lit. what is tied)<br>3 <i>nt</i> (mental) tie; knot; bond [nt, from gantheti] ‹ gantheti", "balādisuttadvādasakaṃ": "1 <i>nt</i> [nt,]", "vatthena": "1 <i>nt</i> cloth; clothes; robe [nt] ‹ √vas<br>2 <i>nt</i> [nt]<br>3 <i>adj</i> with clothes; clothed [adj, in s]", "pācīnapabbhārā": "1 <i>adj</i> sloping to the east; slanting eastwards [adj,]", "khilaṃ": "1 <i>masc</i> hardness; coldness; hard-heartedness (towards) [masc, abstr, from khīyati] ‹ खीयति<br>2 <i>nt</i> hardness; coldness; hard-heartedness (towards) [nt, abstr, from khīyati] ‹ खीयति<br>3 <i>masc</i> barren land; wasteland; desert [masc, from khīyati] ‹ खीयति<br>4 <i>masc</i> post; pole [masc]", "yogo": "1 <i>masc</i> yoke; bond; attachment (to); (comm) which bind one to the round of cyclical existence [masc, from yojeti] ‹ yojeti<br>2 <i>masc</i> effort; exertion; undertaking; task [masc, from yojeti] ‹ yojeti (lit. yoking)<br>3 <i>masc</i> meditation; contemplation [masc, from yojeti] ‹ yojeti (lit. yoking)<br>4 <i>adj</i> (gram) syntactically dependent on; ruled by; governed by [adj, from yojeti] ‹ yojeti (lit. yoking)<br>5 <i>adj</i> drug; medical remedy [adj, from yojeti] ‹ yojeti (lit. yoking)<br>6 <i>masc</i> [masc, from yojeti] ‹ yojeti (lit. yoking)<br>7 <i>adj</i> devoted; attached; making an effort (to) [adj, in s, from yojeti] ‹ yojeti (lit. yoking)<br>8 <i>masc</i> fitness; suitability [masc, in s, from yojeti] ‹ yojeti (lit. yoking)", "virāganissitaṃ": "1 <i>adj</i> based on fading of desire; supported by dispassion; by means of detachment [adj,]", "pācīnādisuttadvādasakaṃ": "1 <i>nt</i> [nt,]", "bhikkhu": "1 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "bhavo": "1 <i>masc</i> being; becoming; existence [masc, abstr, from bhavati] ‹ bhavati<br>2 <i>masc</i> state of existence; form of becoming [masc, abstr, from bhavati] ‹ bhavati<br>3 <i>masc</i> well-being; prosperity; development [masc, abstr, from bhavati] ‹ bhavati<br>4 <i>aor</i> became; was; existed [aor of bhavati] ‹ bhavati", "nīgho": "1 <i>masc</i> [masc]", "dasamaṃ": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "dve": "1 <i>card</i> two (2) [card, x pl]<br>2 <i>masc</i> couple; pair [masc, irreg]", "tisso": "1 <i>card</i> three (3) [card, masc fem & nt pl]<br>2 <i>masc</i> generic monk's name used in vinaya examples [masc] (lit. constellation of Cancer)<br>3 <i>masc</i> name of one of Vipassī Buddha's chief disciples [masc] (lit. constellation of Cancer)<br>4 <i>masc</i> [masc] (lit. constellation of Cancer)<br>5 <i>card</i> three (3) [card, fem nom pl of ti] ‹ ti<br>6 <i>masc</i> name of an arahant monk [masc] (lit. constellation of Cancer)<br>7 <i>masc</i> name of the 8th previous Buddha [masc] (lit. constellation of Cancer)", "nīvaraṇā": "1 <i>masc</i> obstacle; obstruction; barrier; hindrance [masc, from nivāreti] ‹ निवारेति (lit. blocking; covering)<br>2 <i>nt</i> obstacle; obstruction; barrier; hindrance [nt, from nivāreti] ‹ निवारेति (lit. blocking)", "pācīnato": "1 <i>adj</i> eastern [adj]<br>2 <i>ind</i> to the east (of) [ind, adv, abl sg of pācīna] ‹ पाचीन (lit. from the east)<br>3 <i>fem</i> east; eastern side; eastern direction [fem, abstr, from pācīna] ‹ पाचीन", "kho": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "samuddato": "1 <i>masc</i> sea; ocean [masc, from samuddati] ‹ samuddati", "rukkho": "1 <i>masc</i> tree [masc]", "khandhā": "1 <i>masc</i> mass; heap; pile; volume; aggregation [masc] ‹ √khandh (lit. accumulation)<br>2 <i>masc</i> shoulder; back [masc] ‹ √khandh (lit. accumulation)<br>3 <i>masc</i> aggregate; combination; conglomeration; bundle [masc] ‹ √khandh (lit. accumulation)<br>4 <i>masc</i> (of plant or tree) trunk; stem [masc] ‹ √khandh (lit. accumulation)<br>5 <i>masc</i> group; class; category [masc] ‹ √khandh (lit. accumulation)<br>6 <i>masc</i> [masc] ‹ √khandh (lit. accumulation)<br>7 <i>masc</i> aggregates; combinations; conglomerations; bundles; things that are clung to and taken as a self [masc pl of khanda] ‹ khanda (lit. accumulations)<br>8 <i>adj</i> with a back; having shoulders [adj, in s] ‹ √khandh", "māno": "1 <i>masc</i> pride; conceit; egotism; superiority; comparing oneself [masc, from maññati] ‹ मञ्ञति<br>2 <i>root</i> (gram) √man (think) [root, masc]", "sārena": "1 <i>adj</i> essential; fundamental; substantial; valuable; sound [adj, from sarati] ‹ sarati<br>2 <i>masc</i> core; essence; substance; value [masc, from sarati] ‹ sarati<br>3 <i>masc</i> hardwood; heartwood [masc, from sarati] ‹ sarati<br>4 <i>masc</i> moisture; fluid [masc, from sarati] ‹ sarati<br>5 <i>adj</i> [adj] ‹ sarati<br>6 <i>adj</i> having value; with worth [adj, in s, from sarati] ‹ sarati (lit. with essence)", "samādhibalaṃ": "1 <i>nt</i> power that is meditative composure; strength of perfect peace of mind [nt,]", "pariññāya": "1 <i>adj</i> completely comprehending; fully understanding [adj, in s, from pariññā] ‹ परिञ्ञा<br>2 <i>fem</i> complete comprehension; full understanding; comprehensive knowledge (of) [fem, abstr, from parijānāti] ‹ परिजानाति<br>3 <i>ger</i> completely comprehending; fully understanding [ger of parijānāti] ‹ परिजानाति", "mohavinayapariyosānaṃ": "1 <i>adj</i> removing and ending delusion [adj,]", "arūparāgo": "1 <i>masc</i> passion for immaterial existence; desire for formless existence [masc,]", "tassuddānaṃ": "1 <i>sand</i> summary; a short verse given at the end of each vagga listing the titles or topics of the relevant suttas [sandhi, pron + nt] (lit. tying up of that)", "esanā": "1 <i>adj</i> seeking; searching; looking (for) [adj, in s, from esati] ‹ esati<br>2 <i>fem</i> searching; seeking; quest [fem, abstr, act, from esati] ‹ esati<br>3 <i>fem</i> [fem, abstr,act, from esati] ‹ esati<br>4 <i>fem</i> surgical probing [fem, abstr, act, from esati] ‹ esati (lit. seeking)", "vivekanissitaṃ": "1 <i>adj</i> based on seclusion; supported by detachment; by means of disengagement [adj,]", "vassikaṃ": "1 <i>adj</i> related to the rainy season; for the monsoon [adj, from vassa] ‹ vassa<br>2 <i>adj</i> x years old [adj, in s, from vassa] ‹ vassa<br>3 <i>fem</i> jasmine [fem, from vassati] ‹ vassati (lit. growing in the rainy season)<br>4 <i>masc</i> name of an arahant monk [masc, from vassa] ‹ vassa (lit. related to the rainy season)", "imesaṃ": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> for these; for them; for those [pron, masc & nt dat pl of ima] ‹ ima<br>3 <i>pron</i> of these; their [pron, masc & nt gen pl of ima] ‹ ima", "bhāveti": "1 <i>pr</i> cultivates; develops [pr, caus of bhavati] ‹ bhavati (lit. causes to become)", "āsavo": "1 <i>masc</i> discharge from a sore; suppuration from a wound [masc, from āsavati] ‹ आसवति<br>2 <i>masc</i> discharge; suppuration; outflow; effluent; (comm) defilement [masc, from āsavati] ‹ आसवति<br>3 <i>masc</i> extract; liquor; spirit [masc, from āsavati] ‹ आसवति<br>4 <i>aor</i> [aor of āsavati] ‹ आसवति", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "bhāvento": "1 <i>prp</i> cultivating; developing [prp of bhāveti] ‹ भावेति", "avijjā": "1 <i>fem</i> ignorance; illusion; not knowing; not understanding [fem, abstr] ‹ √vid", "padaṃ": "1 <i>nt</i> foot [nt, from pajjati] ‹ pajjati<br>2 <i>nt</i> path; track; way [nt, from pajjati] ‹ pajjati<br>3 <i>nt</i> (of poetry) line; foot [nt, from pajjati] ‹ pajjati<br>4 <i>nt</i> word; phrase; sentence; saying [nt, from pajjati] ‹ pajjati<br>5 <i>nt</i> place; position; state [nt, in s, from pajjati] ‹ pajjati<br>6 <i>nt</i> (gram) word; part of a word; suffix [nt, from pajjati] ‹ pajjati<br>7 <i>nt</i> [nt, from pajjati] ‹ pajjati<br>8 <i>nt</i> mark; impression; print; sign [nt, from pajjati] ‹ pajjati<br>9 <i>nt</i> (gram) part of speech [nt, from pajjati] ‹ pajjati<br>10 <i>nt</i> part; portion; component [nt, in s, from pajjati] ‹ pajjati<br>11 <i>nt</i> footprint; footstep [nt, in s, from pajjati] ‹ pajjati<br>12 <i>ind</i> (of recitation) line by line [ind, adv, acc sg of pada] ‹ pada<br>13 <i>nt</i> item in a list [nt, from pajjati] ‹ pajjati", "candimasūriyā": "1 <i>masc</i> moon and sun [masc,]<br>2 <i>masc</i> moon and sun [masc pl,]", "vedanā": "1 <i>fem</i> (pleasant, unpleasant or neutral) felt experience; feeling; feeling tone; sensation; second of the five aggregates [fem, from vedeti] ‹ vedeti (lit. causing to know)<br>2 <i>fem</i> pain [fem, from vedeti] ‹ vedeti (lit. causing to know)<br>3 <i>adj</i> with felt experience; with a feeling; having a feeling tone [adj, in s, from vedanā] ‹ वेदना (lit. causing to know)", "satibalaṃ": "1 <i>nt</i> power that is awareness; strength of mindfulness [nt,]", "evameva": "1 <i>sand</i> similarly; in the same way; so too; just so [sandhi, adv + ind]<br>2 <i>ind</i> thus; this; like this; similarly; in the same manner; just as; such [ind, adv]<br>3 <i>ind</i> yes!; that is right!; correct! [ind, excl]", "pañca": "1 <i>card</i> five (5) [card, x pl]", "vaggo": "1 <i>adj</i> disunited; divisive; factious; dissentious; incomplete [adj]<br>2 <i>masc</i> chapter; section [masc]<br>3 <i>masc</i> group; party; faction [masc]<br>4 <i>masc</i> (gram) (of consonants) set; group; class; series [masc]<br>5 <i>masc</i> dissociation; separation [masc]", "saṃyojanāni": "1 <i>nt</i> fetter; chain; bond; thing which binds [nt, from saṃyojeti] ‹ संयोजेति (lit. causing to yoke together)<br>2 <i>nt</i> connection; link [nt, from saṃyojeti] ‹ संयोजेति (lit. causing to yoke together)<br>3 <i>adj</i> with a fetter; having a chain; about a bond; regarding a thing which binds [adj, from saṃyojeti] ‹ संयोजेति (lit. causing to yoke together)", "idha": "1 <i>ind</i> here; now; in this world [ind, adv, from ima] ‹ ima<br>2 <i>ind</i> here; in this regard; in this case [ind, adv, from ima] ‹ ima<br>3 <i>ind</i> (comm) in this teaching; here in this doctrine [ind, adv, from ima] ‹ ima", "saddhābalaṃ": "1 <i>nt</i> power that is confidence; strength of faith [nt,]", "vidhā": "1 <i>adj</i> of the kind; of the sort; of the variety; -fold [adj, in s, from vidahati] ‹ vidahati (lit. placing apart)<br>2 <i>masc</i> awl; piercer [masc, from vijjhati] ‹ vijjhati<br>3 <i>fem</i> distinction; discrimination; categorization; conceit [fem, abstr, from vidahati] ‹ vidahati (lit. placing apart)<br>4 <i>fem</i> part; portion; component (of) [fem, in s, from vidahati] ‹ vidahati (lit. placing apart)<br>5 <i>fem</i> type; kind; sort; variety (of) [fem, abstr, in s, from vidahati] ‹ vidahati (lit. placing apart)", "bhāvetabbāni": "1 <i>ptp</i> should be cultivated; should be developed [ptp of bhāveti] ‹ भावेति (lit. to cause to be)", "imāni": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> these [pron, nt nom & acc pl of ima] ‹ ima", "bhāvetabbānīti": "1 <i>ptp</i> should be cultivated; should be developed [ptp of bhāveti] ‹ भावेति (lit. to cause to be)", "seyyathāpi": "1 <i>sand</i> just like; as if; imagine if [sandhi, pron + adv + ind]", "nibbānapabbhāro": "1 <i>adj</i> slanting to Nibbāna; sloping to Nibbāna; inclining to Nibbāna [adj,]", "malañca": "1 <i>nt</i> dirt; impurity; stain; dross; filth; grime; tarnish; grunge; contaminant ‹ √mal<br>2 <i>nt</i> rust [nt] ‹ √mal", "nibbānapoṇo": "1 <i>adj</i> sloping to Nibbāna; inclining to Nibbāna; leading to Nibbāna [adj,]", "rājā": "1 <i>masc</i> king; sovereign; lord; ruler [masc, atta group] ‹ √राज्<br>2 <i>adj</i> royal [adj, in s, from rājā] ‹ राज<br>3 <i>masc</i> king; sovereign; lord; ruler [masc nom sg of rāja, atta group] ‹ राज<br>4 <i>aor</i> [aor of rājati] ‹ राजति<br>5 <i>masc</i> names of a daemon [masc, atta group] ‹ √राज् (lit. king)", "pañcabalāni": "1 <i>nt</i> [nt,]<br>2 <i>nt</i> five mental forces; five powers [nt pl,]", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "cha": "1 <i>card</i> six (6) [card, x pl]<br>2 <i>ind</i> 7th item in a numerical list [ind] (lit. letter ch)<br>3 <i>lett</i> (gram) letter ch; 15th letter of the alphabet; aspirated palatal consonant [letter, masc]", "meghā": "1 <i>masc</i> cloud; rain cloud; rain [masc] ‹ √migh", "dosavinayapariyosānaṃ": "1 <i>adj</i> removing and ending ill-will [adj,]", "saṃyojanānaṃ": "1 <i>nt</i> fetter; chain; bond; thing which binds [nt, from saṃyojeti] ‹ संयोजेति (lit. causing to yoke together)<br>2 <i>nt</i> connection; link [nt, from saṃyojeti] ‹ संयोजेति (lit. causing to yoke together)<br>3 <i>adj</i> with a fetter; having a chain; about a bond; regarding a thing which binds [adj, from saṃyojeti] ‹ संयोजेति (lit. causing to yoke together)", "ninnā": "1 <i>adj</i> sloping (towards); slanting (towards); inclining down (to) [adj] ‹ ni √nam (lit. bent down)<br>2 <i>nt</i> lowlands; vale; valley [nt] ‹ ni √nam (lit. bent down)<br>3 <i>adj</i> inclining (towards) [adj] ‹ ni √nam (lit. bent down)", "bahulīkaronto": "1 <i>prp</i> increasing; practising often; devoting oneself (to) [prp of bahulīkaroti,  vb] ‹ बहुलीकरोति (lit. doing a lot)", "kathañca": "1 <i>adj</i> with words; having talk; asking [adj, in s, from kathā] ‹ कथा<br>2 <i>sand</i> and how? [sandhi, adv + ind, interr]<br>3 <i>ind</i> how? [ind, adv, interr, from ka] ‹ ka<br>4 <i>ind</i> what's the reason? [ind, adv, interr, from ka] ‹ ka<br>5 <i>ind</i> what? like what? [ind, adv, interr, from ka] ‹ ka<br>6 <i>fem</i> talk; speech; conversation; discussion [fem, from katheti] ‹ katheti<br>7 <i>fem</i> argument; debate [fem, from katheti] ‹ katheti (lit. talk)<br>8 <i>fem</i> discourse about; lecture on; sermon on [fem, in s, from katheti] ‹ katheti (lit. talk on)<br>9 <i>fem</i> commentary; detailed discussion; analysis [fem, in s, from katheti] ‹ katheti (lit. talk on)<br>10 <i>ind</i> why? [ind, adv, interr, from ka] ‹ ka", "nāgo": "1 <i>masc</i> noble person; great man; epithet of an arahant; epithet of the Buddha [masc]<br>2 <i>masc</i> tusker; bull elephant [masc]<br>3 <i>masc</i> snake; serpent; cobra [masc]<br>4 <i>masc</i> dragon; drake; supernatural shape-shifting serpent [masc]<br>5 <i>masc</i> stallion; thoroughbred [masc]<br>6 <i>masc</i> massive bull; strong ox [masc]<br>7 <i>masc</i> huge tree [masc]<br>8 <i>masc</i> massive man; giant [masc]", "nirodhanissitaṃ": "1 <i>adj</i> based on ending; supported by cessation; by means of finishing [adj,]", "oghādisuttadasakaṃ": "1 <i>nt</i> [nt,]", "uddhaccaṃ": "1 <i>nt</i> agitation; restlessness; distraction; excitement [nt, abstr, from uddhata] ‹ uddhata (lit. carrying up)", "katamāni": "1 <i>pron</i> what?; which (of the many)? [pron, interr, from ka] ‹ ka", "dvete": "1 <i>card</i> two or three (2 or 3) [card,]", "upādānaṃ": "1 <i>nt</i> fuel (for fire) [nt, from upādiyati] ‹ उपादियति (lit. taking near)<br>2 <i>nt</i> grasping; clinging; acquiring; appropriating; taking possession; identifying [nt, act, from upādiyati] ‹ उपादियति (lit. taking near)<br>3 <i>adj</i> with fuel; having fuel [adj, in s, from upādiyati] ‹ उपादियति (lit. taking near)", "nibbānaninno": "1 <i>adj</i> slanting to Nibbāna; sloping to Nibbāna; inclining to Nibbāna [adj,]", "uddhambhāgiyāni": "1 <i>adj</i> higher; upper [adj,] (lit. connected to the upper part)", "pañcimāni": "1 <i>sand</i> these five [sandhi, adj + pron]", "balānīti": "1 <i>nt</i> strength; power; might [nt] ‹ √bal<br>2 <i>nt</i> mental power; Dhamma strength ‹ √bal (lit. strength)<br>3 <i>nt</i> army; military force [nt] ‹ √bal (lit. strength)<br>4 <i>nt</i> financial ability; resources [nt] ‹ √bal (lit. strength)", "esanādisuttadvādasakaṃ": "1 <i>nt</i> [nt,]", "gaṅgā": "1 <i>fem</i> name of a river; one of the five great rivers of ancient India [fem]<br>2 <i>fem</i> river [fem]", "vossaggapariṇāmiṃ": "1 <i>adj</i> developing into complete relinquishment; ripening in release; culminating in letting go [adj,]", "vīriyabalaṃ": "1 <i>nt</i> power that is effort; strength of energy [nt,]", "ākāsena": "1 <i>masc</i> open space; vacuity [masc, from ākāsati] ‹ आकासति (lit. space)<br>2 <i>masc</i> sky; air [masc, from ākāsati] ‹ आकासति (lit. space)<br>3 <i>masc</i> open air [masc, from ākāsati] ‹ आकासति (lit. space)<br>4 <i>masc</i> space [masc, from ākāsati] ‹ आकासति<br>5 <i>masc</i> environment; atmosphere; (comm) craving [masc, from ākāsati] ‹ आकासति (lit. space)<br>6 <i>masc</i> name of a family clan [masc]<br>7 <i>masc</i> (comm) game played in the air with eight by eight or ten by ten rows [masc, from ākāsati] ‹ आकासति (lit. space)", "āgantukā": "1 <i>masc</i> guest; newcomer; new arrival; stranger [masc, agent, from āgantar] ‹ आगन्तर् (lit. who comes here)<br>2 <i>adj</i> (of talk) unrelated; incidental; random [adj, in s, from āgantar] ‹ आगन्तर् (lit. who comes here)<br>3 <i>adj</i> newly appeared; suddenly arrived [adj, in s, from āgantar] ‹ आगन्तर् (lit. who comes here)", "kūṭaṃ": "1 <i>adj</i> false; crooked; corrupt [adj] ‹ √कुट्<br>2 <i>masc</i> peak; ridge; summit [masc] ‹ √कुट् (lit. crooked)<br>3 <i>nt</i> fraud (using); deceit (by); con (with) [nt] ‹ √कुट् (lit. crooked)<br>4 <i>nt</i> trap; snare [nt] ‹ √कुट् (lit. crooked)<br>5 <i>masc</i> mountain peak; summit [masc] ‹ √कुट् (lit. crooked)<br>6 <i>masc</i> ridge beam; ridge-pole; roof-tree; top beam [masc] ‹ √कुट् (lit. crooked)<br>7 <i>nt</i> hammer [nt] ‹ √कुट्<br>8 <i>nt</i> [nt]<br>9 <i>masc</i> peak of a discourse; climax of a talk [masc] ‹ √कुट् (lit. crooked)", "nāvā": "1 <i>fem</i> ship; boat; sailing vessel [fem]", "tathāgataṃ": "1 <i>masc</i> Such Become; Realised; being in such a state; arrived at the truth; epithet of the Buddha [masc,]", "dvādasa": "1 <i>card</i> twelve (12) [card, x pl,]<br>2 <i>ordi</i> twelfth (12th) [ordin of dvādasa,] ‹ द्वादस", "evaṃ": "1 <i>ind</i> thus; this; like this; similarly; in the same manner; just as; such [ind, adv]<br>2 <i>ind</i> yes!; that is right!; correct! [ind, excl]", "mūlaṃ": "1 <i>nt</i> (of a tree) root; base; foot [nt] ‹ √मूल्<br>2 <i>nt</i> source; origin; root [nt] ‹ √मूल्<br>3 <i>nt</i> money; cash; capital; moola [nt] ‹ √मूल्<br>4 <i>nt</i> (vinaya) (of a legal action) beginning; start [nt] ‹ √मूल्<br>5 <i>adj</i> original; first; primary [adj, in s] ‹ √मूल्<br>6 <i>nt</i> (of money) capital; principal [nt] ‹ √मूल्<br>7 <i>nt</i> base; foundation; bottom part [nt, in s]<br>8 <i>nt</i> primary text; root text; source text (as opposed to the commentaries and sub-commentaries)", "rāgavinayapariyosānaṃ": "1 <i>adj</i> removing and ending desire [adj,]", "taṇhā": "1 <i>adj</i> with craving; having desire (for) [adj, from taṇhā] ‹ तण्हा (lit. with thirst)<br>2 <i>fem</i> craving; wanting; desire (for) [fem, abstr, from tasati] ‹ tasati (lit. thirst)<br>3 <i>fem</i> attachment (to); love (for) [fem, abstr, from tasati] ‹ tasati (lit. thirst)<br>4 <i>fem</i> name of one of the three daughters of Death [fem, from tasati] ‹ tasati (lit. thirst)<br>5 <i>fem</i> thirst [fem, abstr, from tasati] ‹ tasati", "tasinā": "1 <i>fem</i> craving; wanting; desire (for) [fem, abstr, from taṇhā] ‹ तण्हा (lit. thirst)", "parikkhayāya": "1 <i>masc</i> exhaustion; destruction; extinction; depletion (of) [masc] ‹ परि √खी", "pañcannaṃ": "1 <i>card</i> five (5) [card, x pl]<br>2 <i>card</i> to five; for five [card, x dat pl of pañca] ‹ पञ्च<br>3 <i>card</i> of five [card, x gen pl of pañca] ‹ पञ्च<br>4 <i>card</i> when five [card, x gen pl of pañca, gen abs] ‹ पञ्च (lit. of five)", "vitthāretabbā": "1 <i>ptp</i> should be expanded in detail; should be filled out [ptp of vitthāreti] ‹ वित्थारेति (lit. to cause to be spread out)", "ogho": "1 <i>masc</i> (of water) flood; deluge; torrent [masc]<br>2 <i>masc</i> (of defilements) deluge; inundation; torrent [masc, in s]", "bījañca": "1 <i>nt</i> seed; germ [nt]<br>2 <i>nt</i> sprouting; germinating; propagation; vegetative reproduction [nt]<br>3 <i>adj</i> fertile; productive [adj]<br>4 <i>prp</i> fanning (something with) [prp of bījati] ‹ बीजति", "nadī": "1 <i>aor</i> roared; bellowed [aor of nadati] ‹ nadati<br>2 <i>fem</i> river [fem, from nadati, irreg declension] ‹ nadati<br>3 <i>aor</i> [aor of nadati] ‹ nadati<br>4 <i>fem</i> (gram) technical term for i, ī, u, ū on feminine stems [fem, from nadati, irreg declension] ‹ nadati", "sūkiyā": "1 <i>fem</i> (of a plant) hair; bristle; spike; spicule [fem]", "kumbhena": "1 <i>masc</i> clay pot; water jar; pitcher [masc]<br>2 <i>masc</i> frontal boss; temporal boss; protuberance on an elephant's head that become enlarged during musth [masc] (lit. clay pot)", "pācīnapoṇā": "1 <i>adj</i> sloping to the east; inclining eastwards [adj,]"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>६. बल संयुक्त (शक्तियों से संबंधित संग्रह) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<h3 id='s0305m.mul_01404'><span class="paliword" data-word="1-12">१-१२.</span> <span class="paliword" data-word="balādisuttadvādasakaṃ">बलादिसुत्तद्वादसकं</span></h3>
+<div class='hindi' id='s0305m.mul_01404_hi'>१-१२. बलादिसुत्तद्वादसकं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01405_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="705-716">७०५-७१६.</span> <span class="paliword" data-word="pañcimāni">‘‘पञ्‍चिमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="balāni">बलानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="saddhābalaṃ">सद्धाबलं,</span> <span class="paliword" data-word="vīriyabalaṃ">वीरियबलं,</span> <span class="paliword" data-word="satibalaṃ">सतिबलं,</span> <span class="paliword" data-word="samādhibalaṃ">समाधिबलं,</span> <span class="paliword" data-word="paññābalaṃ">पञ्‍ञाबलं</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balānīti">बलानीति।</span> <span class="paliword" data-word="seyyathāpi">सेय्यथापि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="gaṅgā">गङ्गा</span> <span class="paliword" data-word="nadī">नदी</span> <span class="paliword" data-word="pācīnaninnā">पाचीननिन्‍ना</span> <span class="paliword" data-word="pācīnapoṇā">पाचीनपोणा</span> <span class="paliword" data-word="pācīnapabbhārā">पाचीनपब्भारा;</span> <span class="paliword" data-word="evameva">एवमेव</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="pañcabalāni">पञ्‍चबलानि</span> <span class="paliword" data-word="bahulīkaronto">बहुलीकरोन्तो</span> <span class="paliword" data-word="nibbānaninno">निब्बाननिन्‍नो</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="nibbānapoṇo">निब्बानपोणो</span> <span class="paliword" data-word="nibbānapabbhāro">निब्बानपब्भारो।</span> <span class="paliword" data-word="kathañca">कथञ्‍च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bahulīkaronto">बहुलीकरोन्तो</span> <span class="paliword" data-word="nibbānaninno">निब्बाननिन्‍नो</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="nibbānapoṇo">निब्बानपोणो</span> <span class="paliword" data-word="nibbānapabbhāro">निब्बानपब्भारो?</span> <span class="paliword" data-word="idha">इध,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="saddhābalaṃ">सद्धाबलं</span> <span class="paliword" data-word="bhāveti">भावेति</span> <span class="paliword" data-word="vivekanissitaṃ">विवेकनिस्सितं</span> <span class="paliword" data-word="virāganissitaṃ">विरागनिस्सितं</span> <span class="paliword" data-word="nirodhanissitaṃ">निरोधनिस्सितं</span> <span class="paliword" data-word="vossaggapariṇāmiṃ">वोस्सग्गपरिणामिं,</span> <span class="paliword" data-word="vīriyabalaṃpe॰">वीरियबलं…पे॰…</span> <span class="paliword" data-word="satibalaṃ">सतिबलं…</span> <span class="paliword" data-word="samādhibalaṃ">समाधिबलं…</span> <span class="paliword" data-word="paññābalaṃ">पञ्‍ञाबलं</span> <span class="paliword" data-word="bhāveti">भावेति</span> <span class="paliword" data-word="vivekanissitaṃ">विवेकनिस्सितं</span> <span class="paliword" data-word="virāganissitaṃ">विरागनिस्सितं</span> <span class="paliword" data-word="nirodhanissitaṃ">निरोधनिस्सितं</span> <span class="paliword" data-word="vossaggapariṇāmiṃ">वोस्सग्गपरिणामिं।</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bahulīkaronto">बहुलीकरोन्तो</span> <span class="paliword" data-word="nibbānaninno">निब्बाननिन्‍नो</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="nibbānapoṇo">निब्बानपोणो</span> <span class="paliword" data-word="nibbānapabbhāroti">निब्बानपब्भारो’’ति।</span> <span class="paliword" data-word="dvādasamaṃ">द्वादसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01405_hi">
+                ७०५-७१६.
+“भिक्षुओं, ये पाँच बल हैं।
+कौन से पाँच? श्रद्धा-बल (śraddhā-bala), वीर्य-बल (vīrya-bala), स्मृति-बल (smṛti-bala), समाधि-बल (samādhi-bala) और प्रज्ञा-बल (prajñā-bala) — भिक्षुओं, ये ही पाँच बल हैं।
+जैसे गंगा नदी पूर्व की ओर झुकने वाली, पूर्व की ओर बहने वाली और पूर्व की ओर ढलने वाली है; वैसे ही भिक्षुओं, जो भिक्षु इन पाँच बलों का अभ्यास करता है और इन पाँच बलों को बार-बार विकसित करता है, वह निर्वाण (nirvāṇa) की ओर झुकने वाला, निर्वाण की ओर प्रवृत्त होने वाला और निर्वाण की ओर ढलने वाला हो जाता है।
+और भिक्षुओं, भिक्षु कैसे इन पाँच बलों का अभ्यास और संवर्धन करते हुए निर्वाण की ओर झुकता है, उसकी ओर प्रवृत्त होता है और उसकी ओर ढलता है? यहाँ, भिक्षुओं, एक भिक्षु श्रद्धा-बल का विकास करता है जो विवेक पर आश्रित है, विराग पर आश्रित है, निरोध पर आश्रित है और त्याग में परिणत होता है; वह वीर्य-बल... स्मृति-बल... समाधि-बल... और प्रज्ञा-बल का विकास करता है जो विवेक, विराग और निरोध पर आश्रित है तथा त्याग में परिणत होता है।
+इस प्रकार, भिक्षुओं, इन पाँच बलों का अभ्यास और बार-बार विकास करने वाला भिक्षु निर्वाण की ओर झुकने वाला, निर्वाण की ओर प्रवृत्त होने वाला और निर्वाण की ओर ढलने वाला होता है।”
+बारहवां।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01407_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01407_hi">
+                इसका सारांश इस प्रकार है:
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01408_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="cha">छ</span> <span class="paliword" data-word="pācīnato">पाचीनतो</span> <span class="paliword" data-word="ninnā">निन्‍ना,</span> <span class="paliword" data-word="cha">छ</span> <span class="paliword" data-word="ninnā">निन्‍ना</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuddato">समुद्दतो।</span> <span class="paliword" data-word="dvete">द्वेते</span> <span class="paliword" data-word="cha">छ</span> <span class="paliword" data-word="dvādasa">द्वादस</span> <span class="paliword" data-word="honti">होन्ति,</span> <span class="paliword" data-word="vaggo">वग्गो</span> <span class="paliword" data-word="tena">तेन</span> <span class="paliword" data-word="pavuccatīti||">पवुच्‍चतीति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01408_hi">
+                छः पूर्व की ओर ढलती हैं और छः समुद्र की ओर प्रवृत्त होती हैं।
+ये दो छः मिलकर बारह होती हैं, इसलिए इसे एक वर्ग कहा जाता है।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01411_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01411_hi">
+                इसका सारांश इस प्रकार है:
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01412_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tathāgataṃ">तथागतं</span> <span class="paliword" data-word="padaṃ">पदं</span> <span class="paliword" data-word="kūṭaṃ">कूटं,</span> <span class="paliword" data-word="mūlaṃ">मूलं</span> <span class="paliword" data-word="sārena">सारेन</span> <span class="paliword" data-word="vassikaṃ">वस्सिकं।</span> <span class="paliword" data-word="rājā">राजा</span> <span class="paliword" data-word="candimasūriyā">चन्दिमसूरिया,</span> <span class="paliword" data-word="vatthena">वत्थेन</span> <span class="paliword" data-word="dasamaṃ">दसमं</span> <span class="paliword" data-word="padanti||">पदन्ति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01412_hi">
+                तथागत का पद सर्वोच्च है, वह सार युक्त श्रेष्ठ मूल है।
+जैसे चन्द्रमा और सूर्य राजा हैं, वैसे ही वस्त्रों में दसवाँ पद (वस्त्र का प्रकार) प्रधान है।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01414_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01414_hi">
+                इसका सारांश यह है:
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01415_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="balaṃ">बलं</span> <span class="paliword" data-word="bījañca">बीजञ्‍च</span> <span class="paliword" data-word="nāgo">नागो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="rukkho">रुक्खो</span> <span class="paliword" data-word="kumbhena">कुम्भेन</span> <span class="paliword" data-word="sūkiyā">सूकिया।</span> <span class="paliword" data-word="ākāsena">आकासेन</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="meghā">मेघा,</span> <span class="paliword" data-word="nāvā">नावा</span> <span class="paliword" data-word="āgantukā">आगन्तुका</span> <span class="paliword" data-word="nadīti||">नदीति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01415_hi">
+                शक्ति (बल), बीज, नाग, वृक्ष, घड़ा और सूई;
+आकाश में दो मेघ, नौका, नवागंतुक और नदी।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01417_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01417_hi">
+                इसका सारांश यह है –
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01418_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="esanā">एसना</span> <span class="paliword" data-word="vidhā">विधा</span> <span class="paliword" data-word="āsavo">आसवो,</span> <span class="paliword" data-word="bhavo">भवो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dukkhatā">दुक्खता</span> <span class="paliword" data-word="tisso">तिस्सो।</span> <span class="paliword" data-word="khilaṃ">खिलं</span> <span class="paliword" data-word="malañca">मलञ्‍च</span> <span class="paliword" data-word="nīgho">नीघो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="vedanā">वेदना</span> <span class="paliword" data-word="taṇhā">तण्हा</span> <span class="paliword" data-word="tasinā">तसिना</span> <span class="paliword" data-word="cāti||">चाति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01418_hi">
+                एषणा, विधा, आस्रव, और भव के साथ-साथ तीन प्रकार की दुःखता;
+खिल, मल, नीघ, वेदना, तृष्णा और तसिना ये सभी क्लेशों के नाम हैं॥
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0305m.mul_01420'><span class="paliword" data-word="1-10">१-१०.</span> <span class="paliword" data-word="oghādisuttadasakaṃ">ओघादिसुत्तदसकं</span></h3>
+<div class='hindi' id='s0305m.mul_01420_hi'>१-१०. ओघादिसुत्तदसकं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01421_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="749-758">७४९-७५८.</span> <span class="paliword" data-word="pañcimāni">‘‘पञ्‍चिमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="uddhambhāgiyāni">उद्धम्भागियानि</span> <span class="paliword" data-word="saṃyojanāni">संयोजनानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="rūparāgo">रूपरागो,</span> <span class="paliword" data-word="arūparāgo">अरूपरागो,</span> <span class="paliword" data-word="māno">मानो,</span> <span class="paliword" data-word="uddhaccaṃ">उद्धच्‍चं,</span> <span class="paliword" data-word="avijjā">अविज्‍जा</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañcuddhambhāgiyāni">पञ्‍चुद्धम्भागियानि</span> <span class="paliword" data-word="saṃyojanāni">संयोजनानि।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañcannaṃ">पञ्‍चन्‍नं</span> <span class="paliword" data-word="uddhambhāgiyānaṃ">उद्धम्भागियानं</span> <span class="paliword" data-word="saṃyojanānaṃ">संयोजनानं</span> <span class="paliword" data-word="abhiññāya">अभिञ्‍ञाय</span> <span class="paliword" data-word="pariññāya">परिञ्‍ञाय</span> <span class="paliword" data-word="parikkhayāya">परिक्खयाय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bhāvetabbāni">भावेतब्बानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="idha">इध,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="saddhābalaṃ">सद्धाबलं</span> <span class="paliword" data-word="bhāveti">भावेति</span> <span class="paliword" data-word="vivekanissitaṃ">विवेकनिस्सितं</span> <span class="paliword" data-word="virāganissitaṃ">विरागनिस्सितं</span> <span class="paliword" data-word="nirodhanissitaṃ">निरोधनिस्सितं</span> <span class="paliword" data-word="vossaggapariṇāmiṃ">वोस्सग्गपरिणामिं,</span> <span class="paliword" data-word="vīriyabalaṃpe॰">वीरियबलं…पे॰…</span> <span class="paliword" data-word="satibalaṃpe॰">सतिबलं…पे॰…</span> <span class="paliword" data-word="samādhibalaṃpe॰">समाधिबलं…पे॰…</span> <span class="paliword" data-word="paññābalaṃ">पञ्‍ञाबलं</span> <span class="paliword" data-word="bhāveti">भावेति</span> <span class="paliword" data-word="vivekanissitaṃ">विवेकनिस्सितं</span> <span class="paliword" data-word="virāganissitaṃ">विरागनिस्सितं</span> <span class="paliword" data-word="nirodhanissitaṃ">निरोधनिस्सितं</span> <span class="paliword" data-word="vossaggapariṇāmiṃ">वोस्सग्गपरिणामिं।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañcannaṃ">पञ्‍चन्‍नं</span> <span class="paliword" data-word="uddhambhāgiyānaṃ">उद्धम्भागियानं</span> <span class="paliword" data-word="saṃyojanānaṃ">संयोजनानं</span> <span class="paliword" data-word="abhiññāya">अभिञ्‍ञाय</span> <span class="paliword" data-word="pariññāya">परिञ्‍ञाय</span> <span class="paliword" data-word="parikkhayāya">परिक्खयाय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bhāvetabbānīti">भावेतब्बानी’’ति।</span> <span class="paliword" data-word="evaṃ">(एवं</span> <span class="paliword" data-word="vitthāretabbā">वित्थारेतब्बा)।</span> <span class="paliword" data-word="dasamaṃ">दसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01421_hi">
+                ७४९-७५८.
+“भिक्षुओं, ये पाँच ऊर्ध्वभागीय (उच्च स्तर के) संयोजन हैं।
+वे पाँच कौन से हैं? रूप-राग (रूप के प्रति आसक्ति), अरूप-राग (अरूप के प्रति आसक्ति), मान (अहंकार), औद्धत्य (चंचलता), और अविद्या—भिक्षुओं, ये ही पाँच ऊर्ध्वभागीय संयोजन हैं।
+भिक्षुओं, इन पाँच ऊर्ध्वभागीय संयोजनों के विशेष ज्ञान, पूर्ण परिज्ञान, क्षय और प्रहाण (त्याग) के लिए पाँच बलों का अभ्यास करना चाहिए।
+वे पाँच कौन से हैं? यहाँ, भिक्षुओं, एक भिक्षु श्रद्धा-बल का अभ्यास करता है जो विवेक पर आश्रित है, वैराग्य पर आश्रित है, निरोध पर आश्रित है और त्याग में परिणत होता है; वह वीर्य-बल का... स्मृति-बल का... समाधि-बल का... और प्रज्ञा-बल का अभ्यास करता है जो विवेक पर आश्रित है, वैराग्य पर आश्रित है, निरोध पर आश्रित है और त्याग में परिणत होता है।
+भिक्षुओं, इन पाँच ऊर्ध्वभागीय संयोजनों के विशेष ज्ञान, पूर्ण परिज्ञान, क्षय और प्रहाण के लिए इन पाँच बलों का अभ्यास करना चाहिए।”
+(इसी प्रकार विस्तार से कहना चाहिए)।
+दसवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01423_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01423_hi">
+                इसका सारांश यह है:
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01424_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="ogho">ओघो</span> <span class="paliword" data-word="yogo">योगो</span> <span class="paliword" data-word="upādānaṃ">उपादानं,</span> <span class="paliword" data-word="ganthā">गन्था</span> <span class="paliword" data-word="anusayena">अनुसयेन</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="kāmaguṇā">कामगुणा</span> <span class="paliword" data-word="nīvaraṇā">नीवरणा,</span> <span class="paliword" data-word="khandhā">खन्धा</span> <span class="paliword" data-word="oruddhambhāgiyāti||">ओरुद्धम्भागियाति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01424_hi">
+                ओघ, योग, उपादान, ग्रंथ और अनुशय;
+कामगुण, निवारण, स्कंध और ऊर्ध्वभागीय (संयोजन)॥
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0305m.mul_01426'><span class="paliword" data-word="1-12">१-१२.</span> <span class="paliword" data-word="pācīnādisuttadvādasakaṃ">पाचीनादिसुत्तद्वादसकं</span></h3>
+<div class='hindi' id='s0305m.mul_01426_hi'>१-१२. पाचीनादिसुत्तद्वादसकं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01427_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="759-770">७५९-७७०.</span> <span class="paliword" data-word="seyyathāpi">‘‘सेय्यथापि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="gaṅgā">गङ्गा</span> <span class="paliword" data-word="nadī">नदी</span> <span class="paliword" data-word="pācīnaninnā">पाचीननिन्‍ना</span> <span class="paliword" data-word="pācīnapoṇā">पाचीनपोणा</span> <span class="paliword" data-word="pācīnapabbhārā">पाचीनपब्भारा;</span> <span class="paliword" data-word="evameva">एवमेव</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bahulīkaronto">बहुलीकरोन्तो</span> <span class="paliword" data-word="nibbānaninno">निब्बाननिन्‍नो</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="nibbānapoṇo">निब्बानपोणो</span> <span class="paliword" data-word="nibbānapabbhāro">निब्बानपब्भारो।</span> <span class="paliword" data-word="kathañca">कथञ्‍च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bahulīkaronto">बहुलीकरोन्तो</span> <span class="paliword" data-word="nibbānaninno">निब्बाननिन्‍नो</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="nibbānapoṇo">निब्बानपोणो</span> <span class="paliword" data-word="nibbānapabbhāro">निब्बानपब्भारो?</span> <span class="paliword" data-word="idha">इध,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="saddhābalaṃ">सद्धाबलं</span> <span class="paliword" data-word="bhāveti">भावेति</span> <span class="paliword" data-word="rāgavinayapariyosānaṃ">रागविनयपरियोसानं</span> <span class="paliword" data-word="dosavinayapariyosānaṃ">दोसविनयपरियोसानं</span> <span class="paliword" data-word="mohavinayapariyosānaṃpe॰">मोहविनयपरियोसानं…पे॰…</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bahulīkaronto">बहुलीकरोन्तो</span> <span class="paliword" data-word="nibbānaninno">निब्बाननिन्‍नो</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="nibbānapoṇo">निब्बानपोणो</span> <span class="paliword" data-word="nibbānapabbhāroti">निब्बानपब्भारो’’ति।</span> <span class="paliword" data-word="vitthāretabbā">(वित्थारेतब्बा)</span> <span class="paliword" data-word="dvādasamaṃ">द्वादसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01427_hi">
+                ७५९-७७०.
+"हे भिक्षुओं, जिस प्रकार गंगा नदी पूर्व की ओर बहती है, पूर्व की ओर ढलती है और पूर्व की ओर ही झुकती है; उसी प्रकार, हे भिक्षुओं, पाँच बलों (pañca balāni) का अभ्यास और संवर्धन करने वाला भिक्षु निर्वाण (nirvāṇa) की ओर बहता है, निर्वाण की ओर ढलता है और निर्वाण की ओर ही झुकता है।
+
+और कैसे, हे भिक्षुओं, भिक्षु पाँच बलों का अभ्यास और संवर्धन करते हुए निर्वाण की ओर प्रवृत्त होता है? यहाँ, हे भिक्षुओं, एक भिक्षु श्रद्धा के बल (śraddhābala) का अभ्यास करता है, जिसका समापन राग के विनय, द्वेष के विनय और मोह के विनय में होता है... (इत्यादि)... इस प्रकार, हे भिक्षुओं, पाँच बलों का अभ्यास और संवर्धन करने वाला भिक्षु निर्वाण की ओर बहता है, निर्वाण की ओर ढलता है और निर्वाण की ओर ही झुकता है।"
+
+(विस्तार किया जाना चाहिए) बारहवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01429_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01429_hi">
+                इसका सारांश यह है:
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01430_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="cha">छ</span> <span class="paliword" data-word="pācīnato">पाचीनतो</span> <span class="paliword" data-word="ninnā">निन्‍ना,</span> <span class="paliword" data-word="cha">छ</span> <span class="paliword" data-word="ninnā">निन्‍ना</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuddato">समुद्दतो।</span> <span class="paliword" data-word="dvete">द्वेते</span> <span class="paliword" data-word="cha">छ</span> <span class="paliword" data-word="dvādasa">द्वादस</span> <span class="paliword" data-word="honti">होन्ति,</span> <span class="paliword" data-word="vaggo">वग्गो</span> <span class="paliword" data-word="tena">तेन</span> <span class="paliword" data-word="pavuccatīti||">पवुच्‍चतीति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01430_hi">
+                छह पूर्व की ओर झुकी हुई हैं, और छह समुद्र की ओर झुकी हुई हैं।
+इन दोनों छहों को मिलाकर बारह होते हैं, इसी कारण इसे एक वर्ग (वग्ग) कहा जाता है।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0305m.mul_01433'><span class="paliword" data-word="1-12">१-१२.</span> <span class="paliword" data-word="esanādisuttadvādasakaṃ">एसनादिसुत्तद्वादसकं</span></h3>
+<div class='hindi' id='s0305m.mul_01433_hi'>१-१२. एसनादिसुत्तद्वादसकं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01434_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="792-802">७९२-८०२.</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="esanāpāḻi">एसनापाळि</span> <span class="paliword" data-word="vitthāretabbā">वित्थारेतब्बा</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="rāgavinayapariyosānaṃ">रागविनयपरियोसानं</span> <span class="paliword" data-word="dosavinayapariyosānaṃ">दोसविनयपरियोसानं</span> <span class="paliword" data-word="mohavinayapariyosānaṃ">मोहविनयपरियोसानं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01434_hi">
+                ७९२-८०२.
+इसी प्रकार एषणा-पालि का विस्तार करना चाहिए—राग के विनय में पर्यवसान, द्वेष के विनय में पर्यवसान और मोह के विनय में पर्यवसान।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01436_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01436_hi">
+                इसका सारांश यह है:
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01437_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="esanā">एसना</span> <span class="paliword" data-word="vidhā">विधा</span> <span class="paliword" data-word="āsavo">आसवो,</span> <span class="paliword" data-word="bhavo">भवो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dukkhatā">दुक्खता</span> <span class="paliword" data-word="tisso">तिस्सो।</span> <span class="paliword" data-word="khilaṃ">खिलं</span> <span class="paliword" data-word="malañca">मलञ्‍च</span> <span class="paliword" data-word="nīgho">नीघो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="vedanā">वेदना</span> <span class="paliword" data-word="taṇhā">तण्हा</span> <span class="paliword" data-word="tasinā">तसिना</span> <span class="paliword" data-word="cāti||">चाति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01437_hi">
+                खोज (एषणा), प्रकार, आस्रव, भव, और तीन प्रकार के दुःख;
+कठोरता (खिल), मल, क्लेश (नीघ), वेदना, तृष्णा और पिपासा ये सब हैं।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0305m.mul_01439'><span class="paliword" data-word="1-10">१-१०.</span> <span class="paliword" data-word="oghādisuttadasakaṃ">ओघादिसुत्तदसकं</span></h3>
+<div class='hindi' id='s0305m.mul_01439_hi'>१-१०. ओघादिसुत्तदसकं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01440_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="803-812">८०३-८१२.</span> <span class="paliword" data-word="pañcimāni">‘‘पञ्‍चिमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="uddhambhāgiyāni">उद्धम्भागियानि</span> <span class="paliword" data-word="saṃyojanāni">संयोजनानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="rūparāgo">रूपरागो,</span> <span class="paliword" data-word="arūparāgo">अरूपरागो,</span> <span class="paliword" data-word="māno">मानो,</span> <span class="paliword" data-word="uddhaccaṃ">उद्धच्‍चं</span> <span class="paliword" data-word="avijjā">अविज्‍जा</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañcuddhambhāgiyāni">पञ्‍चुद्धम्भागियानि</span> <span class="paliword" data-word="saṃyojanāni">संयोजनानि।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañcannaṃ">पञ्‍चन्‍नं</span> <span class="paliword" data-word="uddhambhāgiyānaṃ">उद्धम्भागियानं</span> <span class="paliword" data-word="saṃyojanānaṃ">संयोजनानं</span> <span class="paliword" data-word="abhiññāya">अभिञ्‍ञाय</span> <span class="paliword" data-word="pariññāya">परिञ्‍ञाय</span> <span class="paliword" data-word="parikkhayāya">परिक्खयाय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bhāvetabbāni">भावेतब्बानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="idha">इध,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="saddhābalaṃ">सद्धाबलं</span> <span class="paliword" data-word="bhāvetipe॰">भावेति…पे॰…</span> <span class="paliword" data-word="paññābalaṃ">पञ्‍ञाबलं</span> <span class="paliword" data-word="bhāveti">भावेति</span> <span class="paliword" data-word="rāgavinayapariyosānaṃ">रागविनयपरियोसानं</span> <span class="paliword" data-word="dosavinayapariyosānaṃ">दोसविनयपरियोसानं</span> <span class="paliword" data-word="mohavinayapariyosānaṃ">मोहविनयपरियोसानं।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañcannaṃ">पञ्‍चन्‍नं</span> <span class="paliword" data-word="uddhambhāgiyānaṃ">उद्धम्भागियानं</span> <span class="paliword" data-word="saṃyojanānaṃ">संयोजनानं</span> <span class="paliword" data-word="abhiññāya">अभिञ्‍ञाय</span> <span class="paliword" data-word="pariññāya">परिञ्‍ञाय</span> <span class="paliword" data-word="parikkhayāya">परिक्खयाय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="balāni">बलानि</span> <span class="paliword" data-word="bhāvetabbānīti">भावेतब्बानी’’ति।</span> <span class="paliword" data-word="dasamaṃ">दसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01440_hi">
+                ८०३-८१२.
+“भिक्षुओं, ये पाँच उच्चतर लोकों से बाँधने वाले बंधन (saṃyojana) हैं।
+वे पाँच कौन से हैं? रूप के प्रति राग, अरूप के प्रति राग, मान (अहंकार), औद्धत्य (चंचलता) और अविद्या — भिक्षुओं, ये ही पाँच उच्चतर बंधन हैं।
+भिक्षुओं, इन पाँच उच्चतर बंधनों के विशिष्ट ज्ञान, पूर्ण परिज्ञान, क्षय और त्याग के लिए पाँच बलों (balāni) का अभ्यास करना चाहिए।
+वे पाँच कौन से हैं? यहाँ, भिक्षुओं, एक भिक्षु श्रद्धा-बल का विकास करता है... और प्रज्ञा-बल का विकास करता है, जो राग के विनय, द्वेष के विनय और मोह के विनय में परिपक्व होते हैं।
+भिक्षुओं, इन पाँच उच्चतर बंधनों के विशिष्ट ज्ञान, पूर्ण परिज्ञान, क्षय और त्याग के लिए इन पाँच बलों का अभ्यास किया जाना चाहिए।”
+दसवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01442_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01442_hi">
+                इसका सारांश यह है:
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0305m.mul_01443_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="ogho">ओघो</span> <span class="paliword" data-word="yogo">योगो</span> <span class="paliword" data-word="upādānaṃ">उपादानं,</span> <span class="paliword" data-word="ganthā">गन्था</span> <span class="paliword" data-word="anusayena">अनुसयेन</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="kāmaguṇā">कामगुणा</span> <span class="paliword" data-word="nīvaraṇā">नीवरणा,</span> <span class="paliword" data-word="khandhā">खन्धा</span> <span class="paliword" data-word="oruddhambhāgiyāti||">ओरुद्धम्भागियाति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0305m.mul_01443_hi">
+                ओघ, योग, उपादान, ग्रंथ और अनुशय;
+कामगुण, निवारण, तथा अधोभाग और ऊर्ध्वभाग के स्कंध॥
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

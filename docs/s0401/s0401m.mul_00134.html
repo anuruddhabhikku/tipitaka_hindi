@@ -1,0 +1,490 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"āpattiṃ": "1 <i>fem</i> entering; going into [fem, from āpajjati] ‹ आपज्जति<br>2 <i>fem</i> (vinaya) offence; wrongdoing; transgression [fem, abstr, from āpajjati] ‹ आपज्जति<br>3 <i>fem</i> [fem]", "ye": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>pr</i> goes; goes to; goes forward; proceeds; travels<br>6 <i>pr</i> (of an army) marches against; pursues; routs [pr]<br>7 <i>pron</i> whoever; whatever; whichever; those who [pron, masc & nt nom pl of ya] ‹ ya<br>8 <i>pron</i> whoever; whatever; whichever; those who (object) [pron, masc & nt acc pl of ya] ‹ ya", "namocanādhippāyassāti": "1 <i>masc</i> not intending to release; not aiming to ejaculate [masc,]", "anavasesāpattiyeva": "1 <i>fem</i> offence without rehabilitation; irremediable transgression [fem,] (lit. no remainder offence)", "hitāya": "1 <i>pp</i> beneficial; good; advantageous [pp of dahati] ‹ dahati (lit. placed)<br>2 <i>masc</i> benefactor; friend; good person [masc, pp of dahati] ‹ dahati<br>3 <i>nt</i> welfare; good; benefit (of); blessing [nt, pp of dahati] ‹ dahati (lit. placed)<br>4 <i>nt</i> beneficial; advantageous (for) [nt, dat sg of hita] ‹ hita (lit. for the benefit)<br>5 <i>pp</i> put; placed [pp of dahati, in s] ‹ dahati", "āpatti": "1 <i>fem</i> entering; going into [fem, from āpajjati] ‹ आपज्जति<br>2 <i>fem</i> (vinaya) offence; wrongdoing; transgression [fem, abstr, from āpajjati] ‹ आपज्जति<br>3 <i>fem</i> [fem]", "dutiyaṃ": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>ind</i> second time [ind, adv, acc sg of dutiya] ‹ dutiya<br>5 <i>fem</i> second woman; another woman; female companion [fem, from dvi] ‹ dvi<br>6 <i>fem</i> [fem]<br>7 <i>fem</i> [fem, from dūta] ‹ दूत<br>8 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "lahukā": "1 <i>adj</i> quick; fast; swift [adj, from lahu] ‹ lahu (lit. light)<br>2 <i>adj</i> light; light-weight [adj, from lahu] ‹ lahu<br>3 <i>adj</i> trifling; unimportant; negligible [adj, from lahu] ‹ lahu (lit. light)<br>4 <i>adj</i> [adj, from lahu] ‹ lahu (lit. light)<br>5 <i>adj</i> (of time or life) brief; short-lived [adj, from lahu] ‹ lahu (lit. light)", "bahujanahitāya": "1 <i>nt</i> for the benefit of many people; for the good of the population [nt, , dat sg of bahujanahita] ‹ bahujanahita", "pana": "1 <i>ind</i> moreover; and so; but; or; however [ind]", "sāvasesāpattiyeva": "1 <i>fem</i> offence with rehabilitation; remediable transgression; i.e. all offences except defeat [fem,] (lit. remainder offence)", "dvādasamaṃ": "1 <i>ordi</i> twelfth (12th) [ordin of dvādasa,] ‹ द्वादस", "puññaṃ": "1 <i>nt</i> merit; good deed; spiritual wealth [nt] ‹ √पुण्<br>2 <i>adj</i> having merit; meritorious; auspicious; virtuous [adj] ‹ √पुण्", "anavasesāpatti": "1 <i>fem</i> offence without rehabilitation; irremediable transgression [fem,] (lit. no remainder offence)", "devamanussānaṃ": "1 <i>masc</i> gods and human beings; deities and men [masc pl,]", "vīsatimaṃ": "1 <i>ordi</i> [ordin of vīsati,] ‹ वीसति", "duṭṭhullaṃ": "1 <i>nt</i> heaviness; discomfort; inertia [nt, abstr, from thūla] ‹ थूल (lit. bad heavy)<br>2 <i>adj</i> (of speech) rude; obscene; vulgar; coarse [adj, from thūla] ‹ थूल (lit. bad heavy)<br>3 <i>adj</i> (of an offence) serious; heavy; bad; corrupt [adj, from thūla] ‹ थूल (lit. bad heavy)<br>4 <i>nt</i> rude words; obscene speech; vulgar language; lewd talk [nt, from thūla] ‹ थूल (lit. bad heavy)", "ṭhapentīti": "1 <i>pr</i> helps to last; causes to remain [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>2 <i>pr</i> stands aside [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>3 <i>pr</i> appoints; establishes; sets up; places (someone in a position) [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>4 <i>pr</i> sets aside; puts to one side [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>5 <i>pr</i> places; puts; stands [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>6 <i>prp</i> placing; setting; positioning [prp of ṭhapeti] ‹ ठपेति (lit. causing to stand)", "ahitāya": "1 <i>pp</i> not good; unbeneficial; harmful [pp of na dahati] ‹ dahati<br>2 <i>masc</i> bad person; unfriendly person; enemy [masc, pp of na dahati] ‹ dahati<br>3 <i>nt</i> harm; damage; disadvantage; misfortune [nt, pp of na dahati] ‹ dahati (lit. not supported)<br>4 <i>nt</i> unbeneficial; harmful (for) [nt, dat sg of na hita] ‹ hita (lit. for the harm (of))", "sāvasesā": "1 <i>adj</i> incomplete; with remainder; with some left over [adj, from avasesa] ‹ avasesa<br>2 <i>adj</i> (of an offence) curable; remediable [adj, from avasesa] ‹ avasesa (lit. with remainder)", "sappaṭikammā": "1 <i>adj</i> amendable; repairable; rehabilitatable [adj, from paṭikamma] ‹ पटिकम्म (lit. with doing back)", "āpattikkhandhā": "1 <i>masc</i> class of offences; group of transgressions [masc,]", "appaṭikammā": "1 <i>nt</i> not making amends; not redressing; not fixing; not repairing [nt, from na paṭikaroti] ‹ पटिकरोति (lit. not doing back)<br>2 <i>adj</i> not amendable; irrepairable; unrehabilitatable [adj, from na paṭikamma] ‹ पटिकरोति (lit. not doing back)", "dvādasame": "1 <i>ordi</i> twelfth (12th) [ordin of dvādasa,] ‹ द्वादस", "sāvasesāpatti": "1 <i>fem</i> offence with rehabilitation; remediable transgression; i.e. all offences except defeat [fem,] (lit. remainder offence)", "duṭṭhullā": "1 <i>nt</i> heaviness; discomfort; inertia [nt, abstr, from thūla] ‹ थूल (lit. bad heavy)<br>2 <i>adj</i> (of speech) rude; obscene; vulgar; coarse [adj, from thūla] ‹ थूल (lit. bad heavy)<br>3 <i>adj</i> (of an offence) serious; heavy; bad; corrupt [adj, from thūla] ‹ थूल (lit. bad heavy)<br>4 <i>nt</i> rude words; obscene speech; vulgar language; lewd talk [nt, from thūla] ‹ थूल (lit. bad heavy)", "tattha": "1 <i>ind</i> there; in that place [ind, adv, from ta] ‹ ta<br>2 <i>ind</i> in that regard; in that case; regarding that matter [ind, adv, from ta] ‹ ta", "dve": "1 <i>card</i> two (2) [card, x pl]<br>2 <i>masc</i> couple; pair [masc, irreg]", "dasamaṃ": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "aduṭṭhullāpatti": "1 <i>fem</i> light offence; mild transgression [fem, abstr,]", "pasavanti": "1 <i>pr</i> flows out; pours out; discharges [pr]<br>2 <i>pr</i> produces; generates; makes; gives birth to (lit. flows forth)", "bahuñca": "1 <i>adj</i> many; much; lots; a lot (of); great; large [adj] ‹ √bah", "garukaṃ": "1 <i>adj</i> heavy; onerous; weighty [adj, from garu] ‹ garu<br>2 <i>adj</i> serious; grave [adj, from garu] ‹ garu (lit. heavy)<br>3 <i>adj</i> respected; esteemed; given importance [adj, from garu] ‹ garu (lit. heavy)", "sabbattha": "1 <i>ind</i> everywhere; every place [ind, adv, from sabba] ‹ sabba<br>2 <i>ind</i> in every way; in every respect; entirely [ind, adv, from sabba] ‹ sabba<br>3 <i>ind</i> (gram) in all cases; in all instances [ind, adv, from sabba] ‹ sabba<br>4 <i>masc</i> all cases; all matters; all things [masc pl,]", "bahujanaasukhāya": "1 <i>nt</i> for the discomfort of many people [nt, , dat sg of bahujanāsukha] ‹ बहुजनासुख", "sappaṭikammaṃ": "1 <i>adj</i> amendable; repairable; rehabilitatable [adj, from paṭikamma] ‹ पटिकम्म (lit. with doing back)", "aduṭṭhullaṃ": "1 <i>adj</i> not rude; not obscene; not vulgar [adj, from na thūla] ‹ थूल (lit. not bad coarse)", "uttānamevāti": "1 <i>sand</i> is clear as is [sandhi, adj + ind + ind]", "anāpattiṃ": "1 <i>fem</i> (vinaya) non-offence; non-transgression [fem, abstr, from na āpajjati] ‹ आपज्जति", "anavasesā": "1 <i>adj</i> all; without exception [adj] ‹ ava √sis<br>2 <i>adj</i> without remainder; with nothing left over [adj] ‹ ava √sis<br>3 <i>adj</i> (of an offence) incurable; irremediable [adj] ‹ ava √sis (lit. with no remainder)", "sukhāya": "1 <i>adj</i> easy (on); comfortable (for); pleasant (for); good (for); contented [adj] ‹ √sukh<br>2 <i>nt</i> ease; comfort; happiness; pleasure; contentment [nt, abstr] ‹ √sukh<br>3 <i>adj</i> (of water) tepid [adj] ‹ √sukh<br>4 <i>nt</i> comfortable (for) [nt, dat sg of sukha] ‹ sukha (lit. for the comfort)<br>5 <i>pr</i> is comfortbale with; is ok with; is happy with [pr, deno of sukha] ‹ sukha<br>6 <i>adj</i> (of weather) fine; mild; pleasant [adj] ‹ √sukh", "paṭhamaṃ": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>ind</i> first; firstly; at first; first of all [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>5 <i>ind</i> before; recently; newly; just [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>6 <i>fem</i> [fem]", "namaraṇādhippāyassa": "1 <i>adj</i> not intending to kill; not aiming to murder [adj,]", "atthāya": "1 <i>masc</i> meaning; sense; significance [masc] ‹ √ar<br>2 <i>masc</i> benefit; profit; good; welfare [masc] ‹ √ar<br>3 <i>masc</i> purpose; use; function; goal [masc] ‹ √ar<br>4 <i>masc</i> matter; affair; legal case; lawsuit [masc] ‹ √ar<br>5 <i>adj</i> for the purpose; for the sake; for the benefit (of) [adj, in s] ‹ √ar<br>6 <i>nt</i> matter; affair [nt] ‹ √ar<br>7 <i>masc</i> need; want (for) [masc]<br>8 <i>adj</i> needing; wanting; seeking [adj, in s, from atthayati] ‹ atthayati<br>9 <i>masc</i> home; rest; shelter [masc]<br>10 <i>masc</i> for the purpose; for the sake; for the benefit (of) [masc, in s, dat sg of atthāya] ‹ अत्थाय<br>11 <i>masc</i> fortunate; beneficial; useful (for) [masc, dat sg of atthāya] ‹ अत्थाय (lit. for the sake)<br>12 <i>masc</i> death; end; annihilation; destruction [masc]<br>13 <i>masc</i> western mountain (behind which the sun sets) [masc]", "dīpenti": "1 <i>pr</i> explains; illustrates; illuminates [pr, caus of dippati] ‹ dippati (lit. shines)<br>2 <i>pr</i> [pr, caus of]", "eko": "1 <i>card</i> one (1) [card, masc fem nt sg]<br>2 <i>adj</i> a; a certain; a single [adj, used as indefinite article]<br>3 <i>adj</i> alone; single; solitary [adj]<br>4 <i>adj</i> only [adj, in s]<br>5 <i>adj</i> same; one and the same [adj]", "ajānantassa": "1 <i>prp</i> not knowing; being ignorant (of) [prp of na jānāti] ‹ जानाति", "pārājikāpattikkhandho": "1 <i>adj</i> [adj,]", "anāpatti": "1 <i>fem</i> (vinaya) non-offence; non-transgression [fem, abstr, from na āpajjati] ‹ आपज्जति", "sappaṭikammāpatti": "1 <i>fem</i> rehabilitatable offence; remediable transgression [fem,] (lit. with repair offence)", "antaradhāpentīti": "1 <i>pr</i> makes disappear; causes to disappear; eradicates [pr, caus of antaradhāyati,  vb] ‹ अन्तरधायति (lit. causes to place in-between)", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "cha": "1 <i>card</i> six (6) [card, x pl]<br>2 <i>ind</i> 7th item in a numerical list [ind] (lit. letter ch)<br>3 <i>lett</i> (gram) letter ch; 15th letter of the alphabet; aspirated palatal consonant [letter, masc]", "aduṭṭhullā": "1 <i>adj</i> not rude; not obscene; not vulgar [adj, from na thūla] ‹ थूल (lit. not bad coarse)", "saddhammaṃ": "1 <i>masc</i> good teaching; true doctrine; true nature of things; (comm) the five precepts, ten precepts, four foundations of mindfulness etc. [masc,]<br>2 <i>masc</i> good quality; positive characteristic [masc,]<br>3 <i>masc</i> one's own teaching; personal doctrine [masc,]", "bahujanasukhāya": "1 <i>nt</i> comfort of many people; ease of the masses [nt, abstr,]<br>2 <i>nt</i> for the comfort of many people; for the ease of the masses [nt, abstr, , dat sg of bahujanasukha] ‹ bahujanasukha", "dukkhāya": "1 <i>adj</i> uncomfortable; unpleasant [adj] ‹ √dukkh<br>2 <i>adj</i> painful [adj] ‹ √dukkh<br>3 <i>nt</i> discomfort; suffering; unease; unpleasantness; something unsatisfactory; trouble; a bummer; stress ‹ √dukkh<br>4 <i>nt</i> pain; physical discomfort [nt] ‹ √dukkh<br>5 <i>nt</i> uncomfortable (for) [nt, dat sg of dukkha] ‹ dukkha (lit. for the discomfort)", "anatthāya": "1 <i>masc</i> harm; misfortune; damage; injury; hurt [masc, from na attha] ‹ attha<br>2 <i>masc</i> unbeneficial; unfortunate (for) [masc, dat sg of na atthāya] ‹ अत्थाय (lit. not for the sake)<br>3 <i>masc</i> to harm; to misfortune [masc, dat sg of na atthāya] ‹ अत्थाय (lit. to non-benefit)<br>4 <i>masc</i> what is useless; what is unbeneficial; what is meaningless [masc, from na attha] ‹ attha (lit. non benefit)", "appaṭikammāpatti": "1 <i>fem</i> offence without rehabilitation; irremediable transgression [fem,] (lit. no repair offence)", "lahukaṃ": "1 <i>adj</i> quick; fast; swift [adj, from lahu] ‹ lahu (lit. light)<br>2 <i>adj</i> light; light-weight [adj, from lahu] ‹ lahu<br>3 <i>adj</i> trifling; unimportant; negligible [adj, from lahu] ‹ lahu (lit. light)<br>4 <i>adj</i> [adj, from lahu] ‹ lahu (lit. light)<br>5 <i>ind</i> [ind, adv]<br>6 <i>adj</i> (of time or life) brief; short-lived [adj, from lahu] ‹ lahu (lit. light)", "apuññaṃ": "1 <i>nt</i> demerit; loss of spiritual wealth [nt] ‹ √पुण्<br>2 <i>adj</i> meritless; demeritorious; bad; unwholesome [adj, from na puñña] ‹ पुञ्ञ", "te": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>card</i> three (3) [card, masc fem & nt pl]<br>4 <i>ve</i> (gram) ti; verbal ending of the present tense 3rd person singular [ve, masc]<br>5 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>6 <i>pron</i> they; those [pron, masc nom pl of ta] ‹ ta<br>7 <i>pron</i> them; those [pron, masc acc pl of ta] ‹ ta<br>8 <i>pron</i> you; to you (object) [pron, 2nd acc sg of tvaṃ] ‹ त्वं<br>9 <i>pron</i> by you [pron, 2nd instr sg of tvaṃ] ‹ त्वं<br>10 <i>pron</i> for you; to you [pron, 2nd dat sg of tvaṃ] ‹ त्वं<br>11 <i>pron</i> your; of you [pron, 2nd gen sg of tvaṃ] ‹ त्वं<br>12 <i>pron</i> when you [pron, 2nd gen sg of tvaṃ, gen abs] ‹ त्वं<br>13 <i>card</i> three (3) [card, in s, from ti] ‹ ti<br>14 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha", "garukāpatti": "1 <i>fem</i> serious offence; grave transgression [fem,]", "appaṭikammaṃ": "1 <i>nt</i> not making amends; not redressing; not fixing; not repairing [nt, from na paṭikaroti] ‹ पटिकरोति (lit. not doing back)<br>2 <i>adj</i> not amendable; irrepairable; unrehabilitatable [adj, from na paṭikamma] ‹ पटिकरोति (lit. not doing back)", "nāma": "1 <i>ind</i> certainly; truly; for sure [ind, emph]<br>2 <i>ind</i> called; means; by the name of; namely [ind, adv] (lit. name)<br>3 <i>nt</i> (gram) noun; substantive (lit. name)<br>4 <i>nt</i> name [nt]<br>5 <i>nt</i> mental objects of consciousness; mentality; mental factors of feeling, perception, intention, contact and attention [nt, abstr] (lit. name)<br>6 <i>adj</i> called; named [adj] (lit. name)<br>7 <i>ind</i> [ind, adv]<br>8 <i>nt</i> (gram) nominal stem [nt] (lit. name)", "atheyyacittassa": "1 <i>adj</i> without intention to steal [adj,] (lit. not thieving mind)", "āpattīti": "1 <i>fem</i> entering; going into [fem, from āpajjati] ‹ आपज्जति<br>2 <i>fem</i> (vinaya) offence; wrongdoing; transgression [fem, abstr, from āpajjati] ‹ आपज्जति<br>3 <i>fem</i> [fem]", "jānantassa": "1 <i>prp</i> knowing; being aware (of) [prp of jānāti] ‹ जानाति", "vuttā": "1 <i>pp</i> sown; scattered; planted [pp of vapati] ‹ vapati<br>2 <i>pp</i> shaven [pp of vapati] ‹ vapati<br>3 <i>pp</i> said; told; spoken; mentioned [pp of vacati] ‹ vacati<br>4 <i>pp</i> called; named; said (to be) [pp of vacati] ‹ vacati<br>5 <i>pp</i> spoken to [pp of vacati] ‹ vacati<br>6 <i>nt</i> [nt]<br>7 <i>pp</i> [pp]<br>8 <i>nt</i> poem; verse; stanza [nt, pp of vacati] ‹ vacati (lit. spoken)<br>9 <i>adj</i> with a livelihood (of); living off; as means of living [adj, from vutti] ‹ vutti<br>10 <i>nt</i> (gram) meter; prosody [nt, pp of vacati] ‹ vacati (lit. spoken)", "ekādasamaṃ": "1 <i>ordi</i> eleventh (11th) [ordin of ekādasa,] ‹ एकादस", "bahujanaahitāya": "1 <i>nt</i> for the disadvantage of many people; for the harm of the people [nt, , dat sg of bahujanāhita] ‹ bahujanaahita", "garukā": "1 <i>adj</i> heavy; onerous; weighty [adj, from garu] ‹ garu<br>2 <i>adj</i> serious; grave [adj, from garu] ‹ garu (lit. heavy)<br>3 <i>adj</i> respected; esteemed; given importance [adj, from garu] ‹ garu (lit. heavy)", "lahukāpatti": "1 <i>fem</i> light offence; minor transgression [fem,]", "paṭipannā": "1 <i>pp</i> practising (for) [pp of paṭipajjati] ‹ पटिपज्जति (lit. gone along)<br>2 <i>pp</i> followed a path; undertaken a journey [pp of paṭipajjati] ‹ पटिपज्जति (lit. gone along)<br>3 <i>pp</i> fallen (into); met (with); got into [pp of paṭipajjati] ‹ पटिपज्जति (lit. gone along)", "nayena": "1 <i>masc</i> inference; conclusion [masc, from nayati] ‹ nayati<br>2 <i>masc</i> meaning; sense; context [masc, from nayati] ‹ nayati (lit. leading)<br>3 <i>masc</i> method; mode; manner; approach [masc, from nayati] ‹ nayati (lit. leading)<br>4 <i>masc</i> (gram) inferential method [masc, from nayati] ‹ nayati (lit. leading)<br>5 <i>masc</i> [masc, from nayati] ‹ nayati (lit. leading)", "cimaṃ": "1 <i>sand</i> and this [sandhi, ind + pron]", "bahuno": "1 <i>adj</i> many; much; lots; a lot (of); great; large [adj] ‹ √bah", "anāpattīti": "1 <i>fem</i> (vinaya) non-offence; non-transgression [fem, abstr, from na āpajjati] ‹ आपज्जति", "bhikkhū": "1 <i>aor</i> begged; begged for alms [aor of bhikkhati] ‹ bhikkhati<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "anavasesaṃ": "1 <i>adj</i> all; without exception [adj] ‹ ava √sis<br>2 <i>adj</i> without remainder; with nothing left over [adj] ‹ ava √sis<br>3 <i>ind</i> completely; totally [ind, adv, acc sg of na avasesa] ‹ avasesa (lit. without remainder)<br>4 <i>adj</i> (of an offence) incurable; irremediable [adj] ‹ ava √sis (lit. with no remainder)", "janassa": "1 <i>masc</i> man; person; fellow [masc, agent, from jāyati] ‹ जायति<br>2 <i>masc</i> men; people; population [masc, from jāyati] ‹ जायति<br>3 <i>nt</i> man; person; people [nt, agent, from jāyati] ‹ जायति", "duṭṭhullāpatti": "1 <i>fem</i> heavy offence; serious transgression [fem, abstr,]", "anullapanādhippāyassa": "1 <i>adj</i> not intending to boast; not aiming to brag [adj,] (lit. not talking up intention)", "sāvasesaṃ": "1 <i>adj</i> incomplete; with remainder; with some left over [adj, from avasesa] ‹ avasesa<br>2 <i>adj</i> (of an offence) curable; remediable [adj, from avasesa] ‹ avasesa (lit. with remainder)", "sesaṃ": "1 <i>pron</i> own; one's own; one's own possession [pron, base, reflx]<br>2 <i>adj</i> remaining; left; left over [adj, from sissati] ‹ sissati<br>3 <i>masc</i> leftovers; remains; remainder; remnant [masc, from sissati] ‹ sissati<br>4 <i>nt</i> rest; remainder [nt, from sissati] ‹ sissati"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>१२. अनापत्ति वर्ग (Anāpatti-Varga) - आपत्ति-रहित अनुभाग <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00135_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00135_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="150">१५०.</span> <span class="paliword" data-word="ye">‘‘ये</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="anāpattiṃ">अनापत्तिं</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="bahujanaahitāya">बहुजनअहिताय</span> <span class="paliword" data-word="paṭipannā">पटिपन्‍ना</span> <span class="paliword" data-word="bahujanaasukhāya">बहुजनअसुखाय,</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="anatthāya">अनत्थाय</span> <span class="paliword" data-word="ahitāya">अहिताय</span> <span class="paliword" data-word="dukkhāya">दुक्खाय</span> <span class="paliword" data-word="devamanussānaṃ">देवमनुस्सानं।</span> <span class="paliword" data-word="bahuñca">बहुञ्‍च</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="apuññaṃ">अपुञ्‍ञं</span> <span class="paliword" data-word="pasavanti">पसवन्ति,</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="cimaṃ">चिमं</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="antaradhāpentīti">अन्तरधापेन्ती’’ति।</span> <span class="paliword" data-word="paṭhamaṃ">पठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00135_hi">
+                १५०.
+"हे भिक्षुओं, जो भिक्षु निर्दोष को दोषपूर्ण बताते हैं, वे भिक्षु बहुत से लोगों के अहित के लिए, बहुत से लोगों के असुख के लिए, और देवों तथा मनुष्यों सहित जन-समुदाय के अनर्थ, अहित और दुःख के लिए प्रवृत्त होते हैं।
+हे भिक्षुओं, वे भिक्षु बहुत अपुण्य अर्जित करते हैं और वे इस सद्धर्म (सद्धम्म) को अंतर्धान यानी लुप्त करने का कारण बनते हैं।"
+प्रथम।
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00135_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="150">१५०.</span> <span class="paliword" data-word="dvādasame">द्वादसमे</span> <span class="paliword" data-word="pana">पन</span> <span class="paliword" data-word="anāpattiṃ">अनापत्तिं</span> <span class="paliword" data-word="āpattītiādīsu">आपत्तीतिआदीसु</span> <span class="paliword" data-word="anāpatti">‘‘अनापत्ति</span> <span class="paliword" data-word="ajānantassa">अजानन्तस्स</span> <span class="paliword" data-word="atheyyacittassa">अथेय्यचित्तस्स</span> <span class="paliword" data-word="namaraṇādhippāyassa">नमरणाधिप्पायस्स</span> <span class="paliword" data-word="anullapanādhippāyassa">अनुल्‍लपनाधिप्पायस्स</span> <span class="paliword" data-word="namocanādhippāyassāti">नमोचनाधिप्पायस्सा’’ति</span> <span class="paliword" data-word="tattha">तत्थ</span> <span class="paliword" data-word="tattha">तत्थ</span> <span class="paliword" data-word="vuttā">वुत्ता</span> <span class="paliword" data-word="anāpatti">अनापत्ति</span> <span class="paliword" data-word="anāpatti">अनापत्ति</span> <span class="paliword" data-word="nāma">नाम,</span> <span class="paliword" data-word="jānantassa">‘‘जानन्तस्स</span> <span class="paliword" data-word="theyyacittassātiādinā">थेय्यचित्तस्सा’’तिआदिना</span> <span class="paliword" data-word="nayena">नयेन</span> <span class="paliword" data-word="vuttā">वुत्ता</span> <span class="paliword" data-word="āpatti">आपत्ति</span> <span class="paliword" data-word="āpatti">आपत्ति</span> <span class="paliword" data-word="nāma">नाम,</span> <span class="paliword" data-word="pañcāpattikkhandhā">पञ्‍चापत्तिक्खन्धा</span> <span class="paliword" data-word="lahukāpatti">लहुकापत्ति</span> <span class="paliword" data-word="nāma">नाम,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="āpattikkhandhā">आपत्तिक्खन्धा</span> <span class="paliword" data-word="garukāpatti">गरुकापत्ति</span> <span class="paliword" data-word="nāma">नाम।</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="āpattikkhandhā">आपत्तिक्खन्धा</span> <span class="paliword" data-word="duṭṭhullāpatti">दुट्ठुल्‍लापत्ति</span> <span class="paliword" data-word="nāma">नाम,</span> <span class="paliword" data-word="pañcāpattikkhandhā">पञ्‍चापत्तिक्खन्धा</span> <span class="paliword" data-word="aduṭṭhullāpatti">अदुट्ठुल्‍लापत्ति</span> <span class="paliword" data-word="nāma">नाम।</span> <span class="paliword" data-word="cha">छ</span> <span class="paliword" data-word="āpattikkhandhā">आपत्तिक्खन्धा</span> <span class="paliword" data-word="sāvasesāpatti">सावसेसापत्ति</span> <span class="paliword" data-word="nāma">नाम,</span> <span class="paliword" data-word="eko">एको</span> <span class="paliword" data-word="pārājikāpattikkhandho">पाराजिकापत्तिक्खन्धो</span> <span class="paliword" data-word="anavasesāpatti">अनवसेसापत्ति</span> <span class="paliword" data-word="nāma">नाम।</span> <span class="paliword" data-word="sappaṭikammāpatti">सप्पटिकम्मापत्ति</span> <span class="paliword" data-word="nāma">नाम</span> <span class="paliword" data-word="sāvasesāpattiyeva">सावसेसापत्तियेव,</span> <span class="paliword" data-word="appaṭikammāpatti">अप्पटिकम्मापत्ति</span> <span class="paliword" data-word="nāma">नाम</span> <span class="paliword" data-word="anavasesāpattiyeva">अनवसेसापत्तियेव।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānamevāti">उत्तानमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_00355_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_00355_hi">
+                    १५०.
+किन्तु बारहवें (प्रकरण) में, 'अनापत्ति' और 'आपत्ति' इत्यादि के सन्दर्भ में—जो अनभिज्ञ हो, जिसकी नीयत चोरी की न हो, जिसका उद्देश्य मृत्यु कारित करना, मिथ्या दावा करना या मुक्त करना न हो, उसके लिए विभिन्न स्थलों पर जो 'अनापत्ति' (दोषरहित अवस्था) कही गई है, वह अनापत्ति है। इसके विपरीत, 'जानते हुए' और 'चोरी की नीयत से' आदि विधि से जो 'आपत्ति' (दोष) कही गई है, वह आपत्ति है। पाँच आपत्ति-समूह 'लघु आपत्ति' कहलाते हैं, और दो आपत्ति-समूह 'गुरु आपत्ति' कहलाते हैं।
+
+दो आपत्ति-समूह 'दुष्ठुल्लापत्ति' (गंभीर दोष) कहलाते हैं, और पाँच आपत्ति-समूह 'अदुष्ठुल्लापत्ति' (साधारण दोष) कहलाते हैं।
+
+छह आपत्ति-समूह 'सावशेषापत्ति' (परिमार्जन योग्य दोष) कहलाते हैं, और एक पाराजिका-आपत्ति-समूह 'अनवशेषापत्ति' (अपरिमार्जित दोष) कहलाता है।
+
+'सप्रतिकर्मापत्ति' (प्रतिकार योग्य दोष) वास्तव में सावशेषापत्ति ही है, और 'अप्रतिकर्मापत्ति' (प्रतिकार रहित दोष) अनवशेषापत्ति ही है।
+
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="13">१३.</span> <span class="paliword" data-word="ekapuggalavaggavaṇṇanā">एकपुग्गलवग्गवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_00356_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_00356_hi">
+                    १३. एकल व्यक्ति के वर्ग की व्याख्या
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00136_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="151">१५१.</span> <span class="paliword" data-word="ye">‘‘ये</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="anāpattīti">अनापत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="bahujanaahitāya">बहुजनअहिताय</span> <span class="paliword" data-word="paṭipannā">पटिपन्‍ना</span> <span class="paliword" data-word="bahujanaasukhāya">बहुजनअसुखाय,</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="anatthāya">अनत्थाय</span> <span class="paliword" data-word="ahitāya">अहिताय</span> <span class="paliword" data-word="dukkhāya">दुक्खाय</span> <span class="paliword" data-word="devamanussānaṃ">देवमनुस्सानं।</span> <span class="paliword" data-word="bahuñca">बहुञ्‍च</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="apuññaṃ">अपुञ्‍ञं</span> <span class="paliword" data-word="pasavanti">पसवन्ति,</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="cimaṃ">चिमं</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="antaradhāpentīti">अन्तरधापेन्ती’’ति।</span> <span class="paliword" data-word="dutiyaṃ">दुतियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00136_hi">
+                १५१.
+"हे भिक्षुओं, जो भिक्षु अपराध को अनापराध बताते हैं, वे बहुत से लोगों के अहित और असुख के लिए कार्य कर रहे हैं। वे देवों और मनुष्यों सहित जन-साधारण के अनर्थ, अहित और दुःख का कारण बनते हैं।
+हे भिक्षुओं, ऐसे भिक्षु अत्यधिक अपुण्य अर्जित करते हैं और वे इस सद्धर्म को लुप्त कर देते हैं।"
+द्वितीय।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00137_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="152-159">१५२-१५९.</span> <span class="paliword" data-word="ye">‘‘ये</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="lahukaṃ">लहुकं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="garukā">गरुका</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="garukaṃ">गरुकं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="lahukā">लहुका</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="duṭṭhullaṃ">दुट्ठुल्‍लं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="aduṭṭhullā">अदुट्ठुल्‍ला</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="aduṭṭhullaṃ">अदुट्ठुल्‍लं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="duṭṭhullā">दुट्ठुल्‍ला</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="sāvasesaṃ">सावसेसं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="anavasesā">अनवसेसा</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="anavasesaṃ">अनवसेसं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="sāvasesā">सावसेसा</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="sappaṭikammaṃ">सप्पटिकम्मं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="appaṭikammā">अप्पटिकम्मा</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="appaṭikammaṃ">अप्पटिकम्मं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="sappaṭikammā">सप्पटिकम्मा</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="bahujanaahitāya">बहुजनअहिताय</span> <span class="paliword" data-word="paṭipannā">पटिपन्‍ना</span> <span class="paliword" data-word="bahujanaasukhāya">बहुजनअसुखाय,</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="anatthāya">अनत्थाय</span> <span class="paliword" data-word="ahitāya">अहिताय</span> <span class="paliword" data-word="dukkhāya">दुक्खाय</span> <span class="paliword" data-word="devamanussānaṃ">देवमनुस्सानं।</span> <span class="paliword" data-word="bahuñca">बहुञ्‍च</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="apuññaṃ">अपुञ्‍ञं</span> <span class="paliword" data-word="pasavanti">पसवन्ति,</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="cimaṃ">चिमं</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="antaradhāpentīti">अन्तरधापेन्ती’’ति।</span> <span class="paliword" data-word="dasamaṃ">दसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00137_hi">
+                १५२-१५९.
+“हे भिक्षुओं, जो भिक्षु हल्की आपत्ति (transgression) को भारी आपत्ति बताते हैं... और भारी आपत्ति को हल्की आपत्ति बताते हैं... गंभीर (duṭṭhulla) आपत्ति को अगंभीर आपत्ति बताते हैं... और अगंभीर आपत्ति को गंभीर आपत्ति बताते हैं... अवशेष (ससाध्य) आपत्ति को निरवशेष (असाध्य) आपत्ति बताते हैं... और निरवशेष आपत्ति को अवशेष आपत्ति बताते हैं... प्रतिकर्म (सुधारने योग्य) आपत्ति को अप्रतिकर्म बताते हैं... और अप्रतिकर्म आपत्ति को प्रतिकर्म बताते हैं—वे भिक्षु बहुत से लोगों के अहित और असुख के लिए प्रवृत्त होते हैं; वे जनसामान्य के अनर्थ, अहित और दुःख के लिए तथा देवों एवं मनुष्यों की हानि के लिए कार्य करते हैं।
+
+और हे भिक्षुओं, वे भिक्षु बहुत सा अपुण्य (demerit) संचित करते हैं, और वे इस सद्धर्म (true Dhamma) को अंतर्धान (विलुप्त) करने वाले होते हैं।”
+
+दसवां (समाप्त)।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00138_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="160">१६०.</span> <span class="paliword" data-word="ye">‘‘ये</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="anāpattiṃ">अनापत्तिं</span> <span class="paliword" data-word="anāpattīti">अनापत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="bahujanahitāya">बहुजनहिताय</span> <span class="paliword" data-word="paṭipannā">पटिपन्‍ना</span> <span class="paliword" data-word="bahujanasukhāya">बहुजनसुखाय,</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="atthāya">अत्थाय</span> <span class="paliword" data-word="hitāya">हिताय</span> <span class="paliword" data-word="sukhāya">सुखाय</span> <span class="paliword" data-word="devamanussānaṃ">देवमनुस्सानं।</span> <span class="paliword" data-word="bahuñca">बहुञ्‍च</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="puññaṃ">पुञ्‍ञं</span> <span class="paliword" data-word="pasavanti">पसवन्ति,</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="cimaṃ">चिमं</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="ṭhapentīti">ठपेन्ती’’ति।</span> <span class="paliword" data-word="ekādasamaṃ">एकादसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00138_hi">
+                १६०.
+“हे भिक्षुओं, जो भिक्षु अनापत्ति को अनापत्ति के रूप में ही स्पष्ट करते हैं, वे भिक्षु बहुत से लोगों के कल्याण के लिए, बहुत से लोगों के सुख के लिए, जनसामान्य के हित, कल्याण और सुख के लिए, तथा देवताओं और मनुष्यों के लाभ के लिए कार्यरत हैं।
+
+हे भिक्षुओं, वे भिक्षु प्रचुर पुण्य अर्जित करते हैं, और वे ही इस सद्धर्म को सुरक्षित रखते हैं।”
+
+ग्यारहवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00139_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="161">१६१.</span> <span class="paliword" data-word="ye">‘‘ये</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="bahujanahitāya">बहुजनहिताय</span> <span class="paliword" data-word="paṭipannā">पटिपन्‍ना</span> <span class="paliword" data-word="bahujanasukhāya">बहुजनसुखाय,</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="atthāya">अत्थाय</span> <span class="paliword" data-word="hitāya">हिताय</span> <span class="paliword" data-word="sukhāya">सुखाय</span> <span class="paliword" data-word="devamanussānaṃ">देवमनुस्सानं।</span> <span class="paliword" data-word="bahuñca">बहुञ्‍च</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="puññaṃ">पुञ्‍ञं</span> <span class="paliword" data-word="pasavanti">पसवन्ति,</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="cimaṃ">चिमं</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="ṭhapentīti">ठपेन्ती’’ति।</span> <span class="paliword" data-word="dvādasamaṃ">द्वादसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00139_hi">
+                १६१.
+"हे भिक्षुओं, वे भिक्षु जो आपत्ति (अपराध) को आपत्ति के रूप में ही स्पष्ट करते हैं, वे बहुत से लोगों के हित के लिए, बहुत से लोगों के सुख के लिए, जनसाधारण के लाभ, कल्याण और देवताओं तथा मनुष्यों के सुख के लिए प्रवृत्त हैं।
+हे भिक्षुओं, वे भिक्षु बहुत पुण्य अर्जित करते हैं और वे ही इस सद्धर्म (सच्चे धर्म) को सुरक्षित रखते हैं।"
+बारहवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00140_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="162-169">१६२-१६९.</span> <span class="paliword" data-word="ye">‘‘ये</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="lahukaṃ">लहुकं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="lahukā">लहुका</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति…</span> <span class="paliword" data-word="garukaṃ">गरुकं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="garukā">गरुका</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति…</span> <span class="paliword" data-word="duṭṭhullaṃ">दुट्ठुल्‍लं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="duṭṭhullā">दुट्ठुल्‍ला</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति…</span> <span class="paliword" data-word="aduṭṭhullaṃ">अदुट्ठुल्‍लं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="aduṭṭhullā">अदुट्ठुल्‍ला</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति…</span> <span class="paliword" data-word="sāvasesaṃ">सावसेसं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="sāvasesā">सावसेसा</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति…</span> <span class="paliword" data-word="anavasesaṃ">अनवसेसं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="anavasesā">अनवसेसा</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति…</span> <span class="paliword" data-word="sappaṭikammaṃ">सप्पटिकम्मं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="sappaṭikammā">सप्पटिकम्मा</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति…</span> <span class="paliword" data-word="appaṭikammaṃ">अप्पटिकम्मं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="appaṭikammā">अप्पटिकम्मा</span> <span class="paliword" data-word="āpattīti">आपत्तीति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="bahujanahitāya">बहुजनहिताय</span> <span class="paliword" data-word="paṭipannā">पटिपन्‍ना</span> <span class="paliword" data-word="bahujanasukhāya">बहुजनसुखाय,</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="atthāya">अत्थाय</span> <span class="paliword" data-word="hitāya">हिताय</span> <span class="paliword" data-word="sukhāya">सुखाय</span> <span class="paliword" data-word="devamanussānaṃ">देवमनुस्सानं।</span> <span class="paliword" data-word="bahuñca">बहुञ्‍च</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="puññaṃ">पुञ्‍ञं</span> <span class="paliword" data-word="pasavanti">पसवन्ति,</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="cimaṃ">चिमं</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="ṭhapentīti">ठपेन्ती’’ति।</span> <span class="paliword" data-word="vīsatimaṃ">वीसतिमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00140_hi">
+                १६२-१६९.
+“हे भिक्षुओं, जो भिक्षु हल्की आपत्ति को हल्की आपत्ति के रूप में स्पष्ट करते हैं... भारी आपत्ति को भारी आपत्ति के रूप में... घोर आपत्ति को घोर आपत्ति के रूप में... अघोर आपत्ति को अघोर आपत्ति के रूप में... सावशेष (संशोधन योग्य) आपत्ति को सावशेष आपत्ति के रूप में... अनवशेष (अपरिवर्तनीय) आपत्ति को अनवशेष आपत्ति के रूप में... प्रतिकर्म (प्रायश्चित्त) योग्य आपत्ति को प्रतिकर्म योग्य आपत्ति के रूप में... और जो बिना प्रतिकर्म वाली आपत्ति को बिना प्रतिकर्म वाली आपत्ति के रूप में स्पष्ट करते हैं, वे भिक्षु बहुत से लोगों के कल्याण और सुख के लिए, तथा देवताओं और मनुष्यों के हित और सुख के लिए कार्य कर रहे हैं।
+
+हे भिक्षुओं, वे भिक्षु अत्यधिक पुण्य अर्जित करते हैं और वे इस सद्धर्म को सुरक्षित रखते हैं।”
+
+बीसवां अध्याय।
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

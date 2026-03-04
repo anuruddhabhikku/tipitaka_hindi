@@ -1,0 +1,420 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"micchāñāṇī": "1 <i>adj</i> with incorrect understanding; with wrong wisdom [adj,]", "sammākammanto": "1 <i>masc</i> correct behaviour; wholesome conduct [masc,]<br>2 <i>adj</i> with wholesome conduct; acting ethically [adj,]", "sammāvimutti": "1 <i>fem</i> correct liberation; right emancipation [fem,]<br>2 <i>adj</i> having correct liberation; with right emancipation [adj,]", "na": "1 <i>ind</i> no; not; neither; nor [ind]<br>2 <i>ind</i> (adds a question mark) surely?; does one not? [ind, interr]<br>3 <i>pref</i> not [prefix, in s]<br>4 <i>masc</i> (gram) negative prefix na [masc, prefix]", "bahuṃ": "1 <i>adj</i> many; much; lots; a lot (of); great; large [adj] ‹ √bah", "micchādiṭṭhiko": "1 <i>adj</i> who has wrong view; who holds a false belief [adj, , from micchādiṭṭhi] ‹ मिच्छादिट्ठि", "micchāsamādhi": "1 <i>adj</i> having imperfect stability of mind; with incorrect mental composure [adj,]<br>2 <i>fem</i> imperfect stability of mind; incorrect mental composure [fem,]", "hoti": "1 <i>pr</i> is; becomes [pr]<br>2 <i>pr</i> exists (for) [pr]<br>3 <i>pr</i> stays; remains; continues to be [pr] (lit. is)", "kho": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "appatisso": "1 <i>adj</i> not agreeable; disrespectful; not polite; not obedient [adj, from na paṭissuṇāti] ‹ पटिस्सुणाति (lit. not listening back)", "micchāājīvo": "1 <i>adj</i> with wrong livelihood; having a wrong mode of living [adj,]<br>2 <i>masc</i> wrong livelihood; wrong mode of living [masc,]", "micchākammanto": "1 <i>masc</i> wrong action; wrong behaviour [masc,]<br>2 <i>adj</i> undertaking wrong action; with wrong behaviour [adj,]", "sappatisso": "1 <i>adj</i> agreeable; respectful; deferential; polite; obedient [adj, from patissa] ‹ patissa (lit. listening back)", "sammāsati": "1 <i>fem</i> right mindfulness; perfect presence; correct awareness [fem,]<br>2 <i>adj</i> with correct present moment awareness; having perfect memory [adj,]", "nādhibhoti": "1 <i>pr</i> does not overcome; does not overpower; does not conquer [pr, from na adhibhoti] ‹ adhibhoti", "micchāvāco": "1 <i>adj</i> speaking wrongly; with bad speech; badly spoken [adj,]", "pāsaṃso": "1 <i>ptp</i> praiseworthy; commendable; laudable [ptp of pasaṃsati] ‹ पसंसति (lit. to be praised)", "micchāsaṅkappo": "1 <i>masc</i> wrong intention; incorrect notion; false idea; wrong concept [masc,]<br>2 <i>adj</i> having wrong intention; with wrong notions; with wrong ideas [adj,]", "sevitabboti": "1 <i>ptp</i> should be associated with; should be affiliated with; should be partaken of [ptp of sevati] ‹ sevati (lit. to be associated)<br>2 <i>ptp</i> should be practised; should be followed; should be undertaken [ptp of sevati] ‹ sevati (lit. to be associated)<br>3 <i>ptp</i> [ptp of sevati] ‹ sevati (lit. to be associated)", "pujjo": "1 <i>ptp</i> commendable; praiseworthy; laudable [ptp of pūjeti] ‹ पूजेति (lit. to be praised)", "apuññaṃ": "1 <i>nt</i> demerit; loss of spiritual wealth [nt] ‹ √पुण्<br>2 <i>adj</i> meritless; demeritorious; bad; unwholesome [adj, from na puñña] ‹ पुञ्ञ", "micchāvāyāmo": "1 <i>adj</i> with wrong effort; having incorrect endeavour [adj,]<br>2 <i>masc</i> wrong effort; incorrect endeavour [masc,]", "imehi": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> by these; with these [pron, masc & nt instr pl of ima] ‹ ima<br>3 <i>pron</i> from these [pron, masc & nt abl pl of ima] ‹ ima", "sammāvāco": "1 <i>adj</i> with correct speech; speaking properly [adj,]", "dasahi": "1 <i>card</i> ten (10) [card, x pl]<br>2 <i>card</i> with ten; by ten [card, x instr pl of dasa] ‹ dasa<br>3 <i>card</i> from ten [card, x abl pl of dasa] ‹ dasa", "agāravo": "1 <i>adj</i> disrespectful (to); irreverent; without esteem (for) [adj, from na garu] ‹ garu", "bhajitabbādisuttāni": "1 <i>nt</i> [nt pl,]", "samannāgato": "1 <i>pp</i> possessing; endowed (with); having [pp of saṃ anu ā √gam] ‹ सं अनु आ √गम् (lit. going together)", "sevitabbo": "1 <i>ptp</i> should be associated with; should be affiliated with; should be partaken of [ptp of sevati] ‹ sevati (lit. to be associated)<br>2 <i>ptp</i> should be practised; should be followed; should be undertaken [ptp of sevati] ‹ sevati (lit. to be associated)<br>3 <i>ptp</i> [ptp of sevati] ‹ sevati (lit. to be associated)", "puññaṃ": "1 <i>nt</i> merit; good deed; spiritual wealth [nt] ‹ √पुण्<br>2 <i>adj</i> having merit; meritorious; auspicious; virtuous [adj] ‹ √पुण्", "catutthassa": "1 <i>ordi</i> fourth (4th) [ordin of catu] ‹ catu<br>2 <i>masc</i> (gram) fourth consonant of each vagga; gh, jh, ḍh, dh, bh [masc, from catu] ‹ catu (lit. fourth)", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "ārādhako": "1 <i>adj</i> successful; accomplished [adj, from ārādheti] ‹ आराधेति<br>2 <i>masc</i> [masc]", "micchāsati": "1 <i>adj</i> with incorrect present moment awareness; with imperfect memory [adj,]<br>2 <i>fem</i> wrong mindfulness; incorrect present moment awareness; imperfect memory [fem,]<br>3 <i>adj</i> having wrong mindfulness; with incorrect present moment awareness [adj,]<br>4 <i>adj</i> with imperfect memory [adj,]", "sevitabbasuttaṃ": "1 <i>nt</i> [nt,]", "pasavatīti": "1 <i>pr</i> flows out; pours out; discharges [pr]<br>2 <i>pr</i> produces; generates; makes; gives birth to (lit. flows forth)<br>3 <i>prp</i> [prp of pasavati] ‹ pasavati", "sammāñāṇī": "1 <i>adj</i> with correct understanding; with right wisdom [adj,]", "sammādiṭṭhiko": "1 <i>adj</i> who has correct belief; who has the right outlook [adj,] (lit. having right view)", "payirupāsitabbo": "1 <i>ptp</i> should be closely associated with; should be attended to closely; should be sat at the feet (of) [ptp of payirupāsati] ‹ पयिरुपासति (lit. to be sat around near)", "dhammehi": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>nt</i> teaching; discourse; doctrine [nt, from dharati, irreg] ‹ dharati<br>13 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>14 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>15 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>16 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu", "visujjhati": "1 <i>pr</i> is purified; is cleansed; becomes pure [pr]", "micchāvimutti": "1 <i>fem</i> wrong liberation; incorrect deliverance [fem,]<br>2 <i>adj</i> having incorrect liberation; with wrong emancipation [adj,]", "sammāsaṅkappo": "1 <i>masc</i> correct intention; right volition; proper thought [masc,]<br>2 <i>adj</i> with correct intention; having right volition; with proper thought [adj,]", "vaḍḍhati": "1 <i>pr</i> increases; grows; develops (in) [pr]", "pasavati": "1 <i>pr</i> flows out; pours out; discharges [pr]<br>2 <i>pr</i> produces; generates; makes; gives birth to (lit. flows forth)", "sagāravo": "1 <i>adj</i> respectful; reverential [adj, from garu] ‹ garu", "paññāya": "1 <i>adj</i> wise; intelligent; learned; knowledgeable; skilled [adj, in s, from paññā] ‹ पञ्ञा<br>2 <i>fem</i> wisdom; knowledge; understanding; insight; distinctive knowledge [fem, abstr, from pajānāti] ‹ पजानाति<br>3 <i>ger</i> knowing; understanding [ger of pajānāti] ‹ पजानाति<br>4 <i>fem</i> by wisdom; with intelligence; by understanding; with insight [fem, instr sg of paññā] ‹ पञ्ञा<br>5 <i>pr</i> is clearly known; is evident; is perceived; there is [pr, pass of pajānāti] ‹ पजानाति (lit. is known)<br>6 <i>pr</i> is allowed; is permitted (to); is known [pr, pass of pajānāti] ‹ पजानाति<br>7 <i>pr</i> is well known; is recognized (by) [pr, pass of pajānāti] ‹ पजानाति (lit. is known)<br>8 <i>pr</i> [pr, pass of pajānāti] ‹ पजानाति (lit. is known)<br>9 <i>pr</i> happens (to); occurs (to); exists (for) [pr, pass of pajānāti] ‹ पजानाति (lit. is known)<br>10 <i>aor</i> was evident; was apparent [aor of paññāyati] ‹ पञ्ञायति<br>11 <i>aor</i> was known; was evident; occurred [aor of paññāyati] ‹ पञ्ञायति<br>12 <i>aor</i> was known as; was called [aor of paññāyati] ‹ पञ्ञायति", "mānaṃ": "1 <i>ve</i> (gram) ma; verbal ending of the present tense 1st person plural [ve, masc]<br>2 <i>lett</i> (gram) letter m; 31st letter of the alphabet; nasal consonant [letter, masc]<br>3 <i>fem</i> moon [fem, in s]<br>4 <i>root</i> (gram) √mā (measure) [root, masc]<br>5 <i>masc</i> pride; conceit; egotism; superiority; comparing oneself [masc, from maññati] ‹ मञ्ञति<br>6 <i>root</i> (gram) √man (think) [root, masc]<br>7 <i>nt</i> measure; quantity [nt, from mināti] ‹ मिनाति (lit. measuring)", "katamehi": "1 <i>pron</i> what?; which (of the many)? [pron, interr, from ka] ‹ ka", "sammāsamādhi": "1 <i>masc</i> perfect stability of mind; correct mental composure [masc,]<br>2 <i>adj</i> having perfect stability of mind; with correct mental composure [adj,]", "puggalo": "1 <i>masc</i> person; individual [masc]", "sammāājīvo": "1 <i>masc</i> correct livelihood; right mode of earning a living [masc,]<br>2 <i>adj</i> with correct livelihood; having right mode of earning a living [adj,]", "sammāvāyāmo": "1 <i>masc</i> correct effort; right striving [masc,]<br>2 <i>adj</i> with correct effort; having right endeavour [adj,]"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>(१६) १.
+पुद्गल-वर्ग (व्यक्तियों का समूह) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<h3 id='s0404m3.mul_01194'><span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="sevitabbasuttaṃ">सेवितब्बसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01194_hi'>१. सेवितब्ब सुत्त (जिसका अनुशीलन करना चाहिए, उस विषय पर प्रवचन)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01195_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0404m3.mul_01195_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="155">१५५.</span> <span class="paliword" data-word="dasahi">‘‘दसहि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammehi">धम्मेहि</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="sevitabbo">सेवितब्बो।</span> <span class="paliword" data-word="katamehi">कतमेहि</span> <span class="paliword" data-word="dasahi">दसहि?</span> <span class="paliword" data-word="micchādiṭṭhiko">मिच्छादिट्ठिको</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="micchāsaṅkappo">मिच्छासङ्कप्पो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="micchāvāco">मिच्छावाचो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="micchākammanto">मिच्छाकम्मन्तो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="micchāājīvo">मिच्छाआजीवो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="micchāvāyāmo">मिच्छावायामो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="micchāsati">मिच्छासति</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="micchāsamādhi">मिच्छासमाधि</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="micchāñāṇī">मिच्छाञाणी</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="imehi">इमेहि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dasahi">दसहि</span> <span class="paliword" data-word="dhammehi">धम्मेहि</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="sevitabbo">सेवितब्बो।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01195_hi">
+                १५५. "हे भिक्षुओं, दस गुणों से युक्त व्यक्ति के साथ संगति नहीं करनी चाहिए। वे दस कौन से हैं? वह मिथ्या दृष्टि (micchādṛṣṭi) वाला होता है, मिथ्या संकल्प वाला होता है, मिथ्या वचन वाला होता है, मिथ्या कर्म वाला होता है, मिथ्या आजीविका वाला होता है, मिथ्या व्यायाम (प्रयत्न) वाला होता है, मिथ्या स्मृति वाला होता है, मिथ्या समाधि वाला होता है, मिथ्या ज्ञान वाला होता है और मिथ्या विमुक्ति वाला होता है। हे भिक्षुओं, इन दस गुणों से युक्त व्यक्ति का सेवन (संगति) नहीं करना चाहिए।"
+            </div>
+            
+
+            <div class="commentary" id="s0404m3.mul_01195_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="155">१५५.</span> <span class="paliword" data-word="catutthassa">चतुत्थस्स</span> <span class="paliword" data-word="paṭhamādīni">पठमादीनि</span> <span class="paliword" data-word="uttānatthānevāti">उत्तानत्थानेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0404a.att_00647_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0404a.att_00647_hi">
+                    १५५. चौथे (अनुभाग) के प्रथम आदि (पद) स्पष्ट अर्थ वाले ही हैं।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="8">८.</span> <span class="paliword" data-word="kammanidānasuttavaṇṇanā">कम्मनिदानसुत्तवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0404a.att_00648_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0404a.att_00648_hi">
+                    ८. कर्मनिदान सूत्र की व्याख्या
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01196_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="dasahi">‘‘दसहि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammehi">धम्मेहि</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="sevitabbo">सेवितब्बो।</span> <span class="paliword" data-word="katamehi">कतमेहि</span> <span class="paliword" data-word="dasahi">दसहि?</span> <span class="paliword" data-word="sammādiṭṭhiko">सम्मादिट्ठिको</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāsaṅkappo">सम्मासङ्कप्पो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāvāco">सम्मावाचो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammākammanto">सम्माकम्मन्तो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāājīvo">सम्माआजीवो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāvāyāmo">सम्मावायामो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāsati">सम्मासति</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāsamādhi">सम्मासमाधि</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāñāṇī">सम्माञाणी</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="imehi">इमेहि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dasahi">दसहि</span> <span class="paliword" data-word="dhammehi">धम्मेहि</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="sevitabboti">सेवितब्बो’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01196_hi">
+                “हे भिक्षुओं, दस गुणों से युक्त व्यक्ति की सेवा करनी चाहिए।
+वे दस कौन से हैं? वह सम्यक् दृष्टि (samyag-dṛṣṭi) वाला होता है, सम्यक् संकल्प (samyak-saṅkalpa) वाला होता है, सम्यक् वाणी (samyag-vāc) वाला होता है, सम्यक् कर्मान्त (samyak-karmānta) वाला होता है, सम्यक् आजीव (samyag-ājīva) वाला होता है, सम्यक् व्यायाम (samyag-vyāyāma) वाला होता है, सम्यक् स्मृति (samyak-smṛti) वाला होता है, सम्यक् समाधि (samyak-samādhi) वाला होता है, सम्यक् ज्ञान (samyag-jñāna) वाला होता है और सम्यक् मुक्ति (samyag-vimukti) वाला होता है—हे भिक्षुओं, इन दस गुणों से युक्त व्यक्ति की सेवा करनी चाहिए।”
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0404m3.mul_01197'><span class="paliword" data-word="2-12">२-१२.</span> <span class="paliword" data-word="bhajitabbādisuttāni">भजितब्बादिसुत्तानि</span></h3>
+<div class='hindi' id='s0404m3.mul_01197_hi'>२-१२. भजनीय आदि सूत्र (bhajitabbādi-suttāni)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01198_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="156-166">१५६-१६६.</span> <span class="paliword" data-word="dasahi">‘‘दसहि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammehi">धम्मेहि</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="bhajitabbope॰">भजितब्बो…पे॰…</span> <span class="paliword" data-word="bhajitabbope॰">भजितब्बो…पे॰…</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="payirupāsitabbo">पयिरुपासितब्बो…</span> <span class="paliword" data-word="payirupāsitabbope॰">पयिरुपासितब्बो…पे॰…</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="pujjo">पुज्‍जो</span> <span class="paliword" data-word="hoti">होति…</span> <span class="paliword" data-word="pujjo">पुज्‍जो</span> <span class="paliword" data-word="hotipe॰">होति…पे॰…</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="pāsaṃso">पासंसो</span> <span class="paliword" data-word="hoti">होति…</span> <span class="paliword" data-word="pāsaṃso">पासंसो</span> <span class="paliword" data-word="hotipe॰">होति…पे॰…</span> <span class="paliword" data-word="agāravo">अगारवो</span> <span class="paliword" data-word="hoti">होति…</span> <span class="paliword" data-word="sagāravo">सगारवो</span> <span class="paliword" data-word="hotipe॰">होति…पे॰…</span> <span class="paliword" data-word="appatisso">अप्पतिस्सो</span> <span class="paliword" data-word="hoti">होति…</span> <span class="paliword" data-word="sappatisso">सप्पतिस्सो</span> <span class="paliword" data-word="hotipe॰">होति…पे॰…</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="ārādhako">आराधको</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="">…</span> <span class="paliword" data-word="ārādhako">आराधको</span> <span class="paliword" data-word="hotipe॰">होति…पे॰…</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="visujjhati">विसुज्झति…</span> <span class="paliword" data-word="visujjhatipe॰">विसुज्झति…पे॰…</span> <span class="paliword" data-word="mānaṃ">मानं</span> <span class="paliword" data-word="nādhibhoti">नाधिभोति…</span> <span class="paliword" data-word="mānaṃ">मानं</span> <span class="paliword" data-word="adhibhotipe॰">अधिभोति…पे॰</span> <span class="paliword" data-word="">…</span> <span class="paliword" data-word="paññāya">पञ्‍ञाय</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vaḍḍhati">वड्ढति…</span> <span class="paliword" data-word="paññāya">पञ्‍ञाय</span> <span class="paliword" data-word="vaḍḍhatipe॰">वड्ढति…पे॰…।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01198_hi">
+                १५६-१६६.
+‘‘भिक्षुओं, दस गुणों से युक्त व्यक्ति के साथ संगति नहीं करनी चाहिए... और संगति करनी चाहिए... उसकी सेवा-उपासना नहीं करनी चाहिए... सेवा-उपासना करनी चाहिए... वह पूजनीय नहीं होता... पूजनीय होता है... वह प्रशंसनीय नहीं होता... प्रशंसनीय होता है... वह गौरवहीन होता है... गौरवपूर्ण होता है... वह अनादरपूर्ण होता है... आदरपूर्ण होता है... वह संतुष्ट करने वाला नहीं होता... संतुष्ट करने वाला होता है... वह शुद्ध नहीं होता... शुद्ध होता है... वह मान (अभिमान) को नहीं जीतता... मान को जीतता है... वह प्रज्ञा (ज्ञान) में नहीं बढ़ता... वह प्रज्ञा में बढ़ता है...।’’
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01199_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="bahuṃ">‘‘बहुं</span> <span class="paliword" data-word="apuññaṃ">अपुञ्‍ञं</span> <span class="paliword" data-word="pasavati">पसवति…</span> <span class="paliword" data-word="bahuṃ">बहुं</span> <span class="paliword" data-word="puññaṃ">पुञ्‍ञं</span> <span class="paliword" data-word="pasavati">पसवति।</span> <span class="paliword" data-word="katamehi">कतमेहि</span> <span class="paliword" data-word="dasahi">दसहि?</span> <span class="paliword" data-word="sammādiṭṭhiko">सम्मादिट्ठिको</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāsaṅkappo">सम्मासङ्कप्पो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāvāco">सम्मावाचो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammākammanto">सम्माकम्मन्तो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāājīvo">सम्माआजीवो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāvāyāmo">सम्मावायामो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāsati">सम्मासति</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāsamādhi">सम्मासमाधि</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāñāṇī">सम्माञाणी</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="imehi">इमेहि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dasahi">दसहि</span> <span class="paliword" data-word="dhammehi">धम्मेहि</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="bahuṃ">बहुं</span> <span class="paliword" data-word="puññaṃ">पुञ्‍ञं</span> <span class="paliword" data-word="pasavatīti">पसवती’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01199_hi">
+                "वह बहुत अपुण्य अर्जित करता है... वह बहुत पुण्य अर्जित करता है।
+
+वे दस कौन से हैं? वह सम्यक्-दृष्टि (samyag-dṛṣṭi) वाला होता है, सम्यक्-संकल्प (samyak-saṅkalpa) वाला होता है, सम्यक्-वाक् (samyag-vāk) वाला होता है, सम्यक्-कर्मान्त (samyak-karmānta) वाला होता है, सम्यक्-आजीव (samyag-ājīva) वाला होता है, सम्यक्-व्यायाम (samyag-vyāyāma) वाला होता है, सम्यक्-स्मृति (samyak-smṛti) वाला होता है, सम्यक्-समाधि (samyak-samādhi) वाला होता है, सम्यक्-ज्ञान (samyag-jñāna) वाला होता है, और सम्यक्-विमुक्ति (samyag-vimukti) वाला होता है—हे भिक्षुओं, इन दस धर्मों से युक्त पुद्गल (pudgala) बहुत पुण्य अर्जित करता है।"
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

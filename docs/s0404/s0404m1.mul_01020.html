@@ -1,0 +1,310 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"soṇā": "1 <i>masc</i> name of a monk [masc] (lit. dog)<br>2 <i>masc</i> name of a layman [masc] (lit. dog)<br>3 <i>masc</i> dog [masc]<br>4 <i>masc</i> name of an arahant monk; Soṇa Kuṭikaṇṇa; great disciple of the Buddha; foremost in eloquence [masc] (lit. dog)<br>5 <i>fem</i> name of an arahant nun [fem, from soṇa] ‹ सोण (lit. female dog)", "na": "1 <i>ind</i> no; not; neither; nor [ind]<br>2 <i>ind</i> (adds a question mark) surely?; does one not? [ind, interr]<br>3 <i>pref</i> not [prefix, in s]<br>4 <i>masc</i> (gram) negative prefix na [masc, prefix]", "sudhammā": "1 <i>fem</i> meeting hall of the gods in Tāvatiṃsa heaven [fem, from dhamma] ‹ dhamma (lit. justice)<br>2 <i>masc</i> [masc, from dhamma] ‹ dhamma", "manujā": "1 <i>masc</i> human being; person [masc,] (lit. born from Manu)", "tissāya": "1 <i>pron</i> that [pron, base]<br>2 <i>masc</i> generic monk's name used in vinaya examples [masc] (lit. constellation of Cancer)<br>3 <i>masc</i> name of one of Vipassī Buddha's chief disciples [masc] (lit. constellation of Cancer)<br>4 <i>masc</i> [masc] (lit. constellation of Cancer)<br>5 <i>masc</i> name of an arahant monk [masc] (lit. constellation of Cancer)<br>6 <i>fem</i> name of an arahant nun [fem, from tissa] ‹ tissa<br>7 <i>masc</i> name of the 8th previous Buddha [masc] (lit. constellation of Cancer)", "nandamātā": "1 <i>fem</i> name of an eminent lay disciple [fem,] (lit. Happy's mother)", "dissati": "1 <i>pr</i> is seen; is observed; is manifest [pr, pass of √dis] ‹ √dis<br>2 <i>pr</i> seems [pr, pass of √dis] ‹ √dis (lit. is seen)<br>3 <i>pr</i> appears [pr, pass of √dis] ‹ √dis (lit. is seen)<br>4 <i>pr</i> sees [pr]<br>5 <i>pr</i> gives; donates; offers; hands (to) [pr]<br>6 <i>pr</i> allows; permits (to); accepts [pr] (lit. gives)<br>7 <i>pr</i> sets on fire; sets alight (to) [pr] (lit. gives)<br>8 <i>pr</i> (of work) assigns; puts in charge of [pr] (lit. gives)<br>9 <i>pr</i> is indicated; is pointed out [pr, pass of disati] ‹ disati", "kho": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "tissamātā": "1 <i>fem</i> name of a laywoman [fem,] (lit. Tissa's mother)", "sutanā": "1 <i>fem</i> name of a laywoman [fem]", "tissā": "1 <i>pron</i> that [pron, base]<br>2 <i>masc</i> generic monk's name used in vinaya examples [masc] (lit. constellation of Cancer)<br>3 <i>masc</i> name of one of Vipassī Buddha's chief disciples [masc] (lit. constellation of Cancer)<br>4 <i>masc</i> [masc] (lit. constellation of Cancer)<br>5 <i>masc</i> name of an arahant monk [masc] (lit. constellation of Cancer)<br>6 <i>fem</i> name of an arahant nun [fem, from tissa] ‹ tissa<br>7 <i>masc</i> name of the 8th previous Buddha [masc] (lit. constellation of Cancer)", "sāmāvatī": "1 <i>fem</i> name of a female lay disciple; foremost among those living in a state of friendliness [fem, from sāmavant] ‹ सामवन्त् (lit. of dark complexion)<br>2 <i>fem</i> name of King Udena's first queen [fem, from sāmavant] ‹ सामवन्त् (lit. of dark complexion)", "kāṇāya": "1 <i>adj</i> blind in one eye; one-eyed; half-blind [adj]<br>2 <i>masc</i> one-eyed man; who is blind in one eye [masc]", "suppiyā": "1 <i>masc</i> name of a wandering ascetic [masc, from piya] ‹ piya (lit. very dear)<br>2 <i>masc</i> name of the people previously living on Vepulla mountain [masc pl,]<br>3 <i>masc</i> name of an arahant monk [masc] (lit. very dear)", "atha": "1 <i>ind</i> then; also; and so; after that [ind]<br>2 <i>ind</i> but; rather; even [ind]", "mātā": "1 <i>fem</i> mother [fem]", "kāṇā": "1 <i>adj</i> blind in one eye; one-eyed; half-blind [adj]<br>2 <i>masc</i> one-eyed man; who is blind in one eye [masc]", "kāṇamātā": "1 <i>fem</i> name of a lay disciple [fem,] (lit. mother of blind in one eye)", "khoti": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "upāsikā": "1 <i>fem</i> female disciple; laywomen; female devotee [fem, agent, from upāsati] ‹ उपासति (lit. sitting near)", "sudhanā": "1 <i>fem</i> name of a laywoman [fem, from dhana] ‹ dhana (lit. very wealthy)", "gahapatānī": "1 <i>fem</i> householder's wife; lady of the house [fem, , from gahapati] ‹ gahapati", "koliyadhītā": "1 <i>fem</i> young woman of the Koliyan clan; (comm) daughter of the Koliyan king [fem,]", "uttarā": "1 <i>adj</i> crossing over; going over [adj, in s, from uttarati] ‹ uttarati (lit. crossing up)<br>2 <i>masc</i> name of a young Brahman [masc, from ar of ud] ‹ ud (lit. higher)<br>3 <i>adj</i> higher (than); superior (to) [adj, ar of ud] ‹ ud<br>4 <i>adj</i> northern; north [adj, ar of ud] ‹ ud (lit. higher)<br>5 <i>nt</i> north [nt, from ar of ud] ‹ ud (lit. higher)<br>6 <i>nt</i> upper robe [nt, in s, from ar of ud] ‹ ud (lit. higher)<br>7 <i>masc</i> name of a deity [masc, from ar of ud] ‹ ud (lit. higher)<br>8 <i>masc</i> name of a privately awakened Buddha [masc, from ar of ud] ‹ ud (lit. higher)<br>9 <i>nt</i> [nt, from ar of ud] ‹ ud (lit. higher)<br>10 <i>prp</i> emerging; getting out (of) [prp of uttarati] ‹ uttarati (lit. crossing up)<br>11 <i>fem</i> north; northern direction; northern side [fem, abstr, from uttara] ‹ uttara<br>12 <i>fem</i> name of Koṇāgamana Buddha's mother [fem, from uttara] ‹ uttara<br>13 <i>fem</i> name of a young female daemon [fem, from uttara] ‹ uttara (lit. northern; higher)<br>14 <i>aor</i> (of water) emerged; came out [aor of uttarati] ‹ uttarati (lit. crossed up)<br>15 <i>masc</i> name of an arahant monk [masc, from ar of ud] ‹ ud<br>16 <i>fem</i> name of an arahant nun [fem, from uttara] ‹ uttara (lit. northern; higher)<br>17 <i>masc</i> name of a young Brahman, disciple of Brahmāyu [masc, from ar of ud] ‹ ud (lit. higher)<br>18 <i>aor</i> [aor of uttarati] ‹ uttarati (lit. crossed up)", "mallikā": "1 <i>fem</i> Arabian jasmine; Sambac jasmine [fem]<br>2 <i>fem</i> name of a queen; wife of King Pasenadi [fem] (lit. jasmine)", "idaṃ": "1 <i>pron</i> this; this thing [pron, nt nom sg of ima] ‹ ima<br>2 <i>pron</i> this; this thing; this place (object) [pron, nt acc sg of ima] ‹ ima<br>3 <i>pron</i> this [pron, base]<br>4 <i>ind</i> here; in this case [ind, adv, acc sg of ima] ‹ ima", "soṇāya": "1 <i>masc</i> name of a monk [masc] (lit. dog)<br>2 <i>masc</i> name of a layman [masc] (lit. dog)<br>3 <i>masc</i> dog [masc]<br>4 <i>masc</i> name of an arahant monk; Soṇa Kuṭikaṇṇa; great disciple of the Buddha; foremost in eloquence [masc] (lit. dog)<br>5 <i>fem</i> name of an arahant nun [fem, from soṇa] ‹ सोण (lit. female dog)", "aṭṭhakathāyameva": "1 <i>fem</i> commentary; exegesis; detailed explanation [fem,] (lit. talk of the meaning)", "bojjhaṅgā": "1 <i>masc</i> element of awakening; factor of enlightenment [masc,]<br>2 <i>nt</i> element of awakening; factor of enlightenment [nt,]", "soṇamātā": "1 <i>fem</i> name of a laywoman [fem,] (lit. Soṇa's mother)", "khujjuttarā": "1 <i>fem</i> name of a lay disciple [fem,] (lit. humped northern)", "khemā": "1 <i>adj</i> well; safe; secure; at peace; at rest [adj] ‹ √khi<br>2 <i>masc</i> safety; security; sanctuary; peace; rest; epithet of Nibbāna [masc] ‹ √khi<br>3 <i>masc</i> name of a deity [masc] ‹ √khi (lit. safety)<br>4 <i>masc</i> name of a park in Bandhumatī [masc] ‹ √khi (lit. safety)<br>5 <i>masc</i> name of the reigning king at the time of Kakusandha Buddha [masc] ‹ √khi (lit. safety)<br>6 <i>fem</i> name of an arahant nun [fem, from khema] ‹ khema (lit. safe)", "migāramātā": "1 <i>fem</i> Migāra's mother; epithet of Visākhā [fem,]", "sirīmā": "1 <i>adj</i> fortunate; lucky [adj, from sirī] ‹ सिरी (lit. having luck quality)<br>2 <i>adj</i> glorious; illustrious; eminent; (comm) possessing merit [adj, from sirī] ‹ सिरी (lit. having glory quality)", "muttā": "1 <i>nt</i> urine [nt]<br>2 <i>pp</i> released; freed; liberated; let loose (from) [pp of muñcati] ‹ मुञ्चति<br>3 <i>pp</i> (of illness) recovered (from) [pp of muñcati] ‹ मुञ्चति (lit. released)<br>4 <i>pp</i> quick; rapid; swift [pp of muñcati, in s] ‹ मुञ्चति (lit. released)<br>5 <i>fem</i> pearl [fem, from mutta] ‹ mutta (lit. released)<br>6 <i>fem</i> name of an arahant nun [fem, from mutta] ‹ mutta (lit. released)", "bimbī": "1 <i>fem</i> [fem]<br>2 <i>fem</i> name of a lay disciple [fem, from bimba] ‹ bimba (lit. doll)", "rūpī": "1 <i>adj</i> material; physical; having form [adj, from rūpa] ‹ रूप", "visākhā": "1 <i>adj</i> forked; branched [adj, from visākhā] ‹ विसाखा<br>2 <i>masc</i> name of a lay disciple [masc, from visākhā] ‹ विसाखा (lit. Libra)<br>3 <i>fem</i> name of the Buddha's chief female disciple, foremost female donor to the Saṅgha [fem, from sākhā] ‹ साखा (lit. Libra)<br>4 <i>fem</i> [fem]<br>5 <i>fem</i> name of Kakusandha Buddha's mother [fem, from sākhā] ‹ साखा (lit. Libra)<br>6 <i>fem</i> name of an arahant nun [fem, from sākhā] ‹ साखा (lit. Libra)", "nakulamātā": "1 <i>fem</i> name of a female lay disciple; foremost among those who are trustworthy [fem,] (lit. mongoose's mother)", "upāsikāti": "1 <i>fem</i> female disciple; laywomen; female devotee [fem, agent, from upāsati] ‹ उपासति (lit. sitting near)", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "padumā": "1 <i>nt</i> lotus; (specifically) pink lotus; (comm) lotus with more than one hundred petals; (or) white lotus [nt]<br>2 <i>masc</i> (comm) part of the Avīci hell where one must stay a paduma-count in duration [masc] (lit. pink lotus)<br>3 <i>card</i> [card, nt sg]<br>4 <i>masc</i> [masc]<br>5 <i>masc</i> name of a privately awakened Buddha [masc] (lit. lotus)<br>6 <i>nt</i> flower [nt, in s]<br>7 <i>masc</i> name of the 17th previous Buddha [masc] (lit. lotus)", "suppavāsā": "1 <i>fem</i> name of a female lay disciple; foremost among those who offer excellent items [fem, from pavāsa] ‹ पवास (lit. happily living abroad)", "bojjhā": "1 <i>nt</i> understanding; knowledge; (comm) developing the factors of awakening [nt, from ptp of bujjhati] ‹ bujjhati (lit. to be realised)", "sumanā": "1 <i>adj</i> glad; happy; pleased; satisfied; cheerful [adj, from manas] ‹ manas (lit. good mind)<br>2 <i>masc</i> [masc, from manas] ‹ manas (lit. good mind)<br>3 <i>fem</i> [fem]<br>4 <i>fem</i> name of a princess [fem, from sumana] ‹ sumana (lit. happy)<br>5 <i>fem</i> [fem, from sumana] ‹ sumana (lit. good mind)<br>6 <i>masc</i> name of an arahant monk [masc, from manas] ‹ manas (lit. good mind)<br>7 <i>fem</i> name of an arahant nun [fem, from sumana] ‹ sumana (lit. jasmine; good mind)<br>8 <i>masc</i> name of the 21st previous Buddha [masc, from manas] ‹ manas (lit. good mind)<br>9 <i>masc</i> name of a daemon [masc, from manas] ‹ manas (lit. good mind)", "rucī": "1 <i>fem</i> preference; choice; liking; approval [fem, abstr, from ruccati] ‹ ruccati", "ettha": "1 <i>ind</i> here; in this place; in this case; in this regard [ind, adv, from ima] ‹ ima<br>2 <i>ind</i> (gram) in this grammatical rule [ind, adv, from ima] ‹ ima", "cundī": "1 <i>fem</i> name of a princess [fem, from cunda] ‹ cunda"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>(१०) ५. श्रमणता वर्ग (Sāmaññavagga) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m1.mul_01021_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="91-116">९१-११६.</span> <span class="paliword" data-word="atha">अथ</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="ettha">एत्थ</span> <span class="paliword" data-word="atha">‘‘अथ</span> <span class="paliword" data-word="khoti">खो’’ति</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="upāsikāti">‘‘उपासिका’’ति</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="idaṃ">इदं</span> <span class="paliword" data-word="aṭṭhakathāyameva">अट्ठकथायमेव</span> <span class="paliword" data-word="dissati">दिस्सति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="pāḻipotthakesu">पाळिपोत्थकेसु</span> <span class="paliword" data-word="bojjhā">बोज्झा</span> <span class="paliword" data-word="bojjhaṅgā">बोज्झङ्गा</span> <span class="paliword" data-word="ka॰">(क॰</span> <span class="paliword" data-word="sī॰">सी॰)</span> <span class="paliword" data-word="upāsikā">उपासिका</span> <span class="paliword" data-word="ettha">एत्थ</span> <span class="paliword" data-word="atha">‘‘अथ</span> <span class="paliword" data-word="khoti">खो’’ति</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="upāsikāti">उपासिका’’ति</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="idaṃ">इदं</span> <span class="paliword" data-word="aṭṭhakathāyameva">अट्ठकथायमेव</span> <span class="paliword" data-word="dissati">दिस्सति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="pāḻipotthakesu">पाळिपोत्थकेसु,</span> <span class="paliword" data-word="sirīmā">सिरीमा,</span> <span class="paliword" data-word="padumā">पदुमा,</span> <span class="paliword" data-word="sutanā">सुतना</span> <span class="paliword" data-word="sudhanā">सुधना</span> <span class="paliword" data-word="sī॰">(सी॰</span> <span class="paliword" data-word="pī॰">पी॰),</span> <span class="paliword" data-word="sudhammā">सुधम्मा</span> <span class="paliword" data-word="syā॰">(स्या॰),</span> <span class="paliword" data-word="manujā">मनुजा,</span> <span class="paliword" data-word="uttarā">उत्तरा,</span> <span class="paliword" data-word="muttā">मुत्ता,</span> <span class="paliword" data-word="khemā">खेमा,</span> <span class="paliword" data-word="rucī">रुची</span> <span class="paliword" data-word="rūpī">रूपी</span> <span class="paliword" data-word="sī॰">(सी॰</span> <span class="paliword" data-word="pī॰">पी॰),</span> <span class="paliword" data-word="cundī">चुन्दी,</span> <span class="paliword" data-word="bimbī">बिम्बी,</span> <span class="paliword" data-word="sumanā">सुमना,</span> <span class="paliword" data-word="mallikā">मल्‍लिका,</span> <span class="paliword" data-word="tissā">तिस्सा,</span> <span class="paliword" data-word="tissamātā">तिस्समाता</span> <span class="paliword" data-word="tissāya">तिस्साय</span> <span class="paliword" data-word="mātā">माता</span> <span class="paliword" data-word="sī॰">(सी॰</span> <span class="paliword" data-word="pī॰">पी॰),</span> <span class="paliword" data-word="soṇā">सोणा,</span> <span class="paliword" data-word="soṇāya">सोणाय</span> <span class="paliword" data-word="mātā">माता</span> <span class="paliword" data-word="soṇamātā">सोणमाता</span> <span class="paliword" data-word="syā॰">(स्या॰),</span> <span class="paliword" data-word="kāṇā">काणा,</span> <span class="paliword" data-word="kāṇamātā">काणमाता</span> <span class="paliword" data-word="kāṇāya">काणाय</span> <span class="paliword" data-word="mātā">माता</span> <span class="paliword" data-word="sī॰">(सी॰</span> <span class="paliword" data-word="pī॰">पी॰),</span> <span class="paliword" data-word="uttarā">उत्तरा</span> <span class="paliword" data-word="nandamātā">नन्दमाता,</span> <span class="paliword" data-word="visākhā">विसाखा</span> <span class="paliword" data-word="migāramātā">मिगारमाता,</span> <span class="paliword" data-word="khujjuttarā">खुज्‍जुत्तरा</span> <span class="paliword" data-word="upāsikā">उपासिका,</span> <span class="paliword" data-word="sāmāvatī">सामावती</span> <span class="paliword" data-word="upāsikā">उपासिका,</span> <span class="paliword" data-word="suppavāsā">सुप्पवासा</span> <span class="paliword" data-word="koliyadhītā">कोलियधीता</span> <span class="paliword" data-word="koḻiyadhītā">कोळियधीता</span> <span class="paliword" data-word="syā॰">(स्या॰</span> <span class="paliword" data-word="pī॰">पी॰),</span> <span class="paliword" data-word="suppiyā">सुप्पिया</span> <span class="paliword" data-word="upāsikā">उपासिका,</span> <span class="paliword" data-word="nakulamātā">नकुलमाता</span> <span class="paliword" data-word="gahapatānī">गहपतानी।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m1.mul_01021_hi">
+                ९१-११६.
+अब यहाँ यह ज्ञातव्य है कि "अथ खो" (फिर निश्चय ही) और "उपासिका" (महिला भक्त) शब्द केवल अट्ठकथा (व्याख्या) में ही दिखाई देते हैं, पालि के मूल हस्तलेखों में नहीं। [ये महिला उपासिकाएँ हैं:] बोज्झा, बोज्झङ्गा, सिरीमा (श्रीमा), पदुमा (पद्मा), सुतना, सुधना, सुधम्मा (सुधर्मा), मनुजा, उत्तरा, मुत्ता (मुक्ता), खेमा (क्षेमा), रुची, रूपी, चुन्दी, बिम्बी, सुमना, मल्लिका, तिस्सा (तिष्या), तिस्समाता (तिष्या की माता), सोणा (श्रणा), सोणमाता (सोणा की माता), काणा, काणमाता (काणा की माता), उत्तरा नन्दमाता, विसाखा मिगारमाता (मृगार-माता विशाखा), खुज्ज्रुत्तरा उपासिका, सामावती (श्यामावती) उपासिका, सुप्पवासा कोलियधीता (कोलीय पुत्री सुप्रवासा), सुप्पिया (सुप्रिया) उपासिका, और गृहपत्नी नकुलमाता।
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

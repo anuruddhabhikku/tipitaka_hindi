@@ -1,0 +1,381 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"dantā": "1 <i>masc</i> tooth [masc]<br>2 <i>masc</i> tusk [masc]<br>3 <i>pp</i> tamed; trained; mastered; (comm) meek [pp of dammati] ‹ dammati<br>4 <i>adj</i> with teeth; having (a ceratin kind of) teeth; -toothed [adj, in s]", "jātikkhayaṃ": "1 <i>masc</i> extinction of birth; wearing away of rebirth [masc,]", "hoti": "1 <i>pr</i> is; becomes [pr]<br>2 <i>pr</i> exists (for) [pr]<br>3 <i>pr</i> stays; remains; continues to be [pr] (lit. is)", "etāhi": "1 <i>pron</i> this [pron, base]", "maccuhāyinī": "1 <i>adj</i> who has abandoned death; who has left death behind; who has dispelled death [adj,]", "ādīnavaṃ": "1 <i>masc</i> danger; problem (in) [masc, from ādīna] ‹ आदीन<br>2 <i>masc</i> disadvantage; drawback; unsatisfactoriness; inadequacy (of) [masc, from ādīna] ‹ आदीन", "susamāhito": "1 <i>adj</i> (of music) well composed; well put together; well played [adj, from samāhita] ‹ समाहित (lit. well placed together here)<br>2 <i>adj</i> (of behaviour) thoroughly composed; well controlled (in) [adj, from samāhita] ‹ समाहित (lit. well placed together here)<br>3 <i>adj</i> (of mind) completely calm; totally settled; well meditatively composed [adj, from samāhita] ‹ समाहित (lit. well placed together here)", "dehaṃ": "1 <i>masc</i> body [masc] ‹ √dih (lit. accumulation)<br>2 <i>nt</i> corpse; cadaver; dead body [nt] ‹ √dih", "disvā": "1 <i>abs</i> having seen; having understood; having found out [abs of √dis] ‹ √dis", "dhāreti": "1 <i>pr</i> holds up; holds out [pr] (lit. carries)<br>2 <i>pr</i> carries; bears [pr]<br>3 <i>pr</i> bears in mind; keeps in mind; remembers (something about) [pr] (lit. carries)<br>4 <i>pr</i> owes (a debt) (to) [pr] (lit. carries)<br>5 <i>pr</i> wears; dresses (in) [pr] (lit. carries)<br>6 <i>pr</i> considers; accepts (something as) [pr] (lit. carries)", "loke": "1 <i>masc</i> world; universe; cosmos [masc] ‹ √lok<br>2 <i>masc</i> world; plane of existence [masc] ‹ √lok<br>3 <i>masc</i> people (of the world); population [masc] ‹ √lok<br>4 <i>masc</i> world of experience; (comm) world of aggregates, sense spheres and elements [masc] ‹ √lok", "mayaṃ": "1 <i>pron</i> I [pron]<br>2 <i>adj</i> made of; constructed by; built of [adj, in s, from miṇāti] ‹ मिणाति<br>3 <i>pron</i> we [pron, 1st nom pl of ahaṃ] ‹ अहं<br>4 <i>pron</i> (royal plural) I [pron, 1st nom pl of ahaṃ] ‹ अहं (lit. we)", "khīṇāsavā": "1 <i>adj</i> who has destroyed the effluents; awakened; epithet of an arahant [adj,]", "kassapo": "1 <i>masc</i> name of the 1st previous Buddha [masc, patr] (lit. descendant of Kassapa)<br>2 <i>masc</i> name of a deity [masc, patr] (lit. descendant of Kassapa)<br>3 <i>masc</i> family name [masc, patr] (lit. descendant of Kassapa)<br>4 <i>masc</i> name of a Vedic sage [masc, patr] (lit. descendant of Kassapa)<br>5 <i>masc</i> name of an arahant monk [masc, patr] (lit. descendant of Kassapa)", "saggāpāyañca": "1 <i>masc</i> heaven and hell [masc,]", "pubbenivāsaṃ": "1 <i>masc</i> previous life; former existence [masc,]", "buddhassa": "1 <i>masc</i> Buddha; Awakened One [masc, pp of bujjhati] ‹ bujjhati<br>2 <i>pp</i> awakened; woke up; understood [pp of bujjhati] ‹ bujjhati", "tevijjo": "1 <i>adj</i> knowing the three Vedas [adj, , from tivijjā] ‹ तिविज्जा<br>2 <i>adj</i> possessing the three knowledges [adj, , from tivijjā] ‹ तिविज्जा", "bhaddākāpilānītherīgāthā": "1 <i>fem</i> [fem,]", "tevijjā": "1 <i>adj</i> knowing the three Vedas [adj, , from tivijjā] ‹ तिविज्जा<br>2 <i>adj</i> possessing the three knowledges [adj, , from tivijjā] ‹ तिविज्जा<br>3 <i>fem</i> three Vedas [fem,] (lit. three knowledges)", "ubho": "1 <i>pron</i> both [pron, base]<br>2 <i>pron</i> both [pron, nom & acc pl of ubha] ‹ ubha", "patto": "1 <i>masc</i> bowl; alms bowl; begging bowl [masc, from pivati] ‹ pivati<br>2 <i>adj</i> with leaves; with foliage [adj, in s]<br>3 <i>pp</i> reached; attained; gained; accomplished; found [pp of pāpuṇāti] ‹ पापुणाति<br>4 <i>pp</i> encountered; met with [pp of pāpuṇāti] ‹ पापुणाति (lit. reached)<br>5 <i>pp</i> fallen; dropped; slumped [pp of patati, in s] ‹ patati<br>6 <i>pp</i> suitable; worthy; fit [pp of pāpuṇāti] ‹ पापुणाति (lit. reached)", "atho": "1 <i>ind</i> and then; or; after that; because of [ind, from atha] ‹ atha", "jetvā": "1 <i>abs</i> having conquered; having defeated; having overcome [abs of jeti] ‹ jeti", "pabbajitā": "1 <i>masc</i> monk; monastic; renunciant; renunciate [masc, pp of pabbajati] ‹ pabbajati (lit. went forth)<br>2 <i>pp</i> ordained; renounced (from) [pp of pabbajati] ‹ pabbajati (lit. went forth)<br>3 <i>fem</i> nun; female monastic; woman renunciant [fem, from pabbajita] ‹ pabbajita (lit. went forth)", "bhaddā": "1 <i>adj</i> good; excellent; lucky; auspicious [adj] ‹ √bhad<br>2 <i>nt</i> good luck; good fortune; blessings [nt] ‹ √bhad<br>3 <i>adj</i> (of vehicles) opulent; luxurious; princely; stately [adj] ‹ √bhad<br>4 <i>masc</i> name of a lay disciple [masc] (lit. lucky)<br>5 <i>fem</i> lady; madam [fem, from bhadda] ‹ bhadda<br>6 <i>fem</i> name of a female demigod [fem, from bhadda] ‹ bhadda (lit. auspicious)<br>7 <i>masc</i> name of an arahant monk [masc] (lit. lucky)<br>8 <i>fem</i> name of an arahant nun [fem, from bhadda] ‹ bhadda", "vijjāhi": "1 <i>pr</i> exists; is found; is present (in) [pr, pass of vindati] ‹ vindati<br>2 <i>pr</i> is possible; is plausible [pr, pass of vindati] ‹ vindati (lit. exists)<br>3 <i>fem</i> knowledge; wisdom; understanding [fem, abstr] ‹ √vid<br>4 <i>fem</i> science; art; branch of knowledge [fem, abstr] (lit. understanding)<br>5 <i>fem</i> spell; magic; sorcery [fem, abstr] ‹ √vid (lit. understanding)", "kāpilānī": "1 <i>fem</i> descendent of Kapila [fem, patr, from kapila] ‹ kapila (lit. related to tawny)", "tīhi": "1 <i>card</i> three (3) [card, masc fem & nt pl]<br>2 <i>ve</i> (gram) ti; verbal ending of the present tense 3rd person singular [ve, masc]<br>3 <i>card</i> by three; with three [card, masc fem & nt instr pl of ti] ‹ ti", "abhiññāvosito": "1 <i>adj</i> who has attained perfect understanding; who has completely understood [adj,]", "dāyādo": "1 <i>masc</i> heir; inheritor (of) [masc,] (lit. receiver of what is given)<br>2 <i>adj</i> inheriting; receiving the results (of) [adj, in s,]", "antimaṃ": "1 <i>adj</i> very last; final; ultimate [adj, superl of anta] ‹ anta", "putto": "1 <i>masc</i> son; child [masc]<br>2 <i>masc</i> (used to form diminutives) young man; descendent; son of [masc, in s]", "tatheva": "1 <i>adj</i> true; real; actual [adj, from tathā] ‹ तथा<br>2 <i>nt</i> truth; actuality [nt, from tathā] ‹ तथा<br>3 <i>masc</i> name of a privately awakened Buddha [masc, from tathā] ‹ तथा (lit. truth)<br>4 <i>ind</i> so; thus; in such a way; likewise; similarly [ind, adv, from ta] ‹ ta<br>5 <i>sand</i> likewise; in the same way; as it is; as they are; similarly [sandhi, adv + ind] (lit. just like this)<br>6 <i>sand</i> really; truly; still [sandhi, adj + ind]<br>7 <i>sand</i> just like this; simply the truth; how it is [sandhi, nt + ind]<br>8 <i>sand</i> just the same; exactly the same; identical [sandhi, nt + ind]", "māraṃ": "1 <i>masc</i> death; Death; death personified [masc, agent, from mārati] ‹ मारति", "muni": "1 <i>masc</i> monk; sage; seer; hermit; silent sage [masc, from munāti] ‹ मुनाति<br>2 <i>nt</i> sage-hood; sagacity; sainthood [nt, abstr, from munāti] ‹ मुनाति<br>3 <i>aor</i> [aor of munāti] ‹ मुनाति"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>४. चतुक्कनिपात (चारों का समूह) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<h3 id='s0509m.mul_00204'><span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="bhaddākāpilānītherīgāthā">भद्दाकापिलानीथेरीगाथा</span></h3>
+<div class='hindi' id='s0509m.mul_00204_hi'>१. भद्दाकापिलानीथेरीगाथा</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0509m.mul_00206_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="putto">‘‘पुत्तो</span> <span class="paliword" data-word="buddhassa">बुद्धस्स</span> <span class="paliword" data-word="dāyādo">दायादो,</span> <span class="paliword" data-word="kassapo">कस्सपो</span> <span class="paliword" data-word="susamāhito">सुसमाहितो।</span> <span class="paliword" data-word="pubbenivāsaṃ">पुब्बेनिवासं</span> <span class="paliword" data-word="yovedi">योवेदि,</span> <span class="paliword" data-word="saggāpāyañca">सग्गापायञ्‍च</span> <span class="paliword" data-word="passati||">पस्सति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0509m.mul_00206_hi">
+                ‘‘बुद्ध के पुत्र और उनके उत्तराधिकारी, भली-भाँति एकाग्रचित्त काश्यप, अपने पूर्व जन्मों को जानते हैं और स्वर्ग तथा दुर्गति को प्रत्यक्ष देखते हैं।’’
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0509m.mul_00208_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="atho">‘‘अथो</span> <span class="paliword" data-word="jātikkhayaṃ">जातिक्खयं</span> <span class="paliword" data-word="patto">पत्तो,</span> <span class="paliword" data-word="abhiññāvosito">अभिञ्‍ञावोसितो</span> <span class="paliword" data-word="muni">मुनि।</span> <span class="paliword" data-word="etāhi">एताहि</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="vijjāhi">विज्‍जाहि,</span> <span class="paliword" data-word="tevijjo">तेविज्‍जो</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="brāhmaṇo||">ब्राह्मणो॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0509m.mul_00208_hi">
+                इसके पश्चात्, जिसने जन्म के क्षय को प्राप्त कर लिया है और जो उच्चतर ज्ञान में निष्णात है, वह मुनि; इन तीन विद्याओं के कारण ही वह ब्राह्मण 'त्रिविद्य' कहलाता है।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0509m.mul_00210_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tatheva">‘‘तथेव</span> <span class="paliword" data-word="bhaddā">भद्दा</span> <span class="paliword" data-word="kāpilānī">कापिलानी,</span> <span class="paliword" data-word="tevijjā">तेविज्‍जा</span> <span class="paliword" data-word="maccuhāyinī">मच्‍चुहायिनी।</span> <span class="paliword" data-word="dhāreti">धारेति</span> <span class="paliword" data-word="antimaṃ">अन्तिमं</span> <span class="paliword" data-word="dehaṃ">देहं,</span> <span class="paliword" data-word="jetvā">जेत्वा</span> <span class="paliword" data-word="māraṃ">मारं</span> <span class="paliword" data-word="savāhanaṃ||">सवाहनं॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0509m.mul_00210_hi">
+                वैसे ही भद्रा कापिलानी भी हैं, जो त्रिविद्या संपन्न और मृत्यु (जन्म-मरण) के चक्र को त्यागने वाली हैं। मार और उसकी सेना को पराजित कर, वे अपना यह अंतिम शरीर धारण किए हुए हैं।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0509m.mul_00212_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="disvā">‘‘दिस्वा</span> <span class="paliword" data-word="ādīnavaṃ">आदीनवं</span> <span class="paliword" data-word="loke">लोके,</span> <span class="paliword" data-word="ubho">उभो</span> <span class="paliword" data-word="pabbajitā">पब्बजिता</span> <span class="paliword" data-word="mayaṃ">मयं।</span> <span class="paliword" data-word="tyamha">त्यम्ह</span> <span class="paliword" data-word="khīṇāsavā">खीणासवा</span> <span class="paliword" data-word="dantā">दन्ता,</span> <span class="paliword" data-word="sītibhūtamha">सीतिभूतम्ह</span> <span class="paliword" data-word="nibbutāti||">निब्बुता’’ति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0509m.mul_00212_hi">
+                "संसार में दोषों को देख कर, हम दोनों ने प्रव्रज्या (संन्यास) ग्रहण कर ली है।
+अब हम क्षीणासव (विकारों से मुक्त) और जितेन्द्रिय हैं, हम परम शांति को प्राप्त कर निर्वाण पा चुके हैं।"
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

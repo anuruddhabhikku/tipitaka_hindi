@@ -1,0 +1,402 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"te": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>card</i> three (3) [card, masc fem & nt pl]<br>4 <i>ve</i> (gram) ti; verbal ending of the present tense 3rd person singular [ve, masc]<br>5 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>6 <i>pron</i> they; those [pron, masc nom pl of ta] ‹ ta<br>7 <i>pron</i> them; those [pron, masc acc pl of ta] ‹ ta<br>8 <i>pron</i> you; to you (object) [pron, 2nd acc sg of tvaṃ] ‹ त्वं<br>9 <i>pron</i> by you [pron, 2nd instr sg of tvaṃ] ‹ त्वं<br>10 <i>pron</i> for you; to you [pron, 2nd dat sg of tvaṃ] ‹ त्वं<br>11 <i>pron</i> your; of you [pron, 2nd gen sg of tvaṃ] ‹ त्वं<br>12 <i>pron</i> when you [pron, 2nd gen sg of tvaṃ, gen abs] ‹ त्वं<br>13 <i>card</i> three (3) [card, in s, from ti] ‹ ti<br>14 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha", "alapitaṃ": "1 <i>pp</i> not spoken; not said; not uttered (by) [pp of na lapati] ‹ lapati", "dasamaṃ": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "sesamettha": "1 <i>sand</i> the rest here; everything else here [sandhi, masc + adv]", "āciṇṇaṃ": "1 <i>nt</i> custom; practice; habit (of) [nt, pp of ācarati] ‹ आचरति (lit. practiced)<br>2 <i>pp</i> [pp of ācarati] ‹ आचरति", "atthāya": "1 <i>masc</i> meaning; sense; significance [masc] ‹ √ar<br>2 <i>masc</i> benefit; profit; good; welfare [masc] ‹ √ar<br>3 <i>masc</i> purpose; use; function; goal [masc] ‹ √ar<br>4 <i>masc</i> matter; affair; legal case; lawsuit [masc] ‹ √ar<br>5 <i>adj</i> for the purpose; for the sake; for the benefit (of) [adj, in s] ‹ √ar<br>6 <i>nt</i> matter; affair [nt] ‹ √ar<br>7 <i>masc</i> need; want (for) [masc]<br>8 <i>adj</i> needing; wanting; seeking [adj, in s, from atthayati] ‹ atthayati<br>9 <i>masc</i> home; rest; shelter [masc]<br>10 <i>masc</i> for the purpose; for the sake; for the benefit (of) [masc, in s, dat sg of atthāya] ‹ अत्थाय<br>11 <i>masc</i> fortunate; beneficial; useful (for) [masc, dat sg of atthāya] ‹ अत्थाय (lit. for the sake)<br>12 <i>masc</i> death; end; annihilation; destruction [masc]<br>13 <i>masc</i> western mountain (behind which the sun sets) [masc]", "ye": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>pr</i> goes; goes to; goes forward; proceeds; travels<br>6 <i>pr</i> (of an army) marches against; pursues; routs [pr]<br>7 <i>pron</i> whoever; whatever; whichever; those who [pron, masc & nt nom pl of ya] ‹ ya<br>8 <i>pron</i> whoever; whatever; whichever; those who (object) [pron, masc & nt acc pl of ya] ‹ ya", "dīpenti": "1 <i>pr</i> explains; illustrates; illuminates [pr, caus of dippati] ‹ dippati (lit. shines)<br>2 <i>pr</i> [pr, caus of]", "pasavanti": "1 <i>pr</i> flows out; pours out; discharges [pr]<br>2 <i>pr</i> produces; generates; makes; gives birth to (lit. flows forth)", "anāciṇṇaṃ": "1 <i>adj</i> [adj]", "hitāya": "1 <i>pp</i> beneficial; good; advantageous [pp of dahati] ‹ dahati (lit. placed)<br>2 <i>masc</i> benefactor; friend; good person [masc, pp of dahati] ‹ dahati<br>3 <i>nt</i> welfare; good; benefit (of); blessing [nt, pp of dahati] ‹ dahati (lit. placed)<br>4 <i>nt</i> beneficial; advantageous (for) [nt, dat sg of hita] ‹ hita (lit. for the benefit)<br>5 <i>pp</i> put; placed [pp of dahati, in s] ‹ dahati", "bahuñca": "1 <i>adj</i> many; much; lots; a lot (of); great; large [adj] ‹ √bah", "dutiyaṃ": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>ind</i> second time [ind, adv, acc sg of dutiya] ‹ dutiya<br>5 <i>fem</i> second woman; another woman; female companion [fem, from dvi] ‹ dvi<br>6 <i>fem</i> [fem]<br>7 <i>fem</i> [fem, from dūta] ‹ दूत<br>8 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "bahujanahitāya": "1 <i>nt</i> for the benefit of many people; for the good of the population [nt, , dat sg of bahujanahita] ‹ bahujanahita", "paṭipannā": "1 <i>pp</i> practising (for) [pp of paṭipajjati] ‹ पटिपज्जति (lit. gone along)<br>2 <i>pp</i> followed a path; undertaken a journey [pp of paṭipajjati] ‹ पटिपज्जति (lit. gone along)<br>3 <i>pp</i> fallen (into); met (with); got into [pp of paṭipajjati] ‹ पटिपज्जति (lit. gone along)", "avinayoti": "1 <i>masc</i> what is not the discipline; not vinaya [masc, from na vineti] ‹ vineti (lit. not leading out)", "vagge": "1 <i>adj</i> disunited; divisive; factious; dissentious; incomplete [adj]<br>2 <i>masc</i> chapter; section [masc]<br>3 <i>masc</i> group; party; faction [masc]<br>4 <i>masc</i> (gram) (of consonants) set; group; class; series [masc]<br>5 <i>masc</i> dissociation; separation [masc]<br>6 <i>pr</i> jumps; prances; springs; bounces; skips", "cimaṃ": "1 <i>sand</i> and this [sandhi, ind + pron]", "tathāgatena": "1 <i>masc</i> Such Become; Realised; being in such a state; arrived at the truth; epithet of the Buddha [masc,]", "vinayaṃ": "1 <i>masc</i> discipline; training [masc, from vineti] ‹ vineti (lit. leading out)<br>2 <i>masc</i> monastic law; code of monastic disciplinary rules [masc, from vineti] ‹ vineti (lit. leading out)<br>3 <i>masc</i> removal; dispelling (of) [masc, from vineti] ‹ vineti (lit. leading out)<br>4 <i>masc</i> settlement; judgement; verdict [masc, from vineti] ‹ vineti (lit. leading out)<br>5 <i>nt</i> vinaya rule; precept [nt, from vineti] ‹ vineti (lit. leading out)<br>6 <i>aor</i> [aor of vinayati] ‹ vinayati (lit. led away)", "puññaṃ": "1 <i>nt</i> merit; good deed; spiritual wealth [nt] ‹ √पुण्<br>2 <i>adj</i> having merit; meritorious; auspicious; virtuous [adj] ‹ √पुण्", "adhammaṃ": "1 <i>masc</i> misconduct; immoral behaviour; unjust means; cheating [masc, from na dharati] ‹ dharati<br>2 <i>masc</i> false teaching; something opposed to the teaching [masc, from na dharati] ‹ dharati<br>3 <i>adj</i> unlawful; illegal [adj, from na dharati] ‹ dharati<br>4 <i>masc</i> [masc]<br>5 <i>adj</i> incorrect; immoral; unrighteous [adj, from na dharati] ‹ dharati (lit. against the teaching)", "bahuno": "1 <i>adj</i> many; much; lots; a lot (of); great; large [adj] ‹ √bah", "devamanussānaṃ": "1 <i>masc</i> gods and human beings; deities and men [masc pl,]", "veditabbāni": "1 <i>ptp</i> can be known; should be understood (by) [ptp of vedeti] ‹ vedeti (lit. to be known)<br>2 <i>ptp</i> to be experienced (by) [ptp of vedeti] ‹ vedeti (lit. to be known)", "vinayoti": "1 <i>masc</i> discipline; training [masc, from vineti] ‹ vineti (lit. leading out)<br>2 <i>masc</i> monastic law; code of monastic disciplinary rules [masc, from vineti] ‹ vineti (lit. leading out)<br>3 <i>masc</i> removal; dispelling (of) [masc, from vineti] ‹ vineti (lit. leading out)<br>4 <i>masc</i> settlement; judgement; verdict [masc, from vineti] ‹ vineti (lit. leading out)<br>5 <i>aor</i> [aor of vinayati] ‹ vinayati (lit. led away)", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "bhikkhū": "1 <i>aor</i> begged; begged for alms [aor of bhikkhati] ‹ bhikkhati<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "lapitaṃ": "1 <i>pp</i> spoken; said; uttered (by) [pp of lapati] ‹ lapati (lit. chatted)", "vuttanayeneva": "1 <i>sand</i> in exactly the same way; by exactly the same method [sandhi, pp + masc + ind]", "avinayaṃ": "1 <i>masc</i> what is not the discipline; not vinaya [masc, from na vineti] ‹ vineti (lit. not leading out)", "ṭhapentīti": "1 <i>pr</i> helps to last; causes to remain [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>2 <i>pr</i> stands aside [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>3 <i>pr</i> appoints; establishes; sets up; places (someone in a position) [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>4 <i>pr</i> sets aside; puts to one side [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>5 <i>pr</i> places; puts; stands [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>6 <i>prp</i> placing; setting; positioning [prp of ṭhapeti] ‹ ठपेति (lit. causing to stand)", "abhāsitaṃ": "1 <i>pp</i> not said; not spoken; not preached (by) [pp of na bhāsati] ‹ भासति", "bhāsitaṃ": "1 <i>nt</i> saying; speech; statement; utterance; talk; words [nt, pp of bhāsati] ‹ भासति (lit. what was said)<br>2 <i>pp</i> said; spoken; recited (by) [pp of bhāsati] ‹ भासति<br>3 <i>nt</i> (gram) ?? word [nt, from bhāsati] ‹ भासति<br>4 <i>nt</i> speaking; talking; saying [nt, pp of bhāsati] ‹ भासति (lit. spoken)", "tathāgatenāti": "1 <i>masc</i> Such Become; Realised; being in such a state; arrived at the truth; epithet of the Buddha [masc,]", "paññattaṃ": "1 <i>pp</i> prepared; readied; arranged; laid out [pp of paññāpeti] ‹ पञ्ञापेति (lit. caused to know)<br>2 <i>pp</i> (of a rule) formulated; prescribed; decreed; declared [pp of paññāpeti] ‹ पञ्ञापेति (lit. caused to know)<br>3 <i>pp</i> stated; declared; made known [pp of paññāpeti] ‹ पञ्ञापेति (lit. caused to know)<br>4 <i>pp</i> designated; assigned [pp of paññāpeti] ‹ पञ्ञापेति (lit. caused to know)", "janassa": "1 <i>masc</i> man; person; fellow [masc, agent, from jāyati] ‹ जायति<br>2 <i>masc</i> men; people; population [masc, from jāyati] ‹ जायति<br>3 <i>nt</i> man; person; people [nt, agent, from jāyati] ‹ जायति", "uttānamevāti": "1 <i>sand</i> is clear as is [sandhi, adj + ind + ind]", "saddhammaṃ": "1 <i>masc</i> good teaching; true doctrine; true nature of things; (comm) the five precepts, ten precepts, four foundations of mindfulness etc. [masc,]<br>2 <i>masc</i> good quality; positive characteristic [masc,]<br>3 <i>masc</i> one's own teaching; personal doctrine [masc,]", "bahujanasukhāya": "1 <i>nt</i> comfort of many people; ease of the masses [nt, abstr,]<br>2 <i>nt</i> for the comfort of many people; for the ease of the masses [nt, abstr, , dat sg of bahujanasukha] ‹ bahujanasukha", "dhammoti": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>13 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>14 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>15 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu", "ekādasame": "1 <i>ordi</i> eleventh (11th) [ordin of ekādasa,] ‹ एकादस", "apaññattaṃ": "1 <i>pp</i> (of a rule) not formulated; not prescribed; not decreed; not declared [pp of na paññāpeti] ‹ पञ्ञापेति (lit. not caused to know)<br>2 <i>pp</i> undesignated; not assigned [pp of na paññāpeti] ‹ पञ्ञापेति (lit. not caused to know)", "sukhāya": "1 <i>adj</i> easy (on); comfortable (for); pleasant (for); good (for); contented [adj] ‹ √sukh<br>2 <i>nt</i> ease; comfort; happiness; pleasure; contentment [nt, abstr] ‹ √sukh<br>3 <i>adj</i> (of water) tepid [adj] ‹ √sukh<br>4 <i>nt</i> comfortable (for) [nt, dat sg of sukha] ‹ sukha (lit. for the comfort)<br>5 <i>pr</i> is comfortbale with; is ok with; is happy with [pr, deno of sukha] ‹ sukha<br>6 <i>adj</i> (of weather) fine; mild; pleasant [adj] ‹ √sukh", "dhammaṃ": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>nt</i> teaching; discourse; doctrine [nt, from dharati, irreg] ‹ dharati<br>13 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>14 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>15 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>16 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu<br>17 <i>fem</i> name of an arahant nun [fem, from dhamma] ‹ dhamma", "paṭhamaṃ": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>ind</i> first; firstly; at first; first of all [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>5 <i>ind</i> before; recently; newly; just [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>6 <i>fem</i> [fem]", "adhammoti": "1 <i>masc</i> misconduct; immoral behaviour; unjust means; cheating [masc, from na dharati] ‹ dharati<br>2 <i>masc</i> false teaching; something opposed to the teaching [masc, from na dharati] ‹ dharati<br>3 <i>adj</i> unlawful; illegal [adj, from na dharati] ‹ dharati<br>4 <i>masc</i> [masc]<br>5 <i>adj</i> incorrect; immoral; unrighteous [adj, from na dharati] ‹ dharati (lit. against the teaching)"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>११. अधर्म-वर्ग (अधर्म का अध्याय) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00131_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00131_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="140">१४०.</span> <span class="paliword" data-word="ye">‘‘ये</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="adhammaṃ">अधम्मं</span> <span class="paliword" data-word="adhammoti">अधम्मोति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="bahujanahitāya">बहुजनहिताय</span> <span class="paliword" data-word="paṭipannā">पटिपन्‍ना</span> <span class="paliword" data-word="bahujanasukhāya">बहुजनसुखाय,</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="atthāya">अत्थाय</span> <span class="paliword" data-word="hitāya">हिताय</span> <span class="paliword" data-word="sukhāya">सुखाय</span> <span class="paliword" data-word="devamanussānaṃ">देवमनुस्सानं।</span> <span class="paliword" data-word="bahuñca">बहुञ्‍च</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="puññaṃ">पुञ्‍ञं</span> <span class="paliword" data-word="pasavanti">पसवन्ति,</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="cimaṃ">चिमं</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="ṭhapentīti">ठपेन्ती’’ति</span> <span class="paliword" data-word="thapentīti">थपेन्तीति</span> <span class="paliword" data-word="ka॰">(क॰)।</span> <span class="paliword" data-word="paṭhamaṃ">पठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00131_hi">
+                १४०.
+"हे भिक्षुओं, जो भिक्षु अधर्म को अधर्म के रूप में स्पष्ट करते हैं, वे भिक्षु बहुजन के हित के लिए और बहुजन के सुख के लिए प्रवृत्त होते हैं; वे बहुत से लोगों के कल्याण, हित और सुख के लिए तथा देवों एवं मनुष्यों के मंगल के लिए कार्य करते हैं। 
+हे भिक्षुओं, वे भिक्षु अपार पुण्य अर्जित करते हैं और वे इस सद्धर्म को सुदृढ़ता से स्थापित करते हैं।"
+प्रथम।
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00131_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="140">१४०.</span> <span class="paliword" data-word="ekādasame">एकादसमे</span> <span class="paliword" data-word="vagge">वग्गे</span> <span class="paliword" data-word="adhammaṃ">अधम्मं</span> <span class="paliword" data-word="adhammotiādīni">अधम्मोतिआदीनि</span> <span class="paliword" data-word="vuttanayeneva">वुत्तनयेनेव</span> <span class="paliword" data-word="veditabbāni">वेदितब्बानि।</span> <span class="paliword" data-word="sesamettha">सेसमेत्थ</span> <span class="paliword" data-word="uttānamevāti">उत्तानमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_00353_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_00353_hi">
+                    १४०. ग्यारहवें वर्ग में, "जो अधर्म है वह अधर्म है" इत्यादि पदों को पहले बताई गई विधि के अनुसार ही समझना चाहिए।
+इसमें शेष भाग स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="12">१२.</span> <span class="paliword" data-word="anāpattivaggavaṇṇanā">अनापत्तिवग्गवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_00354_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_00354_hi">
+                    १२. अनापत्ति वर्ग का विवरण
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00132_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="141">१४१.</span> <span class="paliword" data-word="ye">‘‘ये</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="dhammaṃ">धम्मं</span> <span class="paliword" data-word="dhammoti">धम्मोति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="bahujanahitāya">बहुजनहिताय</span> <span class="paliword" data-word="paṭipannā">पटिपन्‍ना</span> <span class="paliword" data-word="bahujanasukhāya">बहुजनसुखाय,</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="atthāya">अत्थाय</span> <span class="paliword" data-word="hitāya">हिताय</span> <span class="paliword" data-word="sukhāya">सुखाय</span> <span class="paliword" data-word="devamanussānaṃ">देवमनुस्सानं।</span> <span class="paliword" data-word="bahuñca">बहुञ्‍च</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="puññaṃ">पुञ्‍ञं</span> <span class="paliword" data-word="pasavanti">पसवन्ति,</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="cimaṃ">चिमं</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="ṭhapentīti">ठपेन्ती’’ति।</span> <span class="paliword" data-word="dutiyaṃ">दुतियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00132_hi">
+                १४१.
+“हे भिक्षुओं, जो भिक्षु धर्म को धर्म के रूप में ही प्रतिपादित करते हैं, वे भिक्षु बहुत से लोगों के हित के लिए और बहुत से लोगों के सुख के लिए प्रवृत्त होते हैं; वे संसार के कल्याण के लिए तथा देवताओं और मनुष्यों के लाभ, हित और सुख के लिए कार्य करते हैं।
+
+हे भिक्षुओं, वे भिक्षु बहुत पुण्य अर्जित करते हैं और वे इस सद्धर्म (सद्धम्म) को सुरक्षित रखते हैं।”
+
+द्वितीय।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00133_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="142-149">१४२-१४९.</span> <span class="paliword" data-word="ye">‘‘ये</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="avinayaṃ">अविनयं</span> <span class="paliword" data-word="avinayoti">अविनयोति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="vinayaṃ">विनयं</span> <span class="paliword" data-word="vinayoti">विनयोति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="abhāsitaṃ">अभासितं</span> <span class="paliword" data-word="alapitaṃ">अलपितं</span> <span class="paliword" data-word="tathāgatena">तथागतेन</span> <span class="paliword" data-word="abhāsitaṃ">अभासितं</span> <span class="paliword" data-word="alapitaṃ">अलपितं</span> <span class="paliword" data-word="tathāgatenāti">तथागतेनाति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="bhāsitaṃ">भासितं</span> <span class="paliword" data-word="lapitaṃ">लपितं</span> <span class="paliword" data-word="tathāgatena">तथागतेन</span> <span class="paliword" data-word="bhāsitaṃ">भासितं</span> <span class="paliword" data-word="lapitaṃ">लपितं</span> <span class="paliword" data-word="tathāgatenāti">तथागतेनाति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="anāciṇṇaṃ">अनाचिण्णं</span> <span class="paliword" data-word="tathāgatena">तथागतेन</span> <span class="paliword" data-word="anāciṇṇaṃ">अनाचिण्णं</span> <span class="paliword" data-word="tathāgatenāti">तथागतेनाति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="āciṇṇaṃ">आचिण्णं</span> <span class="paliword" data-word="tathāgatena">तथागतेन</span> <span class="paliword" data-word="āciṇṇaṃ">आचिण्णं</span> <span class="paliword" data-word="tathāgatenāti">तथागतेनाति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="apaññattaṃ">अपञ्‍ञत्तं</span> <span class="paliword" data-word="tathāgatena">तथागतेन</span> <span class="paliword" data-word="apaññattaṃ">अपञ्‍ञत्तं</span> <span class="paliword" data-word="tathāgatenāti">तथागतेनाति</span> <span class="paliword" data-word="dīpentipe॰">दीपेन्ति…पे॰…</span> <span class="paliword" data-word="paññattaṃ">पञ्‍ञत्तं</span> <span class="paliword" data-word="tathāgatena">तथागतेन</span> <span class="paliword" data-word="paññattaṃ">पञ्‍ञत्तं</span> <span class="paliword" data-word="tathāgatenāti">तथागतेनाति</span> <span class="paliword" data-word="dīpenti">दीपेन्ति</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="bahujanahitāya">बहुजनहिताय</span> <span class="paliword" data-word="paṭipannā">पटिपन्‍ना</span> <span class="paliword" data-word="bahujanasukhāya">बहुजनसुखाय,</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="atthāya">अत्थाय</span> <span class="paliword" data-word="hitāya">हिताय</span> <span class="paliword" data-word="sukhāya">सुखाय</span> <span class="paliword" data-word="devamanussānaṃ">देवमनुस्सानं।</span> <span class="paliword" data-word="bahuñca">बहुञ्‍च</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="puññaṃ">पुञ्‍ञं</span> <span class="paliword" data-word="pasavanti">पसवन्ति,</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="cimaṃ">चिमं</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="ṭhapentīti">ठपेन्ती’’ति।</span> <span class="paliword" data-word="dasamaṃ">दसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00133_hi">
+                १४२-१४९.
+“हे भिक्षुओं, जो भिक्षु अनुशासन-हीनता को अनुशासन-हीनता के रूप में प्रस्तुत करते हैं... (और) जो अनुशासन को अनुशासन के रूप में स्पष्ट करते हैं... जो तथागत द्वारा न कहे गए और न उच्चारित वचनों को तथागत द्वारा न कहे गए और न उच्चारित ही बताते हैं... जो तथागत द्वारा कहे गए और उच्चारित वचनों को तथागत द्वारा कहे गए और उच्चारित ही बताते हैं... जो तथागत द्वारा आचरित न की गई बातों को तथागत द्वारा अनाचरित ही बताते हैं... जो तथागत द्वारा आचरित बातों को तथागत द्वारा आचरित ही बताते हैं... जो तथागत द्वारा प्रज्ञप्त (निर्धारित) न किए गए नियमों को तथागत द्वारा अप्रज्ञप्त ही बताते हैं... और जो तथागत द्वारा प्रज्ञप्त किए गए नियमों को तथागत द्वारा प्रज्ञप्त ही बताते हैं—हे भिक्षुओं, वे भिक्षु जनसाधारण के हित और सुख के लिए, तथा देवों और मनुष्यों के कल्याण, लाभ और सुख के लिए प्रतिपन्न (कार्यरत) हैं।
+
+और हे भिक्षुओं, वे भिक्षु बहुत पुण्य अर्जित करते हैं, क्योंकि वे इस सद्धर्म (सत्य धर्म) को स्थिर रखते हैं।”
+
+दसवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

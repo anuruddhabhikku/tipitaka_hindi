@@ -1,0 +1,577 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"dhammo": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>13 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>14 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>15 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu", "bhāvetabbasuttaṃ": "1 <i>nt</i> [nt,]", "bhāvetabbo": "1 <i>ptp</i> should be cultivated; should be developed [ptp of bhāveti] ‹ भावेति (lit. to cause to be)", "bahulīkātabbasuttaṃ": "1 <i>nt</i> [nt,]", "sacchikātabbañca": "1 <i>ptp</i> should be personally experienced; should be personally realised [ptp of sacchikaroti,  vb] ‹ sacchikaroti (lit. to be personally done)", "kaṇhamaggañca": "1 <i>masc</i> dark path; evil way [masc,]", "desessāmi": "1 <i>pr</i> preach; teaches; instructs; explains (soemthing to) [pr, caus of disati] ‹ disati (lit. causes to point out)<br>2 <i>pr</i> (vinaya) confesses; admits (to) [pr, caus of disati] ‹ disati<br>3 <i>pr</i> (vinaya) appoints; allocates; designates (to) [pr, caus of disati] ‹ disati (lit. causes to point out)", "bahulīkātabbo": "1 <i>ptp</i> should be practised often; should be developed [ptp of bahulīkaroti,  vb] ‹ बहुलीकरोति (lit. to be made a lot)", "asappurisadhammo": "1 <i>masc</i> nature of a person of no integrity; characteristic of an unethical man; quality of a false person [masc,]", "dutiyaṃ": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>ind</i> second time [ind, adv, acc sg of dutiya] ‹ dutiya<br>5 <i>fem</i> second woman; another woman; female companion [fem, from dvi] ‹ dvi<br>6 <i>fem</i> [fem]<br>7 <i>fem</i> [fem, from dūta] ‹ दूत<br>8 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "uppādetabbañca": "1 <i>ptp</i> should be produced; should be generated [ptp of uppādeti] ‹ उप्पादेति (lit. to cause to be gone up)", "saddhammañca": "1 <i>masc</i> good teaching; true doctrine; true nature of things; (comm) the five precepts, ten precepts, four foundations of mindfulness etc. [masc,]<br>2 <i>masc</i> good quality; positive characteristic [masc,]<br>3 <i>masc</i> one's own teaching; personal doctrine [masc,]", "anussaritabbo": "1 <i>ptp</i> should be remembered; should be recollected [ptp of anusarati] ‹ anusarati (lit. to be remembered)", "saddhammoti": "1 <i>masc</i> good teaching; true doctrine; true nature of things; (comm) the five precepts, ten precepts, four foundations of mindfulness etc. [masc,]<br>2 <i>masc</i> good quality; positive characteristic [masc,]<br>3 <i>masc</i> one's own teaching; personal doctrine [masc,]", "catutthaṃ": "1 <i>ordi</i> fourth (4th) [ordin of catu] ‹ catu<br>2 <i>masc</i> (gram) fourth consonant of each vagga; gh, jh, ḍh, dh, bh [masc, from catu] ‹ catu (lit. fourth)<br>3 <i>ind</i> for the fourth time; on the fourth day [ind, adv, acc sg of catuttha] ‹ catuttha", "āsevitabbañca": "1 <i>ptp</i> should be practised; should be pursued; should be devoted to; should be indulged in [ptp of āsevati] ‹ आसेवति (lit. to be associated)", "sukkamaggo": "1 <i>masc</i> bright path; good road [masc,]", "ayaṃ": "1 <i>masc</i> good luck; good fortune [masc, from eti] ‹ eti<br>2 <i>adj</i> coming; going [adj, in s, from eti] ‹ eti<br>3 <i>masc</i> [masc]<br>4 <i>nt</i> iron [nt, in s]<br>5 <i>masc</i> iron [masc, mano group]<br>6 <i>pron</i> this; this person; this thing [pron, masc & fem nom sg of ima] ‹ ima<br>7 <i>pron</i> this [pron, base]", "suṇātha": "1 <i>pr</i> hears [pr]<br>2 <i>pr</i> listens (to) [pr]", "ariyo": "1 <i>adj</i> noble; distinguished; of an awakened being; of the Buddha [adj, in s]<br>2 <i>adj</i> (abhi) supra-mundane [adj]<br>3 <i>masc</i> ethically noble person; person of moral integrity [masc]<br>4 <i>masc</i> awakened being; enlightened one; arahant [masc]<br>5 <i>masc</i> name of a privately awakened Buddha [masc] (lit. noble)<br>6 <i>masc</i> speaker of an Indo-Aryan language [masc] (lit. noble)", "dhammaṃ": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>nt</i> teaching; discourse; doctrine [nt, from dharati, irreg] ‹ dharati<br>13 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>14 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>15 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>16 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu<br>17 <i>fem</i> name of an arahant nun [fem, from dhamma] ‹ dhamma", "navamaṃ": "1 <i>ordi</i> ninth (9th) [ordin of nava] ‹ nava", "dasamaṃ": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "pañcamaṃ": "1 <i>ordi</i> fifth (5th) [ordin of pañca] ‹ पञ्च<br>2 <i>masc</i> fifth of the seven primary musical notes [masc, ordin of pañca] ‹ पञ्च (lit. fifth)", "anussaritabbasuttaṃ": "1 <i>nt</i> [nt,]", "āsevitabbasuttaṃ": "1 <i>nt</i> [nt,]", "sukkamaggañca": "1 <i>masc</i> bright path; good road [masc,]", "kaṇhamaggasuttaṃ": "1 <i>nt</i> [nt,]", "sukkamaggoti": "1 <i>masc</i> bright path; good road [masc,]", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "chaṭṭhaṃ": "1 <i>ordi</i> sixth (6th) [ordin of cha] ‹ cha", "vuccati": "1 <i>pr</i> is said to be; is called [pr, pass of vacati] ‹ vacati", "paṭhamaṃ": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>ind</i> first; firstly; at first; first of all [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>5 <i>ind</i> before; recently; newly; just [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>6 <i>fem</i> [fem]", "ariyamaggañca": "1 <i>masc</i> path of the noble ones; path to awakening; noble way [masc,]", "asaddhammañca": "1 <i>masc</i> unvirtuous practice; vulgar habit [masc,]<br>2 <i>masc</i> untrue teaching; false doctrine [masc,]<br>3 <i>masc</i> sex; sexual intercourse [masc,]", "anussaritabbañca": "1 <i>ptp</i> should be remembered; should be recollected [ptp of anusarati] ‹ anusarati (lit. to be remembered)", "sammāvimutti": "1 <i>fem</i> correct liberation; right emancipation [fem,]<br>2 <i>adj</i> having correct liberation; with right emancipation [adj,]", "maggoti": "1 <i>masc</i> road; path; track; way [masc, from maggeti] ‹ maggeti<br>2 <i>masc</i> way; means; method [masc, from maggeti] ‹ maggeti<br>3 <i>masc</i> coat; layering [masc, from maggeti] ‹ maggeti (lit. way)<br>4 <i>masc</i> inlet; outlet; pipe [masc, from maggeti] ‹ maggeti (lit. way)<br>5 <i>masc</i> series; sequence; group [masc, from maggeti] ‹ maggeti (lit. way)<br>6 <i>masc</i> [masc, from maggeti] ‹ maggeti (lit. way)<br>7 <i>aor</i> sought; searched for; looked for [aor of maggati] ‹ maggati<br>8 <i>adj</i> with a road; with a path [adj, in s, from maggeti] ‹ maggeti<br>9 <i>masc</i> sexual organ [masc, from maggeti] ‹ maggeti (lit. way)", "saddhammasuttaṃ": "1 <i>nt</i> [nt,]", "anariyamaggañca": "1 <i>masc</i> path of the ignoble ones; ignoble way [masc,]", "anariyo": "1 <i>adj</i> ignoble; vulgar; coarse [adj, from na ariya] ‹ ariya<br>2 <i>masc</i> unawakened being; not an arahant [masc, from na ariya] ‹ ariya (lit. not noble)", "kaṇhamaggo": "1 <i>masc</i> dark path; evil way [masc,]", "tatiyaṃ": "1 <i>ordi</i> third (3rd) [ordin of ti] ‹ ti<br>2 <i>masc</i> (gram) third consonant of each vagga; g, j, ḍ, d, b [masc, from ti] ‹ ti<br>3 <i>adj</i> [adj, from tatha] ‹ tatha<br>4 <i>ind</i> for the third time [ind, adv, acc sg of tatiya] ‹ tatiya<br>5 <i>fem</i> [fem]", "vo": "1 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>2 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha<br>3 <i>lett</i> (gram) letter v; 37th letter of the alphabet; dento-labial semi-vowel [letter, masc]<br>4 <i>pron</i> you all (object) [pron, 2nd acc pl of tvaṃ] ‹ त्वं<br>5 <i>pron</i> by you all; with you all [pron, 2nd instr pl of tvaṃ] ‹ त्वं<br>6 <i>pron</i> to you all; for you all [pron, 2nd dat pl of tvaṃ] ‹ त्वं<br>7 <i>pron</i> of you all; your [pron, 2nd gen pl of tvaṃ] ‹ त्वं<br>8 <i>pron</i> when you all; while you all [pron, 2nd gen pl, gen abs of tvaṃ] ‹ त्वं<br>9 <i>pref</i> - [prefix,]<br>10 <i>ind</i> indeed; truly; surely [ind, emph]<br>11 <i>pron</i> you all (subject) [pron, 2nd nom pl of tvaṃ] ‹ त्वं", "sappurisadhammasuttaṃ": "1 <i>nt</i> [nt,]", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "saddhammo": "1 <i>masc</i> good teaching; true doctrine; true nature of things; (comm) the five precepts, ten precepts, four foundations of mindfulness etc. [masc,]<br>2 <i>masc</i> good quality; positive characteristic [masc,]<br>3 <i>masc</i> one's own teaching; personal doctrine [masc,]", "taṃ": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> it; that [pron, nt nom sg of ta] ‹ ta<br>4 <i>pron</i> him; her; one; that person; that thing [pron, masc fem & nt acc sg of ta] ‹ ta<br>5 <i>pron</i> you (object) [pron, 2nd acc sg of tvaṃ] ‹ त्वं<br>6 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>7 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha", "micchāvimutti": "1 <i>fem</i> wrong liberation; incorrect deliverance [fem,]<br>2 <i>adj</i> having incorrect liberation; with wrong emancipation [adj,]", "ariyamaggasuttaṃ": "1 <i>nt</i> [nt,]", "āsevitabbo": "1 <i>ptp</i> should be practised; should be pursued; should be devoted to; should be indulged in [ptp of āsevati] ‹ आसेवति (lit. to be associated)", "uppādetabbasuttaṃ": "1 <i>nt</i> [nt,]", "na": "1 <i>ind</i> no; not; neither; nor [ind]<br>2 <i>ind</i> (adds a question mark) surely?; does one not? [ind, interr]<br>3 <i>pref</i> not [prefix, in s]<br>4 <i>masc</i> (gram) negative prefix na [masc, prefix]", "asappurisadhammañca": "1 <i>masc</i> nature of a person of no integrity; characteristic of an unethical man; quality of a false person [masc,]", "sacchikātabbasuttaṃ": "1 <i>nt</i> [nt,]", "bhāvetabbañca": "1 <i>ptp</i> should be cultivated; should be developed [ptp of bhāveti] ‹ भावेति (lit. to cause to be)", "aṭṭhamaṃ": "1 <i>ordi</i> eighth (8th) [ordin of aṭṭha] ‹ अट्ठ<br>2 <i>masc</i> name of a privately awakened Buddha [masc, ordin of aṭṭha] ‹ अट्ठ (lit. eighth)<br>3 <i>ind</i> for the eighth time [ind, adv, acc sg of aṭṭhama] ‹ अट्ठम", "maggo": "1 <i>masc</i> road; path; track; way [masc, from maggeti] ‹ maggeti<br>2 <i>masc</i> way; means; method [masc, from maggeti] ‹ maggeti<br>3 <i>masc</i> coat; layering [masc, from maggeti] ‹ maggeti (lit. way)<br>4 <i>masc</i> inlet; outlet; pipe [masc, from maggeti] ‹ maggeti (lit. way)<br>5 <i>masc</i> series; sequence; group [masc, from maggeti] ‹ maggeti (lit. way)<br>6 <i>masc</i> [masc, from maggeti] ‹ maggeti (lit. way)<br>7 <i>aor</i> sought; searched for; looked for [aor of maggati] ‹ maggati<br>8 <i>adj</i> with a road; with a path [adj, in s, from maggeti] ‹ maggeti<br>9 <i>masc</i> sexual organ [masc, from maggeti] ‹ maggeti (lit. way)", "uppādetabbo": "1 <i>ptp</i> should be produced; should be generated [ptp of uppādeti] ‹ उप्पादेति (lit. to cause to be gone up)", "sacchikātabbo": "1 <i>ptp</i> should be personally experienced; should be personally realised [ptp of sacchikaroti,  vb] ‹ sacchikaroti (lit. to be personally done)", "asaddhammo": "1 <i>masc</i> unvirtuous practice; vulgar habit [masc,]<br>2 <i>masc</i> untrue teaching; false doctrine [masc,]<br>3 <i>masc</i> sex; sexual intercourse [masc,]", "bahulīkātabbañca": "1 <i>ptp</i> should be practised often; should be developed [ptp of bahulīkaroti,  vb] ‹ बहुलीकरोति (lit. to be made a lot)", "katamo": "1 <i>pron</i> what?; which (of the many)? [pron, interr, from ka] ‹ ka", "sappurisadhammo": "1 <i>masc</i> teaching of righteous men [masc,]<br>2 <i>masc</i> nature of a person of integrity; characteristic of an ethical man [masc,]", "sattamaṃ": "1 <i>ordi</i> seventh (7th) [ordin of satta] ‹ satta<br>2 <i>adj</i> best; most excellent; highest [adj, superl of santa] ‹ santa", "dhammoti": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>13 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>14 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>15 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu", "sappurisadhammoti": "1 <i>masc</i> teaching of righteous men [masc,]<br>2 <i>masc</i> nature of a person of integrity; characteristic of an ethical man [masc,]", "sappurisadhammañca": "1 <i>masc</i> teaching of righteous men [masc,]<br>2 <i>masc</i> nature of a person of integrity; characteristic of an ethical man [masc,]"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>(१५) ५.
+आर्य वर्ग (श्रेष्ठ समूह) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<h3 id='s0404m3.mul_01172'><span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="ariyamaggasuttaṃ">अरियमग्गसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01172_hi'>१. आर्य मार्ग सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01173_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="145">१४५.</span> <span class="paliword" data-word="ariyamaggañca">‘‘अरियमग्गञ्‍च</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammaṃ">धम्मं</span> <span class="paliword" data-word="desessāmi">देसेस्सामि</span> <span class="paliword" data-word="anariyamaggañca">अनरियमग्गञ्‍च।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇāthape॰">सुणाथ…पे॰…</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="anariyo">अनरियो</span> <span class="paliword" data-word="maggo">मग्गो?</span> <span class="paliword" data-word="micchādiṭṭhipe॰">मिच्छादिट्ठि…पे॰…</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="anariyo">अनरियो</span> <span class="paliword" data-word="maggo">मग्गो।</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ariyo">अरियो</span> <span class="paliword" data-word="maggo">मग्गो?</span> <span class="paliword" data-word="sammādiṭṭhipe॰">सम्मादिट्ठि…पे॰…</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ariyo">अरियो</span> <span class="paliword" data-word="maggoti">मग्गो’’ति।</span> <span class="paliword" data-word="paṭhamaṃ">पठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01173_hi">
+                १४५.
+‘‘भिक्षुओं, मैं तुम्हें आर्य मार्ग (ariyamagga) और अनार्य मार्ग (anariyamagga) के धर्म का उपदेश दूँगा।
+उसे सुनो... विस्तार... और भिक्षुओं, अनार्य मार्ग क्या है? मिथ्या दृष्टि (micchādiṭṭhi)... विस्तार... मिथ्या विमुक्ति (micchāvimutti) — भिक्षुओं, इसे ही अनार्य मार्ग कहा जाता है।
+और भिक्षुओं, आर्य मार्ग क्या है? सम्यक् दृष्टि (sammādiṭṭhi)... विस्तार... सम्यक् विमुक्ति (sammāvimutti) — भिक्षुओं, इसे ही आर्य मार्ग कहा जाता है।’’
+प्रथम।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0404m3.mul_01174'><span class="paliword" data-word="2">२.</span> <span class="paliword" data-word="kaṇhamaggasuttaṃ">कण्हमग्गसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01174_hi'>२. कृष्णमार्ग सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01175_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="146">१४६.</span> <span class="paliword" data-word="kaṇhamaggañca">‘‘कण्हमग्गञ्‍च</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammaṃ">धम्मं</span> <span class="paliword" data-word="desessāmi">देसेस्सामि</span> <span class="paliword" data-word="sukkamaggañca">सुक्‍कमग्गञ्‍च।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇāthape॰">सुणाथ…पे॰…</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="kaṇhamaggo">कण्हमग्गो?</span> <span class="paliword" data-word="micchādiṭṭhipe॰">मिच्छादिट्ठि…पे॰…</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="kaṇhamaggo">कण्हमग्गो।</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukkamaggo">सुक्‍कमग्गो?</span> <span class="paliword" data-word="sammādiṭṭhipe॰">सम्मादिट्ठि…पे॰…</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukkamaggoti">सुक्‍कमग्गो’’ति।</span> <span class="paliword" data-word="dutiyaṃ">दुतियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01175_hi">
+                १४६.
+"हे भिक्षुओं, मैं तुम्हें कृष्ण मार्ग (अंधकारमय मार्ग) और शुक्ल मार्ग (प्रकाशमय मार्ग) के धर्म का उपदेश दूँगा।
+इसे ध्यान से सुनो... और भिक्षुओं, कृष्ण मार्ग क्या है? मिथ्या दृष्टि... से लेकर... मिथ्या विमुक्ति तक—हे भिक्षुओं, इसे कृष्ण मार्ग कहा जाता है।
+और भिक्षुओं, शुक्ल मार्ग क्या है? सम्यक् दृष्टि (Samyak-dṛṣṭi)... से लेकर... सम्यक् विमुक्ति (Samyak-vimukti) तक—हे भिक्षुओं, इसे शुक्ल मार्ग कहा जाता है।"
+यह दूसरा है।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0404m3.mul_01176'><span class="paliword" data-word="3">३.</span> <span class="paliword" data-word="saddhammasuttaṃ">सद्धम्मसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01176_hi'>३. सद्धर्म सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01177_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="147">१४७.</span> <span class="paliword" data-word="saddhammañca">‘‘सद्धम्मञ्‍च</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammaṃ">धम्मं</span> <span class="paliword" data-word="desessāmi">देसेस्सामि</span> <span class="paliword" data-word="asaddhammañca">असद्धम्मञ्‍च।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇāthape॰">सुणाथ…पे॰…</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="asaddhammo">असद्धम्मो?</span> <span class="paliword" data-word="micchādiṭṭhipe॰">मिच्छादिट्ठि…पे॰…</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="asaddhammo">असद्धम्मो।</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="saddhammo">सद्धम्मो?</span> <span class="paliword" data-word="sammādiṭṭhipe॰">सम्मादिट्ठि…पे॰…</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="saddhammoti">सद्धम्मो’’ति।</span> <span class="paliword" data-word="tatiyaṃ">ततियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01177_hi">
+                १४७.
+“भिक्षुओं, मैं तुम्हें सत्धर्म और असद्धर्म का उपदेश दूँगा।
+उसे सुनो... (विस्तार)... और भिक्षुओं, असद्धर्म क्या है? मिथ्या दृष्टि... (विस्तार)... मिथ्या विमुक्ति — भिक्षुओं, इसे असद्धर्म कहा जाता है।
+और भिक्षुओं, सत्धर्म क्या है? सम्यक् दृष्टि (samyag-dṛṣṭi)... (विस्तार)... सम्यक् विमुक्ति (samyag-vimukti) — भिक्षुओं, इसे सत्धर्म कहा जाता है।”
+तृतीय।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0404m3.mul_01178'><span class="paliword" data-word="4">४.</span> <span class="paliword" data-word="sappurisadhammasuttaṃ">सप्पुरिसधम्मसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01178_hi'>४. सत्पुरुष धर्म सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01179_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="148">१४८.</span> <span class="paliword" data-word="sappurisadhammañca">‘‘सप्पुरिसधम्मञ्‍च</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="desessāmi">देसेस्सामि</span> <span class="paliword" data-word="asappurisadhammañca">असप्पुरिसधम्मञ्‍च।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇātha">सुणाथ</span> <span class="paliword" data-word="pe॰">…पे॰…</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="asappurisadhammo">असप्पुरिसधम्मो?</span> <span class="paliword" data-word="micchādiṭṭhipe॰">मिच्छादिट्ठि…पे॰…</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="asappurisadhammo">असप्पुरिसधम्मो।</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sappurisadhammo">सप्पुरिसधम्मो?</span> <span class="paliword" data-word="sammādiṭṭhipe॰">सम्मादिट्ठि…पे॰…</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sappurisadhammoti">सप्पुरिसधम्मो’’ति।</span> <span class="paliword" data-word="catutthaṃ">चतुत्थं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01179_hi">
+                १४८. "हे भिक्षुओं, मैं तुम्हें सत्पुरुष (सज्जन) के धर्म और असत्पुरुष (दुर्जन) के धर्म का उपदेश दूँगा। उसे सुनो... और भिक्षुओं, असत्पुरुष का धर्म क्या है? मिथ्या दृष्टि... मिथ्या मुक्ति—हे भिक्षुओं, इसे असत्पुरुष का धर्म कहा जाता है।
+
+और भिक्षुओं, सत्पुरुष का धर्म क्या है? सम्यक् दृष्टि... सम्यक् मुक्ति—हे भिक्षुओं, इसे सत्पुरुष का धर्म कहा जाता है।"
+
+चौथा।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0404m3.mul_01180'><span class="paliword" data-word="5">५.</span> <span class="paliword" data-word="uppādetabbasuttaṃ">उप्पादेतब्बसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01180_hi'>५. उत्पादतव्य सूत्र (उत्पन्न किए जाने योग्य धर्मों पर आधारित सूत्र)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01181_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="149">१४९.</span> <span class="paliword" data-word="uppādetabbañca">‘‘उप्पादेतब्बञ्‍च</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammaṃ">धम्मं</span> <span class="paliword" data-word="desessāmi">देसेस्सामि</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="uppādetabbañca">उप्पादेतब्बञ्‍च।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇāthape॰">सुणाथ…पे॰…</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="uppādetabbo">उप्पादेतब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="micchādiṭṭhipe॰">मिच्छादिट्ठि…पे॰…</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="uppādetabbo">उप्पादेतब्बो</span> <span class="paliword" data-word="dhammo">धम्मो।</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="uppādetabbo">उप्पादेतब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="sammādiṭṭhipe॰">सम्मादिट्ठि…पे॰…</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="uppādetabbo">उप्पादेतब्बो</span> <span class="paliword" data-word="dhammoti">धम्मो’’ति।</span> <span class="paliword" data-word="pañcamaṃ">पञ्‍चमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01181_hi">
+                १४९.
+“हे भिक्षुओं, मैं तुम्हें उस धर्म का उपदेश दूँगा जिसे उत्पन्न किया जाना चाहिए और उसका भी जिसे उत्पन्न नहीं किया जाना चाहिए।
+उसे सुनो... विस्तार... और भिक्षुओं, वह कौन सा धर्म है जिसे उत्पन्न नहीं किया जाना चाहिए? मिथ्या दृष्टि... विस्तार... मिथ्या मुक्ति—भिक्षुओं, इसे वह धर्म कहा जाता है जिसे उत्पन्न नहीं किया जाना चाहिए।
+और भिक्षुओं, वह कौन सा धर्म है जिसे उत्पन्न किया जाना चाहिए? सम्यक् दृष्टि (samyagdṛṣṭi)... विस्तार... सम्यक् मुक्ति (samyagvimukti)—भिक्षुओं, इसे वह धर्म कहा जाता है जिसे उत्पन्न किया जाना चाहिए।”
+पाँचवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0404m3.mul_01182'><span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="āsevitabbasuttaṃ">आसेवितब्बसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01182_hi'>६. आसेवितव्य सूत्र (वह सूत्र जिसका अभ्यास किया जाना चाहिए)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01183_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="150">१५०.</span> <span class="paliword" data-word="āsevitabbañca">‘‘आसेवितब्बञ्‍च</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammaṃ">धम्मं</span> <span class="paliword" data-word="desessāmi">देसेस्सामि</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="āsevitabbañca">आसेवितब्बञ्‍च।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇāthape॰">सुणाथ…पे॰…</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="āsevitabbo">आसेवितब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="micchādiṭṭhipe॰">मिच्छादिट्ठि…पे॰…</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="āsevitabbo">आसेवितब्बो</span> <span class="paliword" data-word="dhammo">धम्मो।</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="āsevitabbo">आसेवितब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="sammādiṭṭhipe॰">सम्मादिट्ठि…पे॰…</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="āsevitabbo">आसेवितब्बो</span> <span class="paliword" data-word="dhammoti">धम्मो’’ति।</span> <span class="paliword" data-word="chaṭṭhaṃ">छट्ठं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01183_hi">
+                १५०.
+‘‘हे भिक्षुओं, मैं तुम्हें उस धर्म का उपदेश दूँगा जिसका सेवन किया जाना चाहिए और जिसका सेवन नहीं किया जाना चाहिए।
+उसे सुनो... और हे भिक्षुओं, वह कौन सा धर्म है जिसका सेवन नहीं किया जाना चाहिए? मिथ्या दृष्टि (micchādiṭṭhi)... मिथ्या विमुक्ति (micchāvimutti)—हे भिक्षुओं, इसे वह धर्म कहा जाता है जिसका सेवन नहीं किया जाना चाहिए।
+और हे भिक्षुओं, वह कौन सा धर्म है जिसका सेवन किया जाना चाहिए? सम्यक दृष्टि (sammādiṭṭhi)... सम्यक विमुक्ति (sammāvimutti)—हे भिक्षुओं, इसे वह धर्म कहा जाता है जिसका सेवन किया जाना चाहिए।’’
+छठा।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0404m3.mul_01184'><span class="paliword" data-word="7">७.</span> <span class="paliword" data-word="bhāvetabbasuttaṃ">भावेतब्बसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01184_hi'>७. भावना करने योग्य सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01185_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="151">१५१.</span> <span class="paliword" data-word="bhāvetabbañca">‘‘भावेतब्बञ्‍च</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammaṃ">धम्मं</span> <span class="paliword" data-word="desessāmi">देसेस्सामि</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="bhāvetabbañca">भावेतब्बञ्‍च।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇāthape॰">सुणाथ…पे॰…</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="bhāvetabbo">भावेतब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="micchādiṭṭhipe॰">मिच्छादिट्ठि…पे॰…</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="bhāvetabbo">भावेतब्बो</span> <span class="paliword" data-word="dhammo">धम्मो।</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhāvetabbo">भावेतब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="sammādiṭṭhipe॰">सम्मादिट्ठि…पे॰…</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhāvetabbo">भावेतब्बो</span> <span class="paliword" data-word="dhammoti">धम्मो’’ति।</span> <span class="paliword" data-word="sattamaṃ">सत्तमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01185_hi">
+                १५१.
+“भिक्षुओं, मैं तुम्हें उस धर्म का उपदेश दूँगा जिसे विकसित किया जाना चाहिए और उसे भी जिसे विकसित नहीं किया जाना चाहिए।
+उसे सुनो... भिक्षुओं, वह कौन सा धर्म है जिसे विकसित नहीं किया जाना चाहिए? मिथ्या दृष्टि... मिथ्या विमुक्ति — भिक्षुओं, इसे वह धर्म कहा जाता है जिसे विकसित नहीं किया जाना चाहिए।
+और भिक्षुओं, वह कौन सा धर्म है जिसे विकसित किया जाना चाहिए? सम्यक् दृष्टि... सम्यक् विमुक्ति — भिक्षुओं, इसे वह धर्म कहा जाता है जिसे विकसित किया जाना चाहिए।”
+सातवाँ (सुत्त)।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0404m3.mul_01186'><span class="paliword" data-word="8">८.</span> <span class="paliword" data-word="bahulīkātabbasuttaṃ">बहुलीकातब्बसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01186_hi'>८. बहुलीकरण पर सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01187_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="152">१५२.</span> <span class="paliword" data-word="bahulīkātabbañca">‘‘बहुलीकातब्बञ्‍च</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammaṃ">धम्मं</span> <span class="paliword" data-word="desessāmi">देसेस्सामि</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="bahulīkātabbañca">बहुलीकातब्बञ्‍च।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇāthape॰">सुणाथ…पे॰…</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="bahulīkātabbo">बहुलीकातब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="micchādiṭṭhipe॰">मिच्छादिट्ठि…पे॰…</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="bahulīkātabbo">बहुलीकातब्बो</span> <span class="paliword" data-word="dhammo">धम्मो।</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bahulīkātabbo">बहुलीकातब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="sammādiṭṭhipe॰">सम्मादिट्ठि…पे॰…</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bahulīkātabbo">बहुलीकातब्बो</span> <span class="paliword" data-word="dhammoti">धम्मो’’ति।</span> <span class="paliword" data-word="aṭṭhamaṃ">अट्ठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01187_hi">
+                १५२.
+“भिक्षुओं, मैं तुम्हें उस धर्म का उपदेश दूँगा जिसे बहुलता से विकसित करना चाहिए और जिसे बहुलता से विकसित नहीं करना चाहिए।
+उसे सुनो... और भिक्षुओं, वह कौन सा धर्म है जिसे बहुलता से विकसित नहीं करना चाहिए? मिथ्या-दृष्टि... मिथ्या-विमुक्ति—भिक्षुओं, इसे वह धर्म कहा जाता है जिसे बहुलता से विकसित नहीं करना चाहिए।
+और भिक्षुओं, वह कौन सा धर्म है जिसे बहुलता से विकसित करना चाहिए? सम्यक्-दृष्टि... सम्यक्-विमुक्ति—भिक्षुओं, इसे वह धर्म कहा जाता है जिसे बहुलता से विकसित करना चाहिए।”
+आठवाँ (सूत्र)।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0404m3.mul_01188'><span class="paliword" data-word="9">९.</span> <span class="paliword" data-word="anussaritabbasuttaṃ">अनुस्सरितब्बसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01188_hi'>९. अनुस्मरणीय सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01189_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="153">१५३.</span> <span class="paliword" data-word="anussaritabbañca">‘‘अनुस्सरितब्बञ्‍च</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammaṃ">धम्मं</span> <span class="paliword" data-word="desessāmi">देसेस्सामि</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="anussaritabbañca">अनुस्सरितब्बञ्‍च।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇāthape॰">सुणाथ…पे॰…</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="anussaritabbo">अनुस्सरितब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="micchādiṭṭhipe॰">मिच्छादिट्ठि…पे॰…</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="anussaritabbo">अनुस्सरितब्बो</span> <span class="paliword" data-word="dhammo">धम्मो।</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="anussaritabbo">अनुस्सरितब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="sammādiṭṭhipe॰">सम्मादिट्ठि…पे॰…</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="anussaritabbo">अनुस्सरितब्बो</span> <span class="paliword" data-word="dhammoti">धम्मो’’ति।</span> <span class="paliword" data-word="navamaṃ">नवमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01189_hi">
+                १५३.
+"भिक्षुओ, मैं तुम्हें उस धर्म का उपदेश दूँगा जिसे स्मरण नहीं किया जाना चाहिए और उस धर्म का भी जिसे स्मरण किया जाना चाहिए।
+उसे सुनो... (विस्तार)... भिक्षुओ, वह कौन सा धर्म है जिसे स्मरण नहीं किया जाना चाहिए? मिथ्या-दृष्टि... (विस्तार)... मिथ्या-विमुक्ति — भिक्षुओ, इसे वह धर्म कहा जाता है जिसे स्मरण नहीं किया जाना चाहिए।
+और भिक्षुओ, वह कौन सा धर्म है जिसे स्मरण किया जाना चाहिए? सम्यक-दृष्टि... (विस्तार)... सम्यक-विमुक्ति — भिक्षुओ, इसे वह धर्म कहा जाता है जिसे स्मरण किया जाना चाहिए।"
+नौवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0404m3.mul_01190'><span class="paliword" data-word="10">१०.</span> <span class="paliword" data-word="sacchikātabbasuttaṃ">सच्छिकातब्बसुत्तं</span></h3>
+<div class='hindi' id='s0404m3.mul_01190_hi'>१०. साक्षात्करणीय सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0404m3.mul_01191_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="154">१५४.</span> <span class="paliword" data-word="sacchikātabbañca">‘‘सच्छिकातब्बञ्‍च</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammaṃ">धम्मं</span> <span class="paliword" data-word="desessāmi">देसेस्सामि</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="sacchikātabbañca">सच्छिकातब्बञ्‍च।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇāthape॰">सुणाथ…पे॰…</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="sacchikātabbo">सच्छिकातब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="micchādiṭṭhipe॰">मिच्छादिट्ठि…पे॰…</span> <span class="paliword" data-word="micchāvimutti">मिच्छाविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="sacchikātabbo">सच्छिकातब्बो</span> <span class="paliword" data-word="dhammo">धम्मो।</span> <span class="paliword" data-word="katamo">कतमो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sacchikātabbo">सच्छिकातब्बो</span> <span class="paliword" data-word="dhammo">धम्मो?</span> <span class="paliword" data-word="sammādiṭṭhipe॰">सम्मादिट्ठि…पे॰…</span> <span class="paliword" data-word="sammāvimutti">सम्माविमुत्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="vuccati">वुच्‍चति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sacchikātabbo">सच्छिकातब्बो</span> <span class="paliword" data-word="dhammoti">धम्मो’’ति।</span> <span class="paliword" data-word="dasamaṃ">दसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0404m3.mul_01191_hi">
+                १५४.
+“भिक्षुओं, मैं तुम्हें उस धर्म का उपदेश दूँगा जिसे साक्षात्कृत किया जाना चाहिए और जिसे साक्षात्कृत नहीं किया जाना चाहिए।
+उसे सुनो... विस्तार... और भिक्षुओं, वह कौन सा धर्म है जिसे साक्षात्कृत नहीं किया जाना चाहिए? मिथ्या-दृष्टि... विस्तार... मिथ्या-विमुक्ति—भिक्षुओं, इसे वह धर्म कहा जाता है जिसे साक्षात्कृत नहीं किया जाना चाहिए।
+और भिक्षुओं, वह कौन सा धर्म है जिसे साक्षात्कृत किया जाना चाहिए? सम्यक्-दृष्टि... विस्तार... सम्यक्-विमुक्ति—भिक्षुओं, इसे वह धर्म कहा जाता है जिसे साक्षात्कृत किया जाना चाहिए।”
+दसवां।
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

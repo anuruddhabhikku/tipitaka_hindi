@@ -1,0 +1,734 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"hoti": "1 <i>pr</i> is; becomes [pr]<br>2 <i>pr</i> exists (for) [pr]<br>3 <i>pr</i> stays; remains; continues to be [pr] (lit. is)", "pattagandhe": "1 <i>masc</i> [masc,]", "honti": "1 <i>pr</i> is; becomes [pr]<br>2 <i>pr</i> exists (for) [pr]<br>3 <i>pr</i> stays; remains; continues to be [pr] (lit. is)<br>4 <i>prp</i> [prp of hoti] ‹ hoti<br>5 <i>prp</i> becoming [prp of hoti] ‹ hoti", "desessāmi": "1 <i>pr</i> preach; teaches; instructs; explains (soemthing to) [pr, caus of disati] ‹ disati (lit. causes to point out)<br>2 <i>pr</i> (vinaya) confesses; admits (to) [pr, caus of disati] ‹ disati<br>3 <i>pr</i> (vinaya) appoints; allocates; designates (to) [pr, caus of disati] ‹ disati (lit. causes to point out)", "sakalopi": "1 <i>adj</i> whole; entire; every part of [adj, from kalā] ‹ कला", "yena": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>pron</i> by which; with whichever [pron, masc & nt instr sg of ya] ‹ ya<br>6 <i>ind</i> because of; because of which [ind, adv, instr sg of ya] ‹ ya<br>7 <i>ind</i> where; wherever; in which direction; to; towards [ind, adv, instr sg of ya] ‹ ya", "dutiyaṃ": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>ind</i> second time [ind, adv, acc sg of dutiya] ‹ dutiya<br>5 <i>fem</i> second woman; another woman; female companion [fem, from dvi] ‹ dvi<br>6 <i>fem</i> [fem]<br>7 <i>fem</i> [fem, from dūta] ‹ दूत<br>8 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "pānaṃ": "1 <i>adj</i> drinking; who drinks [adj, in s] ‹ √पा<br>2 <i>adj</i> protecting; guarding [adj, in s] ‹ √पा<br>3 <i>root</i> (gram) √pā (drink) [root, masc]<br>4 <i>nt</i> drink; beverage [nt, from pivati] ‹ pivati (lit. drinking)<br>5 <i>nt</i> drinking; sipping [nt, act, in s, from pivati] ‹ pivati<br>6 <i>lett</i> (gram) letter p; 29th letter of the alphabet; labial consonant [letter, masc]<br>7 <i>adj</i> drinking; who drinks; sipping [adj, in s, from pivati] ‹ pivati", "dvādasamaṃ": "1 <i>ordi</i> twelfth (12th) [ordin of dvādasa,] ‹ द्वादस", "etadavoca": "1 <i>aor</i> said this (to) [aor,  vb]", "midhekacco": "1 <i>sand</i> here a certain; in this case a [sandhi, letter + adv + adj]", "sāvatthiyaṃ": "1 <i>fem</i> name of a city; capital of Kosala [fem, from sava] ‹ sava", "yassa": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>pron</i> to whom; for whom; for whoever; for whatever; for whichever [pron, masc & nt dat sg of ya] ‹ ya<br>6 <i>pron</i> of whoever; of whichever; whose [pron, masc & nt gen sg of ya] ‹ ya<br>7 <i>sand</i> whoever to him [sandhi, pron + pron]", "mūlagandhadānūpakārasuttadasakaṃ": "1 <i>nt</i> [nt,]", "bāvīsatimaṃ": "1 <i>ordi</i> [ordin of bāvīsati] ‹ बावीसति", "phalagandhe": "1 <i>masc</i> fragrant fruit [masc,]", "bhagavantaṃ": "1 <i>masc</i> Sublime One; Blessed One; Fortunate One; Auspicious One; epithet of the Buddha [masc, from bhaga] ‹ bhaga (lit. having good fortune quality)<br>2 <i>adj</i> [adj, from bhaga] ‹ bhaga (lit. having good fortune quality)", "gandhassa": "1 <i>masc</i> smell; scent; odour [masc] ‹ √घा<br>2 <i>masc</i> perfume; fragrance; scent [masc] ‹ √घा<br>3 <i>nt</i> name of a type of elephant ‹ √घा (lit. fragrant)", "vatthaṃ": "1 <i>nt</i> cloth; clothes; robe [nt] ‹ √vas<br>2 <i>nt</i> [nt]<br>3 <i>adj</i> with clothes; clothed [adj, in s]", "nu": "1 <i>ind</i> (adds a question mark) surely?; didn't?; wouldn't?; which? [ind, interr]", "suddhikañca": "1 <i>adj</i> pure; clean; bare; unadulterated [adj, from suddhi] ‹ suddhi<br>2 <i>adj</i> (of a discourse) plain; bare; unelaborated [adj, from suddhi] ‹ suddhi", "vuccanti": "1 <i>pr</i> is said to be; is called [pr, pass of vacati] ‹ vacati", "gandhabbakāyikānaṃ": "1 <i>adj</i> [adj]", "paraṃ": "1 <i>pron</i> other; another (person) [pron]<br>2 <i>adj</i> next (world); next (life); after (life) [adj]<br>3 <i>adj</i> (gram) next; following; last; after [adj]<br>4 <i>adj</i> foreign; alien; not oneself [adj]<br>5 <i>masc</i> (gram) next letter; following vowel [masc]<br>6 <i>adj</i> engrossed in; given to; aiming for [adj, in s]<br>7 <i>adj</i> higher; greater; more (than) [adj]<br>8 <i>ind</i> after; beyond; on the other side (of) [ind, prep, acc sg of para] ‹ para", "datvā": "1 <i>abs</i> having given; having offered; having donated (something to) [abs of dadāti] ‹ ददाति<br>2 <i>abs</i> (of medicine) having applied [abs of dadāti] ‹ ददाति", "ayaṃ": "1 <i>masc</i> good luck; good fortune [masc, from eti] ‹ eti<br>2 <i>adj</i> coming; going [adj, in s, from eti] ‹ eti<br>3 <i>masc</i> [masc]<br>4 <i>nt</i> iron [nt, in s]<br>5 <i>masc</i> iron [masc, mano group]<br>6 <i>pron</i> this; this person; this thing [pron, masc & fem nom sg of ima] ‹ ima<br>7 <i>pron</i> this [pron, base]", "papaṭikagandhe": "1 <i>masc</i> fragrant bark [masc,]", "nibbattā": "1 <i>pp</i> produced; extracted; drawn (from) [pp of nibbattati] ‹ nibbattati (lit. proceeded out)<br>2 <i>nt</i> rebirth; being reborn (in) [nt, pp of nibbattati] ‹ nibbattati (lit. proceeded out)<br>3 <i>pp</i> [pp of nibbattati] ‹ nibbattati (lit. proceeded out)<br>4 <i>prp</i> [prp of nibbattati] ‹ nibbattati (lit. proceeding out)<br>5 <i>aor</i> arose; came into being; was born [aor of nibbattati] ‹ nibbattati (lit. proceeding out)", "mūlagandhe": "1 <i>masc</i> fragrant root; root scent [masc,]", "ekasatañca": "1 <i>card</i> one hundred (100) [card, nt sg,]<br>2 <i>card</i> [card, nt sg,]", "bhikkhu": "1 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "suṇātha": "1 <i>pr</i> hears [pr]<br>2 <i>pr</i> listens (to) [pr]", "adhivatthā": "1 <i>pp</i> lived; inhabited; stayed (in) [pp of adhivasati] ‹ adhivasati (lit. lived through)", "attho": "1 <i>masc</i> meaning; sense; significance [masc] ‹ √ar<br>2 <i>masc</i> benefit; profit; good; welfare [masc] ‹ √ar<br>3 <i>masc</i> purpose; use; function; goal [masc] ‹ √ar<br>4 <i>masc</i> matter; affair; legal case; lawsuit [masc] ‹ √ar<br>5 <i>adj</i> for the purpose; for the sake; for the benefit (of) [adj, in s] ‹ √ar<br>6 <i>masc</i> need; want (for) [masc]<br>7 <i>adj</i> needing; wanting; seeking [adj, in s, from atthayati] ‹ atthayati<br>8 <i>masc</i> home; rest; shelter [masc]<br>9 <i>masc</i> death; end; annihilation; destruction [masc]<br>10 <i>masc</i> western mountain (behind which the sun sets) [masc]", "eseva": "1 <i>pron</i> this [pron, base]<br>2 <i>aor</i> [aor of esati] ‹ esati<br>3 <i>sand</i> just this; exactly the same [sandhi, pron + ind]<br>4 <i>pron</i> this; this thing; this person; he; it [pron, masc nom sg of eta] ‹ eta", "gandho": "1 <i>masc</i> smell; scent; odour [masc] ‹ √घा<br>2 <i>masc</i> perfume; fragrance; scent [masc] ‹ √घा", "sutaṃ": "1 <i>pp</i> heard [pp of suṇāti] ‹ सुणाति<br>2 <i>pp</i> learned [pp of suṇāti] ‹ सुणाति (lit. heard)<br>3 <i>nt</i> what is heard; something heard [nt, pp of suṇāti] ‹ सुणाति (lit. heard)<br>4 <i>nt</i> learning; knowledge [nt, pp of suṇāti] ‹ सुणाति (lit. heard)<br>5 <i>masc</i> [masc, pp of √su] ‹ √su<br>6 <i>fem</i> daughter [fem, from savati] ‹ savati", "adhivatthānaṃ": "1 <i>pp</i> lived; inhabited; stayed (in) [pp of adhivasati] ‹ adhivasati (lit. lived through)", "kho": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "rasagandhe": "1 <i>masc</i> fragrant sap [masc,]", "rasagandhānaṃ": "1 <i>masc</i> fragrant sap [masc,]", "rukkho": "1 <i>masc</i> tree [masc]", "sabbapadesu": "1 <i>nt</i> [nt,]", "upapajjati": "1 <i>pr</i> is reborn; re-arises (in) [pr] (lit. goes towards)<br>2 <i>pr</i> appears; arises [pr] (lit. goes towards)<br>3 <i>pr</i> is suitable; is acceptable; is admissible [pr] (lit. goes towards)", "gandhagandhe": "1 <i>masc</i> [masc]", "gandhagandhānaṃ": "1 <i>masc</i> [masc]", "mūlagandhadātāsuttaṃ": "1 <i>nt</i> [nt,]", "yānaṃ": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>nt</i> carriage; wagon; vehicle [nt, from yāti] ‹ याति (lit. going)<br>6 <i>nt</i> going; departing; leaving [nt, act, from yāti] ‹ याति<br>7 <i>nt</i> footwear, sandals [nt, from yāti] ‹ याति (lit. going)", "pheggugandhe": "1 <i>masc</i> fragrant sapwood [masc,]", "sabbattha": "1 <i>ind</i> everywhere; every place [ind, adv, from sabba] ‹ sabba<br>2 <i>ind</i> in every way; in every respect; entirely [ind, adv, from sabba] ‹ sabba<br>3 <i>ind</i> (gram) in all cases; in all instances [ind, adv, from sabba] ‹ sabba<br>4 <i>masc</i> all cases; all matters; all things [masc pl,]", "sukhabahulāti": "1 <i>adj</i> abundantly comfortable; with lots of good [adj,]", "rukkhassa": "1 <i>masc</i> tree [masc]<br>2 <i>nt</i> tree [nt]", "kāyassa": "1 <i>masc</i> body; physical body; physical process [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>2 <i>masc</i> group; host; company; collection; multitude; mass [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>3 <i>masc</i> process; collection [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>4 <i>masc</i> category; class; group (of) [masc, in s, from cināti] ‹ चिनाति (lit. accumulation)<br>5 <i>masc</i> physical existence; material existence [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>6 <i>masc</i> group of beings; class of beings; state of existence [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>7 <i>masc</i> mass; heap; bulk; body [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>8 <i>adj</i> with a body; having (a certain kind of) body; -bodied [adj, from cināti] ‹ चिनाति (lit. accumulation)<br>9 <i>masc</i> embodiment; living manifestation [masc, from cināti] ‹ चिनाति (lit. accumulation)", "sesapadesupi": "1 <i>nt</i> remainder of the words [nt,]<br>2 <i>sand</i> in all the remaining words [sandhi, adj + nt + ind]", "tacagandhānaṃ": "1 <i>masc</i> [masc,]", "tassuddānaṃ": "1 <i>sand</i> summary; a short verse given at the end of each vagga listing the titles or topics of the relevant suttas [sandhi, pron + nt] (lit. tying up of that)", "veditabbo": "1 <i>ptp</i> can be known; should be understood (by) [ptp of vedeti] ‹ vedeti (lit. to be known)<br>2 <i>ptp</i> to be experienced (by) [ptp of vedeti] ‹ vedeti (lit. to be known)", "bhedā": "1 <i>masc</i> death [masc, from bhindati] ‹ bhindati (lit. breakup)<br>2 <i>masc</i> schism; split; breakup; disunion [masc, from bhindati] ‹ bhindati<br>3 <i>adj</i> breaking; splitting; tearing [adj, from bhindati] ‹ bhindati<br>4 <i>adj</i> like; type of; consisting of; having [adj, from bhindati] ‹ bhindati<br>5 <i>adj</i> disturbing; upsetting; violating [adj, from bhindati] ‹ bhindati<br>6 <i>masc</i> variety; distinction; difference [masc, from bhindati] ‹ bhindati<br>7 <i>adj</i> distinguished (by) [adj, from bhindati] ‹ bhindati<br>8 <i>adj</i> consisting of; comprised of [adj, in s, from bhindati] ‹ bhindati (lit. divided)<br>9 <i>masc</i> breakup; dissolution; destruction (of) [masc, from bhindati] ‹ bhindati", "sucaritasuttaṃ": "1 <i>nt</i> [nt,]", "apare": "1 <i>adj</i> another; after; further; next [adj, from apa] ‹ apa<br>2 <i>pron</i> other; another (person); some other [pron, from apa] ‹ apa<br>3 <i>adj</i> western [adj, from apa] ‹ apa<br>4 <i>adj</i> later; subsequent; final [adj, from apa] ‹ apa<br>5 <i>pron</i> (commentary) other learned monks; other commentators [pron, masc nom pl of apara] ‹ apara", "vaṇṇavanto": "1 <i>adj</i> beautiful; good-looking [adj, from vaṇṇa] ‹ वण्ण (lit. having appearance quality)", "dassetuṃ": "1 <i>inf</i> to show off; to exhibit; to present [inf of dasseti] ‹ dasseti (lit. to cause to see)<br>2 <i>inf</i> to show; to illustrate; to point out [inf of dasseti] ‹ dasseti (lit. to cause to see)", "sahabyataṃ": "1 <i>fem</i> companionship; company; fellowship (of) [fem, abstr, from sahabya] ‹ sahabya", "vatāhaṃ": "1 <i>sand</i> oh no I; indeed I; wow I [sandhi, ind + pron]", "mālaṃ": "1 <i>masc</i> pavilion; tent [masc]<br>2 <i>fem</i> garland; wreath [fem]<br>3 <i>fem</i> (gram) inflection paradigm [fem] (lit. garland)<br>4 <i>fem</i> flower; flowering plant [fem]<br>5 <i>nt</i> garland; wreath [nt, from mālā] ‹ माला", "ime": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> these [pron, masc nom & acc pl of ima] ‹ ima", "vilepanaṃ": "1 <i>nt</i> oil; unguent; cream; moisturizer [nt, from vilepeti] ‹ vilepeti (lit. causing to smear over)<br>2 <i>nt</i> smearing; coating; layering [nt, act, from vilepeti] ‹ vilepeti (lit. causing to smear over)", "uttānamevāti": "1 <i>sand</i> is clear as is [sandhi, adj + ind + ind]", "suttantā": "1 <i>masc</i> discourse; teaching; instruction [masc, , from sutta] ‹ sutta<br>2 <i>nt</i> discourse; teaching; instruction [nt, , from sutta] ‹ sutta", "devāti": "1 <i>masc</i> deity; god [masc, from dibbati] ‹ dibbati<br>2 <i>masc</i> king; lord [masc, from dibbati] ‹ dibbati<br>3 <i>masc</i> rain god; rain cloud [masc, from dibbati] ‹ dibbati (lit. god; i.e. Indra, god of the heavens)<br>4 <i>masc</i> sky; heavens [masc, from dibbati] ‹ dibbati (lit. god; i.e. Indra, god of the heavens)", "atthi": "1 <i>pr</i> there is; there exists [pr]<br>2 <i>pr</i> there are; they are [pr 3rd pl of atthi] ‹ atthi<br>3 <i>masc</i> seeker; who wants; who needs; who desires [masc, agent] ‹ √atth<br>4 <i>adj</i> wanting; seeking; needing; desirous (of) [adj, from attha] ‹ attha", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "ko": "1 <i>pron</i> who?; what?; which? [pron, interr, base]<br>2 <i>pron</i> where? [pron]<br>3 <i>pron</i> who?; what?; which? [pron, interr, masc nom sg of ka] ‹ ka", "gandhe": "1 <i>masc</i> smell; scent; odour [masc] ‹ √घा<br>2 <i>masc</i> perfume; fragrance; scent [masc] ‹ √घा<br>3 <i>nt</i> name of a type of elephant ‹ √घा (lit. fragrant)", "seyyaṃ": "1 <i>pr</i> lies; lies around [pr] (lit. sleeps)<br>2 <i>pr</i> sleeps [pr]<br>3 <i>pr</i> (comm) lives; stays; dwells [pr] (lit. sleeps)<br>4 <i>adj</i> better (than); preferable (to) [adj, ar of siri] ‹ siri (lit. luckier)<br>5 <i>nt</i> bed; bedding; couch [nt, from sayati] ‹ sayati<br>6 <i>fem</i> sleep; rest; sleeping posture [fem, from sayati] ‹ sayati (lit. bed)<br>7 <i>fem</i> bed; bedding; couch [fem, from sayati] ‹ sayati<br>8 <i>fem</i> residence; temple; monastery [fem, from sayati] ‹ sayati (lit. bed)<br>9 <i>fem</i> grounds; basis; foundation [fem, from sayati] ‹ sayati (lit. bed)", "paṭhamaṃ": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>ind</i> first; firstly; at first; first of all [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>5 <i>ind</i> before; recently; newly; just [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>6 <i>fem</i> [fem]", "āvasathaṃ": "1 <i>masc</i> dwelling; house; lodging [masc, from āvasa] ‹ आवस (lit. living here)<br>2 <i>masc</i> rest-house; traveller's lodge [masc, from āvasa] ‹ आवस (lit. living here)", "carati": "1 <i>pr</i> walks; wanders; goes around; travels; fares on [pr]<br>2 <i>pr</i> acts; practices; performs; does<br>3 <i>pr</i> lives; leads (one's life); conducts oneself [pr]<br>4 <i>pr</i> [pr]", "idha": "1 <i>ind</i> here; now; in this world [ind, adv, from ima] ‹ ima<br>2 <i>ind</i> here; in this regard; in this case [ind, adv, from ima] ‹ ima<br>3 <i>ind</i> (comm) in this teaching; here in this doctrine [ind, adv, from ima] ‹ ima", "dātā": "1 <i>masc</i> giver; donor (of) [masc, agent, from dadāti] ‹ ददाति<br>2 <i>masc</i> who gives; giver; bestower (of something to someone) [masc, agent, from dadāti] ‹ ददाति", "sucaritaṃ": "1 <i>adj</i> good; right; moral [adj, from carita] ‹ carita (lit. well behaved)<br>2 <i>nt</i> good conduct; good behaviour (by) [nt, from carita] ‹ carita (lit. well behaved)", "upapajjeyyanti": "1 <i>pr</i> is reborn; re-arises (in) [pr] (lit. goes towards)<br>2 <i>pr</i> appears; arises [pr] (lit. goes towards)<br>3 <i>pr</i> is suitable; is acceptable; is admissible [pr] (lit. goes towards)", "anāthapiṇḍikassa": "1 <i>masc</i> name of the Buddha's chief lay disciple [masc,] (lit. feeder of the destitute)<br>2 <i>masc</i> in reference to MN143 Anāthapiṇḍikovādasutta [masc,] (lit. feeder of the destitute)", "gandhabbakāyikā": "1 <i>adj</i> [adj]", "ārāme": "1 <i>adj</i> enjoying; taking pleasure (in); fond (of) [adj, in s, from āramati] ‹ आरमति<br>2 <i>masc</i> pleasure; delight [masc, from āramati] ‹ आरमति<br>3 <i>masc</i> park; parkland; nature reserve [masc, from āramati] ‹ आरमति<br>4 <i>masc</i> monastery [masc, from āramati] ‹ आरमति", "nayo": "1 <i>masc</i> inference; conclusion [masc, from nayati] ‹ nayati<br>2 <i>masc</i> meaning; sense; context [masc, from nayati] ‹ nayati (lit. leading)<br>3 <i>masc</i> method; mode; manner; approach [masc, from nayati] ‹ nayati (lit. leading)<br>4 <i>masc</i> (gram) inferential method [masc, from nayati] ‹ nayati (lit. leading)<br>5 <i>masc</i> [masc, from nayati] ‹ nayati (lit. leading)<br>6 <i>aor</i> led; guided; took (someone to) [aor of nayati] ‹ nayati", "evañhi": "1 <i>sand</i> exactly like this; in exactly the same way [sandhi, adv + ind] (lit. thus indeed)<br>2 <i>ind</i> thus; this; like this; similarly; in the same manner; just as; such [ind, adv]<br>3 <i>ind</i> yes!; that is right!; correct! [ind, excl]", "maraṇā": "1 <i>nt</i> death; dying [nt, act, from marati] ‹ marati", "padīpeyyaṃ": "1 <i>pr</i> [pr, caus of padippati] ‹ padippati<br>2 <i>nt</i> lamps; lighting material; lighting equipment [nt, from padīpa] ‹ पदीप", "satadhā": "1 <i>ind</i> in one hundred ways; into one hundred [ind, adv, from sata] ‹ sata", "sabbesampi": "1 <i>pron</i> all; every [pron, adj]<br>2 <i>pron</i> everything; everyone; all [pron]<br>3 <i>pron</i> whole; entire; complete [pron]<br>4 <i>pron</i> for all; for everyone [pron, masc & nt dat pl of sabba] ‹ sabba<br>5 <i>pron</i> of all [pron, masc & nt gen pl of sabba] ‹ sabba", "viharati": "1 <i>pr</i> lives; dwells; stays (in) [pr]<br>2 <i>pr</i> stays; remains; continues; dwells (in) [pr]", "gandhabbakāyike": "1 <i>adj</i> [adj]", "vo": "1 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>2 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha<br>3 <i>lett</i> (gram) letter v; 37th letter of the alphabet; dento-labial semi-vowel [letter, masc]<br>4 <i>pron</i> you all (object) [pron, 2nd acc pl of tvaṃ] ‹ त्वं<br>5 <i>pron</i> by you all; with you all [pron, 2nd instr pl of tvaṃ] ‹ त्वं<br>6 <i>pron</i> to you all; for you all [pron, 2nd dat pl of tvaṃ] ‹ त्वं<br>7 <i>pron</i> of you all; your [pron, 2nd gen pl of tvaṃ] ‹ त्वं<br>8 <i>pron</i> when you all; while you all [pron, 2nd gen pl, gen abs of tvaṃ] ‹ त्वं<br>9 <i>pref</i> - [prefix,]<br>10 <i>ind</i> indeed; truly; surely [ind, emph]<br>11 <i>pron</i> you all (subject) [pron, 2nd nom pl of tvaṃ] ‹ त्वं", "vuttaṃ": "1 <i>pp</i> sown; scattered; planted [pp of vapati] ‹ vapati<br>2 <i>pp</i> shaven [pp of vapati] ‹ vapati<br>3 <i>pp</i> said; told; spoken; mentioned [pp of vacati] ‹ vacati<br>4 <i>pp</i> called; named; said (to be) [pp of vacati] ‹ vacati<br>5 <i>pp</i> spoken to [pp of vacati] ‹ vacati<br>6 <i>nt</i> [nt]<br>7 <i>pp</i> [pp]<br>8 <i>nt</i> poem; verse; stanza [nt, pp of vacati] ‹ vacati (lit. spoken)<br>9 <i>adj</i> with a livelihood (of); living off; as means of living [adj, from vutti] ‹ vutti<br>10 <i>nt</i> (gram) meter; prosody [nt, pp of vacati] ‹ vacati (lit. spoken)", "tatiyaṃ": "1 <i>ordi</i> third (3rd) [ordin of ti] ‹ ti<br>2 <i>masc</i> (gram) third consonant of each vagga; g, j, ḍ, d, b [masc, from ti] ‹ ti<br>3 <i>adj</i> [adj, from tatha] ‹ tatha<br>4 <i>ind</i> for the third time [ind, adv, acc sg of tatiya] ‹ tatiya<br>5 <i>fem</i> [fem]", "phalagandhānaṃ": "1 <i>masc</i> fragrant fruit [masc,]", "gandhabbe": "1 <i>masc</i> demigod; heavenly musician; class of mythological beings [masc]<br>2 <i>masc</i> stream of consciousness impelled to be reborn [masc]<br>3 <i>masc</i> name of a minister [masc]<br>4 <i>masc</i> musician; entertainer; dancer [masc]", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "jetavane": "1 <i>nt</i> name of a monastery in Sāvatthī [nt,] (lit. Victor's wood)", "dānavatthu": "1 <i>nt</i> grounds for giving; reason for donation [nt,]", "nisinno": "1 <i>pp</i> seated (in) [pp of nisīdati] ‹ निसीदति", "taṃ": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> it; that [pron, nt nom sg of ta] ‹ ta<br>4 <i>pron</i> him; her; one; that person; that thing [pron, masc fem & nt acc sg of ta] ‹ ta<br>5 <i>pron</i> you (object) [pron, 2nd acc sg of tvaṃ] ‹ त्वं<br>6 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>7 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha", "mūle": "1 <i>nt</i> (of a tree) root; base; foot [nt] ‹ √मूल्<br>2 <i>nt</i> source; origin; root [nt] ‹ √मूल्<br>3 <i>nt</i> money; cash; capital; moola [nt] ‹ √मूल्<br>4 <i>nt</i> (vinaya) (of a legal action) beginning; start [nt] ‹ √मूल्<br>5 <i>adj</i> original; first; primary [adj, in s] ‹ √मूल्<br>6 <i>nt</i> (of money) capital; principal [nt] ‹ √मूल्<br>7 <i>nt</i> base; foundation; bottom part [nt, in s]<br>8 <i>nt</i> primary text; root text; source text (as opposed to the commentaries and sub-commentaries)", "piṇḍakena": "1 <i>masc</i> alms food [masc, from piṇḍa] ‹ पिण्ड", "gandhabbakāyasaṃyutte": "1 <i>nt</i> [nt,] (lit. connected with the host of demigods)", "niṭṭhitā": "1 <i>pp</i> finished; completed; accomplished [pp of niṭṭhāti] ‹ निट्ठाति (lit. stood down)<br>2 <i>pp</i> (of food) ready; prepared [pp of niṭṭhāti] ‹ निट्ठाति (lit. stood down)", "deti": "1 <i>pr</i> gives; donates; offers; hands (to) [pr]<br>2 <i>pr</i> allows; permits (to); accepts [pr] (lit. gives)<br>3 <i>pr</i> sets on fire; sets alight (to) [pr] (lit. gives)<br>4 <i>pr</i> (of work) assigns; puts in charge of [pr] (lit. gives)", "upapajjatīti": "1 <i>pr</i> is reborn; re-arises (in) [pr] (lit. goes towards)<br>2 <i>pr</i> appears; arises [pr] (lit. goes towards)<br>3 <i>pr</i> is suitable; is acceptable; is admissible [pr] (lit. goes towards)<br>4 <i>prp</i> being reborn; re-arising (in) [prp of upapajjati] ‹ upapajjati (lit. going towards)", "ekamantaṃ": "1 <i>ind</i> to one side; aside [ind, adv, , acc sg of ekamanta] ‹ ekamanta<br>2 <i>ind</i> solely; exclusively [ind, adv, , acc sg of ekamanta] ‹ ekamanta (lit. one side)", "nissāya": "1 <i>ger</i> leaning (on); depending (on); being supported (by) [ger of nissayati] ‹ nissayati<br>2 <i>ger</i> supporting; helping [ger of nissayati] ‹ nissayati (lit. leaning)<br>3 <i>ger</i> because; on account (of) [ger of nissayati] ‹ nissayati (lit. leaning)<br>4 <i>ger</i> with the help; with the support (of) [ger of nissayati] ‹ nissayati (lit. leaning)<br>5 <i>ind</i> nearby; near; at; on [ind, prep, ger of nissayati] ‹ nissayati (lit. leaning)", "tasmiṃ": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> in that; in that person [pron, masc & nt loc sg of ta] ‹ ta<br>4 <i>pron</i> when that [pron, masc & nt loc sg of ta, loc abs] ‹ ta<br>5 <i>pron</i> (gram) before that [pron, masc & nt loc sg of ta, loc abs] ‹ ta<br>6 <i>pron</i> in that case; in that situation [pron, masc & nt loc sg of ta, loc abs] ‹ ta<br>7 <i>pron</i> under that; under him [pron, masc & nt loc sg of ta] ‹ ta", "pheggugandhānaṃ": "1 <i>masc</i> fragrant sapwood [masc,]", "manasā": "1 <i>masc</i> mind; mental faculty; intellect [masc, mano group, from maññati] ‹ मञ्ञति<br>2 <i>adj</i> intent on; set on; focused on; inclining towards [adj, in s, from manas] ‹ manas (lit. with such a mind)<br>3 <i>adj</i> with a mind; having such a mind; mentally [adj, from manas] ‹ manas (lit. with such a mind)<br>4 <i>masc</i> by mind; with mind; mentally [masc, instr sg of manas, mano group] ‹ manas", "devānaṃ": "1 <i>masc</i> deity; god [masc, from dibbati] ‹ dibbati<br>2 <i>masc</i> king; lord [masc, from dibbati] ‹ dibbati<br>3 <i>masc</i> rain god; rain cloud [masc, from dibbati] ‹ dibbati (lit. god; i.e. Indra, god of the heavens)<br>4 <i>masc</i> sky; heavens [masc, from dibbati] ‹ dibbati (lit. god; i.e. Indra, god of the heavens)", "ekacco": "1 <i>pron</i> certain; one of [pron, from eka] ‹ eka<br>2 <i>pron</i> some; a few [pron, from eka] ‹ eka<br>3 <i>adj</i> part of; partial; in part [adj, from eka] ‹ eka", "samayaṃ": "1 <i>masc</i> time; occasion [masc, from sameti] ‹ sameti (lit. going together)<br>2 <i>masc</i> right time; suitable occasion [masc, from sameti] ‹ sameti (lit. going together)<br>3 <i>masc</i> condition; state [masc, from sameti] ‹ sameti (lit. going together)<br>4 <i>masc</i> gathering; massing; congregation; assembly [masc, from sameti] ‹ sameti (lit. going together)<br>5 <i>masc</i> religion; doctrine [masc, from sameti] ‹ sameti (lit. going together)<br>6 <i>masc</i> learning; study; art; science [masc] ‹ सं √इ<br>7 <i>prp</i> calming; stilling; settling; giving peace [prp of samayati] ‹ samayati (lit. causing to be calm)", "kāyena": "1 <i>masc</i> body; physical body; physical process [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>2 <i>masc</i> group; host; company; collection; multitude; mass [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>3 <i>masc</i> process; collection [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>4 <i>masc</i> category; class; group (of) [masc, in s, from cināti] ‹ चिनाति (lit. accumulation)<br>5 <i>masc</i> physical existence; material existence [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>6 <i>masc</i> group of beings; class of beings; state of existence [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>7 <i>masc</i> mass; heap; bulk; body [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>8 <i>adj</i> with a body; having (a certain kind of) body; -bodied [adj, from cināti] ‹ चिनाति (lit. accumulation)<br>9 <i>masc</i> embodiment; living manifestation [masc, from cināti] ‹ चिनाति (lit. accumulation)", "bhante": "1 <i>pp</i> (of a human) staggering; swaying; spinning [pp of bhamati] ‹ bhamati (lit. spun)<br>2 <i>pp</i> (of a vehicle) swerving; veering off course; out of control [pp of bhamati] ‹ bhamati (lit. spun)<br>3 <i>pp</i> (of water) whirling; swirling; spinning [pp of bhamati] ‹ bhamati (lit. spun)<br>4 <i>masc</i> sir; sirs; lord; lords; venerable sir; venerable sirs; reverend; reverends [masc, voc sg & pl of bhavant, irreg] ‹ bhavant<br>5 <i>masc</i> master; sir; respected man [masc, from bhavati, irreg] ‹ bhavati (lit. being present)<br>6 <i>pr</i> illuminates; lights up [pr]", "aho": "1 <i>ind</i> (expressing a wish) oh may!; please let! [ind, excl]<br>2 <i>masc</i> day [masc, in s]<br>3 <i>ind</i> day [ind, adv, in s]<br>4 <i>ind</i> (expressing pleasure, surprise or disbelief) oh!; wow! [ind, excl]<br>5 <i>ind</i> surely; indeed; truly [ind, emph]<br>6 <i>ind</i> (expressing dismay) oh dear!; oh no! [ind, excl]", "hetu": "1 <i>adj</i> because; by virtue (of) [adj, in s] ‹ √hi<br>2 <i>masc</i> reason (for); cause (for); condition (for); sake (of) [masc] ‹ √hi<br>3 <i>ind</i> by means of; according to [ind, adv, in s] ‹ √hi<br>4 <i>ind</i> for; for the purpose; for the sake (of) [ind, adv, in s] ‹ √hi (lit. reason)<br>5 <i>masc</i> [masc] ‹ √hi", "hi": "1 <i>ind</i> indeed; certainly; truly; definitely [ind, emph]<br>2 <i>ind</i> because; for [ind]<br>3 <i>ve</i> (gram) hi; verbal ending of imperative 2nd person singular [ve, masc]", "mūlagandhānanti": "1 <i>masc</i> fragrant root; root scent [masc,]", "gandhaṃ": "1 <i>masc</i> smell; scent; odour [masc] ‹ √घा<br>2 <i>masc</i> perfume; fragrance; scent [masc] ‹ √घा<br>3 <i>nt</i> name of a type of elephant ‹ √घा (lit. fragrant)", "pattagandhānaṃ": "1 <i>masc</i> [masc,]", "upakappati": "1 <i>pr</i> is beneficial; is good (for) [pr]", "patthanaṃ": "1 <i>nt</i> intending; wishing; aspiring; praying; longing [nt, act, from pattheti] ‹ pattheti (lit. actively wishing for)<br>2 <i>fem</i> intending; wishing; aspiring; praying; longing [fem, abstr, act, from pattheti] ‹ pattheti (lit. actively wishing for)<br>3 <i>adj</i> intending; wishing; aspiring; praying; longing [adj, in s, from patthanā] ‹ पत्थना (lit. actively wishing for)", "annaṃ": "1 <i>nt</i> food [nt, pp of adati] ‹ adati (lit. eaten)", "nāma": "1 <i>ind</i> certainly; truly; for sure [ind, emph]<br>2 <i>ind</i> called; means; by the name of; namely [ind, adv] (lit. name)<br>3 <i>nt</i> (gram) noun; substantive (lit. name)<br>4 <i>nt</i> name [nt]<br>5 <i>nt</i> mental objects of consciousness; mentality; mental factors of feeling, perception, intention, contact and attention [nt, abstr] (lit. name)<br>6 <i>adj</i> called; named [adj] (lit. name)<br>7 <i>ind</i> [ind, adv]<br>8 <i>nt</i> (gram) nominal stem [nt] (lit. name)", "dīghāyukā": "1 <i>adj</i> long-lived; with a long lifespan [adj,]<br>2 <i>masc</i> name of an unknown Buddha coming between Kassapa and Gotama [masc,] (lit. long life)", "dasa": "1 <i>card</i> ten (10) [card, x pl]<br>2 <i>adj</i> seeing; understanding [adj, in s] ‹ √dis<br>3 <i>fem</i> fringe; border; edge [fem]<br>4 <i>adj</i> with a fringe; tasselled; bordered; edged [adj, in s, from dasā] ‹ दसा", "bhagavā": "1 <i>masc</i> Sublime One; Blessed One; Fortunate One; Auspicious One; epithet of the Buddha [masc, from bhaga] ‹ bhaga (lit. having good fortune quality)<br>2 <i>adj</i> [adj, from bhaga] ‹ bhaga (lit. having good fortune quality)<br>3 <i>masc</i> Sublime One; Blessed One; Fortunate One; epithet of the Buddha [masc, nom sg of bhagavant] ‹ bhagavant", "ṭhapenti": "1 <i>pr</i> helps to last; causes to remain [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>2 <i>pr</i> stands aside [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>3 <i>pr</i> appoints; establishes; sets up; places (someone in a position) [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>4 <i>pr</i> sets aside; puts to one side [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)<br>5 <i>pr</i> places; puts; stands [pr, caus of tiṭṭhati] ‹ तिट्ठति (lit. causes to stand)", "so": "1 <i>pron</i> that [pron, base]<br>2 <i>pron</i> own; one's own; one's own possession [pron, base, reflx]<br>3 <i>adj</i> self-; personal- [adj, in s, reflx]<br>4 <i>lett</i> (gram) letter s; 36th letter of the alphabet; dental consonant [letter, masc]<br>5 <i>pron</i> he; that person; that thing [pron, masc nom sg of ta] ‹ ta<br>6 <i>ind</i> (emphatic usage; referring to what has just been said) [ind, emph] (lit. that)<br>7 <i>suff</i> as; according to; by way of; by means of [suffix, adv, abl sg]<br>8 <i>suff</i> (gram) by; in x ways [suffix, adv]", "katamā": "1 <i>pron</i> what?; which (of the many)? [pron, interr, from ka] ‹ ka", "sāvatthinidānaṃ": "1 <i>nt</i> (this) occurred at Sāvatthī [nt,] (lit. Sāvatthī (is the) source)", "vācāya": "1 <i>adj</i> talking; speaking; of speech [adj, in s, from vācā] ‹ वाचा<br>2 <i>fem</i> speech; words; statement; talk [fem, from vacati] ‹ vacati<br>3 <i>fem</i> line of verse; sentence [fem, from vacati] ‹ vacati<br>4 <i>ind</i> verbally; out loud [ind, adv, instr sg of vācā] ‹ वाचा (lit. by speaking)", "papaṭikagandhānaṃ": "1 <i>masc</i> fragrant bark [masc,]", "dvādasasatimaṃ": "1 <i>ordi</i> one hundred and twelfth (112th) [ordin of dvādasasata,] ‹ द्वादससत", "ekaṃ": "1 <i>card</i> one (1) [card, masc fem nt sg]<br>2 <i>adj</i> a; a certain; a single [adj, used as indefinite article]<br>3 <i>adj</i> alone; single; solitary [adj]<br>4 <i>adj</i> only [adj, in s]<br>5 <i>adj</i> same; one and the same [adj]<br>6 <i>nt</i> one thing; single thing; a certain thing [nt]", "adhivatthāti": "1 <i>pp</i> lived; inhabited; stayed (in) [pp of adhivasati] ‹ adhivasati (lit. lived through)", "mūlagandhānaṃ": "1 <i>masc</i> fragrant root; root scent [masc,]", "dvādasa": "1 <i>card</i> twelve (12) [card, x pl,]<br>2 <i>ordi</i> twelfth (12th) [ordin of dvādasa,] ‹ द्वादस", "sabbāni": "1 <i>pron</i> all; every [pron, adj]<br>2 <i>pron</i> everything; everyone; all [pron]<br>3 <i>pron</i> whole; entire; complete [pron]", "evaṃ": "1 <i>ind</i> thus; this; like this; similarly; in the same manner; just as; such [ind, adv]<br>2 <i>ind</i> yes!; that is right!; correct! [ind, excl]", "sāragandhe": "1 <i>masc</i> fragrant hardwood; scent of heartwood [masc,]", "sāragandhādidānūpakārasuttanavutikaṃ": "1 <i>nt</i> [nt,]", "tesaṃyeva": "1 <i>pron</i> that [pron, base]<br>2 <i>pron</i> for them; to them; to those [pron, masc & nt dat pl of ta] ‹ ta<br>3 <i>pron</i> their; of these; of them; of those [pron, masc & nt gen pl of ta] ‹ ta<br>4 <i>pron</i> when they; when these [pron, masc & nt gen pl of ta, gen abs] ‹ ta<br>5 <i>sand</i> of those very; of those exact [sandhi, pron + ind]", "upakappanti": "1 <i>pr</i> is beneficial; is good (for) [pr]", "sāragandhādidātāsuttanavakaṃ": "1 <i>nt</i> [nt,]", "paccayo": "1 <i>masc</i> support; requisite; necessity [masc, from pacceti] ‹ pacceti<br>2 <i>masc</i> cause; reason; supporting condition; requirement (for) [masc, from pacceti] ‹ pacceti<br>3 <i>masc</i> (gram) affix; suffix; verbal ending [masc, from pacceti] ‹ pacceti (lit. dependent)<br>4 <i>adj</i> dependent (on); reliant (on); based (on); supported (by); founded (on) [adj, from pacceti, in s] ‹ pacceti<br>5 <i>masc</i> name of an arahant monk [masc, from pacceti] ‹ pacceti (lit. dependent)", "tesaṃ": "1 <i>pron</i> that [pron, base]<br>2 <i>pron</i> for them; to them; to those [pron, masc & nt dat pl of ta] ‹ ta<br>3 <i>pron</i> their; of these; of them; of those [pron, masc & nt gen pl of ta] ‹ ta<br>4 <i>pron</i> when they; when these [pron, masc & nt gen pl of ta, gen abs] ‹ ta", "tassa": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> to him; for him; to that; for that [pron, masc & nt dat sg of ta] ‹ ta<br>4 <i>pron</i> of that; his; its [pron, masc & nt gen sg of ta] ‹ ta<br>5 <i>pron</i> when he; when it [pron, masc & nt gen sg of ta, gen abs] ‹ ta (lit. of that)<br>6 <i>ind</i> therefore; thus; so; because of that; regarding that [ind, adv, masc & nt gen sg of ta] ‹ ta (lit. of that)", "gandhagandheti": "1 <i>masc</i> [masc]", "pupphagandhānaṃ": "1 <i>masc</i> floral scent; flower perfume [masc,]", "pupphagandhe": "1 <i>masc</i> floral scent; flower perfume [masc,]", "devā": "1 <i>masc</i> deity; god [masc, from dibbati] ‹ dibbati<br>2 <i>masc</i> king; lord [masc, from dibbati] ‹ dibbati<br>3 <i>masc</i> rain god; rain cloud [masc, from dibbati] ‹ dibbati (lit. god; i.e. Indra, god of the heavens)<br>4 <i>masc</i> sky; heavens [masc, from dibbati] ‹ dibbati (lit. god; i.e. Indra, god of the heavens)", "dasavidhaṃ": "1 <i>adj</i> [adj,]", "suddhikasuttaṃ": "1 <i>nt</i> Saṃyutta Nikāya 7.7 (SN7.7) [nt,] (lit. discourse with Suddhika)<br>2 <i>nt</i> Saṃyutta Nikāya 51.24 (SN51.24) [nt,] (lit. clean (version of the) discourse)<br>3 <i>nt</i> [nt,] (lit. clean (version of the) discourse)<br>4 <i>nt</i> Saṃyutta Nikāya 22.98 (SN22.98) [nt,] (lit. clean (version of the) discourse)<br>5 <i>nt</i> Saṃyutta Nikāya 29.1 (SN29.1) [nt,] (lit. clean (version of the) discourse)<br>6 <i>nt</i> Saṃyutta Nikāya 30.1 (SN30.1) [nt,] (lit. clean (version of the) discourse)", "deve": "1 <i>masc</i> deity; god [masc, from dibbati] ‹ dibbati<br>2 <i>masc</i> king; lord [masc, from dibbati] ‹ dibbati<br>3 <i>masc</i> rain god; rain cloud [masc, from dibbati] ‹ dibbati (lit. god; i.e. Indra, god of the heavens)<br>4 <i>masc</i> sky; heavens [masc, from dibbati] ‹ dibbati (lit. god; i.e. Indra, god of the heavens)", "santi": "1 <i>pr</i> there is; there exists [pr]<br>2 <i>pron</i> own; one's own; one's own possession [pron, base, reflx]<br>3 <i>adj</i> self-; personal- [adj, in s, reflx]<br>4 <i>lett</i> (gram) letter s; 36th letter of the alphabet; dental consonant [letter, masc]<br>5 <i>masc</i> dog [masc, atta group]<br>6 <i>prp</i> existing; being; there is [prp of atthi] ‹ atthi<br>7 <i>prp</i> being present; attending [prp of atthi] ‹ atthi<br>8 <i>masc</i> virtuous man; good person; wise person; sage [masc, irreg, from atthi] ‹ atthi<br>9 <i>fem</i> peace; calm; tranquillity [fem, abstr, from sammati] ‹ sammati<br>10 <i>pr</i> they are; there are; they exist [pr 3rd pl of atthi] ‹ atthi<br>11 <i>fem</i> virtuous woman; good woman [fem, from santa] ‹ santa<br>12 <i>pref</i> together; with [prefix]<br>13 <i>abbr</i> abbreviation of Saṃyutta (Nikāya)<br>14 <i>ind</i> own; personal; self- [ind, in s]<br>15 <i>opt</i> I could be [opt 1st sg of siyā] ‹ सिया<br>16 <i>opt</i> could be; may be; might be; should be [opt of atthi, irreg] ‹ atthi<br>17 <i>opt</i> there could be [opt of atthi, irreg] ‹ atthi<br>18 <i>sand</i> 'I could be' [sandhi, opt + ind]", "tacagandhe": "1 <i>masc</i> [masc,]", "sesaṃ": "1 <i>pron</i> own; one's own; one's own possession [pron, base, reflx]<br>2 <i>adj</i> remaining; left; left over [adj, from sissati] ‹ sissati<br>3 <i>masc</i> leftovers; remains; remainder; remnant [masc, from sissati] ‹ sissati<br>4 <i>nt</i> rest; remainder [nt, from sissati] ‹ sissati"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>१०. गन्धर्वकाय संयुक्त (गन्धब्बकायसंयुत्तं) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<h3 id='s0303m.mul_01217'><span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="suddhikasuttaṃ">सुद्धिकसुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01217_hi'>१. सुद्धिकसुत्तं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01218_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01218_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="438">४३८.</span> <span class="paliword" data-word="ekaṃ">एकं</span> <span class="paliword" data-word="samayaṃ">समयं</span> <span class="paliword" data-word="bhagavā">भगवा</span> <span class="paliword" data-word="sāvatthiyaṃ">सावत्थियं</span> <span class="paliword" data-word="viharati">विहरति</span> <span class="paliword" data-word="jetavane">जेतवने</span> <span class="paliword" data-word="anāthapiṇḍikassa">अनाथपिण्डिकस्स</span> <span class="paliword" data-word="ārāme">आरामे</span> <span class="paliword" data-word="pe॰">…पे॰…</span> <span class="paliword" data-word="bhagavā">भगवा</span> <span class="paliword" data-word="etadavoca">एतदवोच</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="gandhabbakāyike">‘‘गन्धब्बकायिके</span> <span class="paliword" data-word="vo">वो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="deve">देवे</span> <span class="paliword" data-word="desessāmi">देसेस्सामि।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="suṇātha">सुणाथ।</span> <span class="paliword" data-word="katamā">कतमा</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="gandhabbakāyikā">गन्धब्बकायिका</span> <span class="paliword" data-word="devā">देवा?</span> <span class="paliword" data-word="santi">सन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा।</span> <span class="paliword" data-word="santi">सन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sāragandhe">सारगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा।</span> <span class="paliword" data-word="santi">सन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pheggugandhe">फेग्गुगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा।</span> <span class="paliword" data-word="santi">सन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tacagandhe">तचगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा।</span> <span class="paliword" data-word="santi">सन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="papaṭikagandhe">पपटिकगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा।</span> <span class="paliword" data-word="santi">सन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pattagandhe">पत्तगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा।</span> <span class="paliword" data-word="santi">सन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pupphagandhe">पुप्फगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा।</span> <span class="paliword" data-word="santi">सन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="phalagandhe">फलगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा।</span> <span class="paliword" data-word="santi">सन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rasagandhe">रसगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा।</span> <span class="paliword" data-word="santi">सन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="gandhagandhe">गन्धगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="vuccanti">वुच्‍चन्ति,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="gandhabbakāyikā">गन्धब्बकायिका</span> <span class="paliword" data-word="devāti">देवा’’ति।</span> <span class="paliword" data-word="paṭhamaṃ">पठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01218_hi">
+                ४३८.
+एक समय भगवान श्रावस्ती के जेतवन में अनाथपिण्डिक के आराम (मठ) में विहार कर रहे थे। वहाँ भगवान ने यह कहा— "भिक्षुओं, मैं तुम्हें गन्धर्वकायिक (gandharvakāyika) देवों के विषय में उपदेश दूँगा। उसे सुनो।"
+
+"भिक्षुओं, गन्धर्वकायिक देव कौन से हैं? भिक्षुओं, ऐसे देव हैं जो मूल (जड़) की सुगन्ध में निवास करते हैं।
+ऐसे देव हैं जो सार (काष्ठ) की सुगन्ध में निवास करते हैं।
+ऐसे देव हैं जो फेग्गु (भीतरी छाल) की सुगन्ध में निवास करते हैं।
+ऐसे देव हैं जो त्वचा (बाहरी छाल) की सुगन्ध में निवास करते हैं।
+ऐसे देव हैं जो पपटिका (पपड़ी या टहनी) की सुगन्ध में निवास करते हैं।
+ऐसे देव हैं जो पत्तों की सुगन्ध में निवास करते हैं।
+ऐसे देव हैं जो पुष्पों की सुगन्ध में निवास करते हैं।
+ऐसे देव हैं जो फलों की सुगन्ध में निवास करते हैं।
+ऐसे देव हैं जो रसों की सुगन्ध में निवास करते हैं।
+ऐसे देव हैं जो गन्धों (सुगन्धित द्रव्यों) की सुगन्ध में निवास करते हैं।
+
+भिक्षुओं, इन्हें ही गन्धर्वकायिक देव कहा जाता है।"
+
+प्रथम (सुत्त)।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01218_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="438-549">४३८-५४९.</span> <span class="paliword" data-word="gandhabbakāyasaṃyutte">गन्धब्बकायसंयुत्ते</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthāti">अधिवत्थाति</span> <span class="paliword" data-word="yassa">यस्स</span> <span class="paliword" data-word="rukkhassa">रुक्खस्स</span> <span class="paliword" data-word="mūle">मूले</span> <span class="paliword" data-word="gandho">गन्धो</span> <span class="paliword" data-word="atthi">अत्थि,</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="nissāya">निस्साय</span> <span class="paliword" data-word="nibbattā">निब्बत्ता।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="hi">हि</span> <span class="paliword" data-word="sakalopi">सकलोपि</span> <span class="paliword" data-word="rukkho">रुक्खो</span> <span class="paliword" data-word="tesaṃ">तेसं</span> <span class="paliword" data-word="upakappati">उपकप्पति।</span> <span class="paliword" data-word="sesapadesupi">सेसपदेसुपि</span> <span class="paliword" data-word="eseva">एसेव</span> <span class="paliword" data-word="nayo">नयो।</span> <span class="paliword" data-word="gandhagandheti">गन्धगन्धेति</span> <span class="paliword" data-word="mūlādigandhānaṃ">मूलादिगन्धानं</span> <span class="paliword" data-word="gandhe">गन्धे।</span> <span class="paliword" data-word="yassa">यस्स</span> <span class="paliword" data-word="hi">हि</span> <span class="paliword" data-word="rukkhassa">रुक्खस्स</span> <span class="paliword" data-word="sabbesampi">सब्बेसम्पि</span> <span class="paliword" data-word="mūlādīnaṃ">मूलादीनं</span> <span class="paliword" data-word="gandho">गन्धो</span> <span class="paliword" data-word="atthi">अत्थि,</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="idha">इध</span> <span class="paliword" data-word="gandho">गन्धो</span> <span class="paliword" data-word="nāma">नाम।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="gandhassa">गन्धस्स</span> <span class="paliword" data-word="gandhe">गन्धे,</span> <span class="paliword" data-word="tasmiṃ">तस्मिं</span> <span class="paliword" data-word="adhivatthā">अधिवत्था।</span> <span class="paliword" data-word="idha">इध</span> <span class="paliword" data-word="mūlādīni">मूलादीनि</span> <span class="paliword" data-word="sabbāni">सब्बानि</span> <span class="paliword" data-word="tesaṃyeva">तेसंयेव</span> <span class="paliword" data-word="upakappanti">उपकप्पन्ति।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="mūlagandhānanti">मूलगन्धानन्ति</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="kāḻānusārikādīnaṃ">काळानुसारिकादीनं</span> <span class="paliword" data-word="mūlagandhānaṃ">मूलगन्धानं</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति।</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="sabbapadesu">सब्बपदेसु</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="evañhi">एवञ्हि</span> <span class="paliword" data-word="sarikkhadānampi">सरिक्खदानम्पि</span> <span class="paliword" data-word="datvā">दत्वा</span> <span class="paliword" data-word="patthanaṃ">पत्थनं</span> <span class="paliword" data-word="ṭhapenti">ठपेन्ति,</span> <span class="paliword" data-word="asarikkhadānampi">असरिक्खदानम्पि।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="dassetuṃ">दस्सेतुं</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="annaṃ">अन्‍नं</span> <span class="paliword" data-word="detītiādi">देतीतिआदि</span> <span class="paliword" data-word="dasavidhaṃ">दसविधं</span> <span class="paliword" data-word="dānavatthu">दानवत्थु</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānamevāti">उत्तानमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0303a.att_00448_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0303a.att_00448_hi">
+                    ४३८-५४९.
+गंधर्वकाय-संयुत्त में 'मूलगंध (जड़ की सुगंध) में निवास करने वाले' का अर्थ है—जिस वृक्ष की जड़ में सुगंध होती है, उसका आश्रय लेकर जो उत्पन्न हुए हैं।
+वह संपूर्ण वृक्ष ही उनके उपयोग में आता है।
+शेष पदों (अनुच्छेदों) में भी यही विधि लागू होती है।
+'गंध-गंध' का अर्थ है—मूल (जड़) आदि विभिन्न सुगंधों की सुगंध में।
+जिस वृक्ष के जड़ आदि सभी अंगों में सुगंध होती है, उसे यहाँ 'गंध' नाम से अभिहित किया गया है।
+उस सुगंध की भी जो सूक्ष्म सुगंध है, वे उसमें निवास करते हैं।
+यहाँ जड़ आदि सभी अंग उन्हीं के काम आते हैं।
+'वह मूलगंधों का दाता है' का तात्पर्य है कि वह कालागुरु (kāḷānusārikā) आदि सुगंधित जड़ों का दान करने वाला है।
+इसी प्रकार सभी पदों का अर्थ समझना चाहिए।
+इस प्रकार लोग समान वस्तुओं का दान देकर भी संकल्प करते हैं और असमान वस्तुओं का दान देकर भी।
+उसी को दर्शाने के लिए 'वह अन्न देता है' आदि दस प्रकार की दान-वस्तुओं का उल्लेख किया गया है।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="gandhabbakāyasaṃyuttavaṇṇanā">गन्धब्बकायसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0303a.att_00449_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0303a.att_00449_hi">
+                    गन्धर्वकायसंयुत्त की व्याख्या यहाँ समाप्त हुई।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="11">११.</span> <span class="paliword" data-word="valāhakasaṃyuttavaṇṇanā">वलाहकसंयुत्तवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0303a.att_00450_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0303a.att_00450_hi">
+                    ११. बलाहक-संयुक्त की व्याख्या (वलाहकसंयुत्त-वण्णना)
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01219'><span class="paliword" data-word="2">२.</span> <span class="paliword" data-word="sucaritasuttaṃ">सुचरितसुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01219_hi'>२. सुचरितसुत्तं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01220_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01220_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="439">४३९.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="ekamantaṃ">एकमन्तं</span> <span class="paliword" data-word="nisinno">निसिन्‍नो</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="bhagavantaṃ">भगवन्तं</span> <span class="paliword" data-word="etadavoca">एतदवोच</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ko">‘‘को</span> <span class="paliword" data-word="nu">नु</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhante">भन्ते,</span> <span class="paliword" data-word="hetu">हेतु,</span> <span class="paliword" data-word="ko">को</span> <span class="paliword" data-word="paccayo">पच्‍चयो,</span> <span class="paliword" data-word="yena">येन</span> <span class="paliword" data-word="midhekacco">मिधेकच्‍चो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="gandhabbakāyikānaṃ">गन्धब्बकायिकानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjatīti">उपपज्‍जती’’ति?</span> <span class="paliword" data-word="idha">‘‘इध,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="ekacco">एकच्‍चो</span> <span class="paliword" data-word="kāyena">कायेन</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति,</span> <span class="paliword" data-word="vācāya">वाचाय</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति,</span> <span class="paliword" data-word="manasā">मनसा</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="sutaṃ">सुतं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="gandhabbakāyikā">‘गन्धब्बकायिका</span> <span class="paliword" data-word="devā">देवा</span> <span class="paliword" data-word="dīghāyukā">दीघायुका</span> <span class="paliword" data-word="vaṇṇavanto">वण्णवन्तो</span> <span class="paliword" data-word="sukhabahulāti">सुखबहुला’ति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="aho">‘अहो</span> <span class="paliword" data-word="vatāhaṃ">वताहं</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="gandhabbakāyikānaṃ">गन्धब्बकायिकानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjeyyanti">उपपज्‍जेय्य’न्ति।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="gandhabbakāyikānaṃ">गन्धब्बकायिकानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjati">उपपज्‍जति।</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="hetu">हेतु,</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="paccayo">पच्‍चयो,</span> <span class="paliword" data-word="yena">येन</span> <span class="paliword" data-word="midhekacco">मिधेकच्‍चो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="gandhabbakāyikānaṃ">गन्धब्बकायिकानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjatīti">उपपज्‍जती’’ति।</span> <span class="paliword" data-word="dutiyaṃ">दुतियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01220_hi">
+                ४३९.
+श्रावस्ती (Śrāvastī) में।
+एक ओर बैठे हुए उस भिक्षु ने भगवान से यह कहा – "भन्ते, वह क्या हेतु है, वह क्या प्रत्यय (paccaya) है, जिससे यहाँ कोई प्राणी शरीर के टूटने पर, मृत्यु के पश्चात, गंधर्वकायिक (gandhabbakāyika) देवताओं के साथ उत्पन्न होता है?"
+"यहाँ, भिक्षु, कोई व्यक्ति शरीर से सुचरित का आचरण करता है, वाणी से सुचरित का आचरण करता है, और मन से सुचरित का आचरण करता है।
+उसने ऐसा सुन रखा होता है – ‘गंधर्वकायिक देवता दीर्घायु, रूपवान और अत्यंत सुखी होते हैं।’
+तब उसे ऐसा विचार आता है – ‘अहो! काश मैं शरीर के टूटने पर, मृत्यु के बाद, गंधर्वकायिक देवताओं के साथ जन्म लूँ।’
+वह शरीर के टूटने पर, मृत्यु के उपरांत, गंधर्वकायिक देवताओं के साथ उत्पन्न होता है।
+हे भिक्षु, यही वह हेतु है, यही वह प्रत्यय है, जिससे यहाँ कोई प्राणी शरीर के टूटने पर, मृत्यु के पश्चात, गंधर्वकायिक देवताओं के साहचर्य में उत्पन्न होता है।"
+द्वितीय।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01220_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="438-549">४३८-५४९.</span> <span class="paliword" data-word="gandhabbakāyasaṃyutte">गन्धब्बकायसंयुत्ते</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthāti">अधिवत्थाति</span> <span class="paliword" data-word="yassa">यस्स</span> <span class="paliword" data-word="rukkhassa">रुक्खस्स</span> <span class="paliword" data-word="mūle">मूले</span> <span class="paliword" data-word="gandho">गन्धो</span> <span class="paliword" data-word="atthi">अत्थि,</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="nissāya">निस्साय</span> <span class="paliword" data-word="nibbattā">निब्बत्ता।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="hi">हि</span> <span class="paliword" data-word="sakalopi">सकलोपि</span> <span class="paliword" data-word="rukkho">रुक्खो</span> <span class="paliword" data-word="tesaṃ">तेसं</span> <span class="paliword" data-word="upakappati">उपकप्पति।</span> <span class="paliword" data-word="sesapadesupi">सेसपदेसुपि</span> <span class="paliword" data-word="eseva">एसेव</span> <span class="paliword" data-word="nayo">नयो।</span> <span class="paliword" data-word="gandhagandheti">गन्धगन्धेति</span> <span class="paliword" data-word="mūlādigandhānaṃ">मूलादिगन्धानं</span> <span class="paliword" data-word="gandhe">गन्धे।</span> <span class="paliword" data-word="yassa">यस्स</span> <span class="paliword" data-word="hi">हि</span> <span class="paliword" data-word="rukkhassa">रुक्खस्स</span> <span class="paliword" data-word="sabbesampi">सब्बेसम्पि</span> <span class="paliword" data-word="mūlādīnaṃ">मूलादीनं</span> <span class="paliword" data-word="gandho">गन्धो</span> <span class="paliword" data-word="atthi">अत्थि,</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="idha">इध</span> <span class="paliword" data-word="gandho">गन्धो</span> <span class="paliword" data-word="nāma">नाम।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="gandhassa">गन्धस्स</span> <span class="paliword" data-word="gandhe">गन्धे,</span> <span class="paliword" data-word="tasmiṃ">तस्मिं</span> <span class="paliword" data-word="adhivatthā">अधिवत्था।</span> <span class="paliword" data-word="idha">इध</span> <span class="paliword" data-word="mūlādīni">मूलादीनि</span> <span class="paliword" data-word="sabbāni">सब्बानि</span> <span class="paliword" data-word="tesaṃyeva">तेसंयेव</span> <span class="paliword" data-word="upakappanti">उपकप्पन्ति।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="mūlagandhānanti">मूलगन्धानन्ति</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="kāḻānusārikādīnaṃ">काळानुसारिकादीनं</span> <span class="paliword" data-word="mūlagandhānaṃ">मूलगन्धानं</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति।</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="sabbapadesu">सब्बपदेसु</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="evañhi">एवञ्हि</span> <span class="paliword" data-word="sarikkhadānampi">सरिक्खदानम्पि</span> <span class="paliword" data-word="datvā">दत्वा</span> <span class="paliword" data-word="patthanaṃ">पत्थनं</span> <span class="paliword" data-word="ṭhapenti">ठपेन्ति,</span> <span class="paliword" data-word="asarikkhadānampi">असरिक्खदानम्पि।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="dassetuṃ">दस्सेतुं</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="annaṃ">अन्‍नं</span> <span class="paliword" data-word="detītiādi">देतीतिआदि</span> <span class="paliword" data-word="dasavidhaṃ">दसविधं</span> <span class="paliword" data-word="dānavatthu">दानवत्थु</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānamevāti">उत्तानमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0303a.att_00448_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0303a.att_00448_hi">
+                    ४३८-५४९.
+गंधर्वकाय-संयुत्त में 'मूलगंध (जड़ की सुगंध) में निवास करने वाले' का अर्थ है—जिस वृक्ष की जड़ में सुगंध होती है, उसका आश्रय लेकर जो उत्पन्न हुए हैं।
+वह संपूर्ण वृक्ष ही उनके उपयोग में आता है।
+शेष पदों (अनुच्छेदों) में भी यही विधि लागू होती है।
+'गंध-गंध' का अर्थ है—मूल (जड़) आदि विभिन्न सुगंधों की सुगंध में।
+जिस वृक्ष के जड़ आदि सभी अंगों में सुगंध होती है, उसे यहाँ 'गंध' नाम से अभिहित किया गया है।
+उस सुगंध की भी जो सूक्ष्म सुगंध है, वे उसमें निवास करते हैं।
+यहाँ जड़ आदि सभी अंग उन्हीं के काम आते हैं।
+'वह मूलगंधों का दाता है' का तात्पर्य है कि वह कालागुरु (kāḷānusārikā) आदि सुगंधित जड़ों का दान करने वाला है।
+इसी प्रकार सभी पदों का अर्थ समझना चाहिए।
+इस प्रकार लोग समान वस्तुओं का दान देकर भी संकल्प करते हैं और असमान वस्तुओं का दान देकर भी।
+उसी को दर्शाने के लिए 'वह अन्न देता है' आदि दस प्रकार की दान-वस्तुओं का उल्लेख किया गया है।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="gandhabbakāyasaṃyuttavaṇṇanā">गन्धब्बकायसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0303a.att_00449_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0303a.att_00449_hi">
+                    गन्धर्वकायसंयुत्त की व्याख्या यहाँ समाप्त हुई।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="11">११.</span> <span class="paliword" data-word="valāhakasaṃyuttavaṇṇanā">वलाहकसंयुत्तवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0303a.att_00450_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0303a.att_00450_hi">
+                    ११. बलाहक-संयुक्त की व्याख्या (वलाहकसंयुत्त-वण्णना)
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01221'><span class="paliword" data-word="3">३.</span> <span class="paliword" data-word="mūlagandhadātāsuttaṃ">मूलगन्धदातासुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01221_hi'>३. मूलगन्धदातासुत्तं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01222_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01222_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="440">४४०.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="ekamantaṃ">एकमन्तं</span> <span class="paliword" data-word="nisinno">निसिन्‍नो</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="bhagavantaṃ">भगवन्तं</span> <span class="paliword" data-word="etadavoca">एतदवोच</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ko">‘‘को</span> <span class="paliword" data-word="nu">नु</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhante">भन्ते,</span> <span class="paliword" data-word="hetu">हेतु,</span> <span class="paliword" data-word="ko">को</span> <span class="paliword" data-word="paccayo">पच्‍चयो,</span> <span class="paliword" data-word="yena">येन</span> <span class="paliword" data-word="midhekacco">मिधेकच्‍चो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjatīti">उपपज्‍जती’’ति?</span> <span class="paliword" data-word="idha">‘‘इध,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="ekacco">एकच्‍चो</span> <span class="paliword" data-word="kāyena">कायेन</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति,</span> <span class="paliword" data-word="vācāya">वाचाय</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति,</span> <span class="paliword" data-word="manasā">मनसा</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="sutaṃ">सुतं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="mūlagandhe">‘मूलगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा</span> <span class="paliword" data-word="dīghāyukā">दीघायुका</span> <span class="paliword" data-word="vaṇṇavanto">वण्णवन्तो</span> <span class="paliword" data-word="sukhabahulāti">सुखबहुला’ति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="aho">‘अहो</span> <span class="paliword" data-word="vatāhaṃ">वताहं</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjeyyanti">उपपज्‍जेय्य’न्ति।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="mūlagandhānaṃ">मूलगन्धानं।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjati">उपपज्‍जति।</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="hetupe॰">हेतु…पे॰…</span> <span class="paliword" data-word="yena">येन</span> <span class="paliword" data-word="midhekacco">मिधेकच्‍चो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjatīti">उपपज्‍जती’’ति।</span> <span class="paliword" data-word="tatiyaṃ">ततियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01222_hi">
+                ४४०.
+श्रावस्ती में।
+एक ओर बैठे हुए उस भिक्षु ने भगवान से यह कहा— "भन्ते! क्या हेतु है, क्या प्रत्यय है, जिससे यहाँ कोई प्राणी शरीर छूटने पर, मृत्यु के पश्चात, मूल-गन्ध (जड़ों की सुगन्ध) में अधिवास करने वाले देवताओं के सान्निध्य में उत्पन्न होता है?" "भिक्षु! यहाँ कोई व्यक्ति काया से सुचरित करता है, वाणी से सुचरित करता है, और मन से सुचरित करता है। 
+उसने ऐसा सुना होता है— 'मूल-गन्ध में अधिवास करने वाले देवता दीर्घायु, वर्णवान और अत्यधिक सुखी होते हैं।' 
+उसके मन में ऐसा विचार आता है— 'अहो! काश मैं शरीर छूटने पर, मृत्यु के पश्चात, मूल-गन्ध में अधिवास करने वाले देवताओं के सान्निध्य में उत्पन्न हो जाऊँ।' 
+वह मूल-गन्धों का दान देने वाला होता है। 
+वह शरीर छूटने पर, मृत्यु के पश्चात, मूल-गन्ध में अधिवास करने वाले देवताओं के सान्निध्य में उत्पन्न होता है। 
+भिक्षु! यही वह हेतु है... जिससे यहाँ कोई प्राणी शरीर छूटने पर, मृत्यु के पश्चात, मूल-गन्ध में अधिवास करने वाले देवताओं के सान्निध्य में उत्पन्न होता है।"
+तृतीय।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01222_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="438-549">४३८-५४९.</span> <span class="paliword" data-word="gandhabbakāyasaṃyutte">गन्धब्बकायसंयुत्ते</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthāti">अधिवत्थाति</span> <span class="paliword" data-word="yassa">यस्स</span> <span class="paliword" data-word="rukkhassa">रुक्खस्स</span> <span class="paliword" data-word="mūle">मूले</span> <span class="paliword" data-word="gandho">गन्धो</span> <span class="paliword" data-word="atthi">अत्थि,</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="nissāya">निस्साय</span> <span class="paliword" data-word="nibbattā">निब्बत्ता।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="hi">हि</span> <span class="paliword" data-word="sakalopi">सकलोपि</span> <span class="paliword" data-word="rukkho">रुक्खो</span> <span class="paliword" data-word="tesaṃ">तेसं</span> <span class="paliword" data-word="upakappati">उपकप्पति।</span> <span class="paliword" data-word="sesapadesupi">सेसपदेसुपि</span> <span class="paliword" data-word="eseva">एसेव</span> <span class="paliword" data-word="nayo">नयो।</span> <span class="paliword" data-word="gandhagandheti">गन्धगन्धेति</span> <span class="paliword" data-word="mūlādigandhānaṃ">मूलादिगन्धानं</span> <span class="paliword" data-word="gandhe">गन्धे।</span> <span class="paliword" data-word="yassa">यस्स</span> <span class="paliword" data-word="hi">हि</span> <span class="paliword" data-word="rukkhassa">रुक्खस्स</span> <span class="paliword" data-word="sabbesampi">सब्बेसम्पि</span> <span class="paliword" data-word="mūlādīnaṃ">मूलादीनं</span> <span class="paliword" data-word="gandho">गन्धो</span> <span class="paliword" data-word="atthi">अत्थि,</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="idha">इध</span> <span class="paliword" data-word="gandho">गन्धो</span> <span class="paliword" data-word="nāma">नाम।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="gandhassa">गन्धस्स</span> <span class="paliword" data-word="gandhe">गन्धे,</span> <span class="paliword" data-word="tasmiṃ">तस्मिं</span> <span class="paliword" data-word="adhivatthā">अधिवत्था।</span> <span class="paliword" data-word="idha">इध</span> <span class="paliword" data-word="mūlādīni">मूलादीनि</span> <span class="paliword" data-word="sabbāni">सब्बानि</span> <span class="paliword" data-word="tesaṃyeva">तेसंयेव</span> <span class="paliword" data-word="upakappanti">उपकप्पन्ति।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="mūlagandhānanti">मूलगन्धानन्ति</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="kāḻānusārikādīnaṃ">काळानुसारिकादीनं</span> <span class="paliword" data-word="mūlagandhānaṃ">मूलगन्धानं</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति।</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="sabbapadesu">सब्बपदेसु</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="evañhi">एवञ्हि</span> <span class="paliword" data-word="sarikkhadānampi">सरिक्खदानम्पि</span> <span class="paliword" data-word="datvā">दत्वा</span> <span class="paliword" data-word="patthanaṃ">पत्थनं</span> <span class="paliword" data-word="ṭhapenti">ठपेन्ति,</span> <span class="paliword" data-word="asarikkhadānampi">असरिक्खदानम्पि।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="dassetuṃ">दस्सेतुं</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="annaṃ">अन्‍नं</span> <span class="paliword" data-word="detītiādi">देतीतिआदि</span> <span class="paliword" data-word="dasavidhaṃ">दसविधं</span> <span class="paliword" data-word="dānavatthu">दानवत्थु</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānamevāti">उत्तानमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0303a.att_00448_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0303a.att_00448_hi">
+                    ४३८-५४९.
+गंधर्वकाय-संयुत्त में 'मूलगंध (जड़ की सुगंध) में निवास करने वाले' का अर्थ है—जिस वृक्ष की जड़ में सुगंध होती है, उसका आश्रय लेकर जो उत्पन्न हुए हैं।
+वह संपूर्ण वृक्ष ही उनके उपयोग में आता है।
+शेष पदों (अनुच्छेदों) में भी यही विधि लागू होती है।
+'गंध-गंध' का अर्थ है—मूल (जड़) आदि विभिन्न सुगंधों की सुगंध में।
+जिस वृक्ष के जड़ आदि सभी अंगों में सुगंध होती है, उसे यहाँ 'गंध' नाम से अभिहित किया गया है।
+उस सुगंध की भी जो सूक्ष्म सुगंध है, वे उसमें निवास करते हैं।
+यहाँ जड़ आदि सभी अंग उन्हीं के काम आते हैं।
+'वह मूलगंधों का दाता है' का तात्पर्य है कि वह कालागुरु (kāḷānusārikā) आदि सुगंधित जड़ों का दान करने वाला है।
+इसी प्रकार सभी पदों का अर्थ समझना चाहिए।
+इस प्रकार लोग समान वस्तुओं का दान देकर भी संकल्प करते हैं और असमान वस्तुओं का दान देकर भी।
+उसी को दर्शाने के लिए 'वह अन्न देता है' आदि दस प्रकार की दान-वस्तुओं का उल्लेख किया गया है।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="gandhabbakāyasaṃyuttavaṇṇanā">गन्धब्बकायसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0303a.att_00449_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0303a.att_00449_hi">
+                    गन्धर्वकायसंयुत्त की व्याख्या यहाँ समाप्त हुई।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="11">११.</span> <span class="paliword" data-word="valāhakasaṃyuttavaṇṇanā">वलाहकसंयुत्तवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0303a.att_00450_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0303a.att_00450_hi">
+                    ११. बलाहक-संयुक्त की व्याख्या (वलाहकसंयुत्त-वण्णना)
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01223'><span class="paliword" data-word="4-12">४-१२.</span> <span class="paliword" data-word="sāragandhādidātāsuttanavakaṃ">सारगन्धादिदातासुत्तनवकं</span></h3>
+<div class='hindi' id='s0303m.mul_01223_hi'>४-१२. सारगन्धादिदातासुत्तनवकं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01224_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="441-449">४४१-४४९.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="ekamantaṃ">एकमन्तं</span> <span class="paliword" data-word="nisinno">निसिन्‍नो</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="bhagavantaṃ">भगवन्तं</span> <span class="paliword" data-word="etadavoca">एतदवोच</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ko">‘‘को</span> <span class="paliword" data-word="nu">नु</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhante">भन्ते,</span> <span class="paliword" data-word="hetu">हेतु,</span> <span class="paliword" data-word="ko">को</span> <span class="paliword" data-word="paccayo">पच्‍चयो,</span> <span class="paliword" data-word="yena">येन</span> <span class="paliword" data-word="midhekacco">मिधेकच्‍चो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="sāragandhe">सारगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃpe॰">देवानं…पे॰…</span> <span class="paliword" data-word="pheggugandhe">फेग्गुगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="tacagandhe">तचगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="papaṭikagandhe">पपटिकगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="pattagandhe">पत्तगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="pupphagandhe">पुप्फगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="phalagandhe">फलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="rasagandhe">रसगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="gandhagandhe">गन्धगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjatīti">उपपज्‍जती’’ति?</span> <span class="paliword" data-word="idha">‘‘इध,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="ekacco">एकच्‍चो</span> <span class="paliword" data-word="kāyena">कायेन</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति,</span> <span class="paliword" data-word="vācāya">वाचाय</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति,</span> <span class="paliword" data-word="manasā">मनसा</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="sutaṃ">सुतं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="sāragandhe">‘सारगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा</span> <span class="paliword" data-word="dīghāyukā">दीघायुका</span> <span class="paliword" data-word="vaṇṇavanto">वण्णवन्तो</span> <span class="paliword" data-word="sukhabahulāti">सुखबहुला’ति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="aho">‘अहो</span> <span class="paliword" data-word="vatāhaṃ">वताहं</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="sāragandhe">सारगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃpe॰">देवानं…पे॰…</span> <span class="paliword" data-word="pheggugandhe">फेग्गुगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="tacagandhe">तचगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="papaṭikagandhe">पपटिकगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="pattagandhe">पत्तगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="pupphagandhe">पुप्फगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="phalagandhe">फलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="rasagandhe">रसगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="gandhagandhe">गन्धगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjeyyanti">उपपज्‍जेय्य’न्ति।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="sāragandhānaṃpe॰">सारगन्धानं…पे॰…</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="pheggugandhānaṃ">फेग्गुगन्धानं…</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="tacagandhānaṃ">तचगन्धानं…</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="papaṭikagandhānaṃ">पपटिकगन्धानं…</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="pattagandhānaṃ">पत्तगन्धानं…</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="pupphagandhānaṃ">पुप्फगन्धानं…</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="phalagandhānaṃ">फलगन्धानं…</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="rasagandhānaṃ">रसगन्धानं…</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="gandhagandhānaṃ">गन्धगन्धानं।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="gandhagandhe">गन्धगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjati">उपपज्‍जति।</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="hetu">हेतु,</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="paccayo">पच्‍चयो,</span> <span class="paliword" data-word="yena">येन</span> <span class="paliword" data-word="midhekacco">मिधेकच्‍चो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="gandhagandhe">गन्धगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjatīti">उपपज्‍जती’’ति।</span> <span class="paliword" data-word="dvādasamaṃ">द्वादसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01224_hi">
+                ४४१-४४९.
+श्रावस्ती में।
+एक ओर बैठे हुए उस भिक्षु ने भगवान से यह कहा – "भन्ते, वह क्या हेतु है, वह क्या प्रत्यय है, जिससे यहाँ कोई प्राणी शरीर के टूटने पर, मृत्यु के पश्चात, सार-गन्ध (चंदन आदि की सुगंध) में निवास करने वाले देवताओं…पे॰… फेग्गु-गन्ध (सारहीन लकड़ी की सुगंध)… त्वचा-गन्ध (छाल की सुगंध)… पपटिका-गन्ध (पपड़ी की सुगंध)… पत्र-गन्ध (पत्तों की सुगंध)… पुष्प-गन्ध (फूलों की सुगंध)… फल-गन्ध… रस-गन्ध… गन्ध-गन्ध (सुगंधित द्रव्यों की सुगंध) में निवास करने वाले देवताओं के साथ उत्पन्न होता है?"
+"भिक्षु, यहाँ कोई प्राणी काया से सुचरित का आचरण करता है, वाणी से सुचरित का आचरण करता है, मन से सुचरित का आचरण करता है।
+उसने सुना होता है – 'सार-गन्ध में निवास करने वाले देवता दीर्घायु, वर्णवान और बहुत सुखी होते हैं।'
+उसके मन में ऐसा विचार आता है – 'अहो! काश मैं शरीर के टूटने पर, मृत्यु के उपरांत, सार-गन्ध में निवास करने वाले देवताओं…पे॰… गन्ध-गन्ध में निवास करने वाले देवताओं के साथ उत्पन्न हो सकूँ!'
+वह सार-गन्ध का दान देने वाला होता है…पे॰… वह फेग्गु-गन्ध का… त्वचा-गन्ध का… पपटिका-गन्ध का… पत्र-गन्ध का… पुष्प-गन्ध का… फल-गन्ध का… रस-गन्ध का… गन्ध-गन्ध का दान देने वाला होता है।
+वह शरीर के टूटने पर, मृत्यु के पश्चात, गन्ध-गन्ध में निवास करने वाले देवताओं की संगति में उत्पन्न होता है।
+भिक्षु, यही वह हेतु है, यही वह प्रत्यय है, जिससे यहाँ कोई प्राणी शरीर के टूटने पर, मृत्यु के पश्चात, गन्ध-गन्ध में निवास करने वाले देवताओं के साथ उत्पन्न होता है।"
+बारहवां सूत्र समाप्त।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01225'><span class="paliword" data-word="13-22">१३-२२.</span> <span class="paliword" data-word="mūlagandhadānūpakārasuttadasakaṃ">मूलगन्धदानूपकारसुत्तदसकं</span></h3>
+<div class='hindi' id='s0303m.mul_01225_hi'>१३-२२. मूलगन्धदानूपकारसुत्तदसकं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01226_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="450-459">४५०-४५९.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="ekamantaṃ">एकमन्तं</span> <span class="paliword" data-word="nisinno">निसिन्‍नो</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="bhagavantaṃ">भगवन्तं</span> <span class="paliword" data-word="etadavoca">एतदवोच</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ko">‘‘को</span> <span class="paliword" data-word="nu">नु</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhante">भन्ते,</span> <span class="paliword" data-word="hetu">हेतु,</span> <span class="paliword" data-word="ko">को</span> <span class="paliword" data-word="paccayo">पच्‍चयो,</span> <span class="paliword" data-word="yena">येन</span> <span class="paliword" data-word="midhekacco">मिधेकच्‍चो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjatīti">उपपज्‍जती’’ति?</span> <span class="paliword" data-word="idha">‘‘इध,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="ekacco">एकच्‍चो</span> <span class="paliword" data-word="kāyena">कायेन</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति,</span> <span class="paliword" data-word="vācāya">वाचाय</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति,</span> <span class="paliword" data-word="manasā">मनसा</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="sutaṃ">सुतं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="mūlagandhe">‘मूलगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा</span> <span class="paliword" data-word="dīghāyukā">दीघायुका</span> <span class="paliword" data-word="vaṇṇavanto">वण्णवन्तो</span> <span class="paliword" data-word="sukhabahulāti">सुखबहुला’ति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="aho">‘अहो</span> <span class="paliword" data-word="vatāhaṃ">वताहं</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjeyyanti">उपपज्‍जेय्य’न्ति।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="annaṃ">अन्‍नं</span> <span class="paliword" data-word="detipe॰">देति…पे॰…</span> <span class="paliword" data-word="pānaṃ">पानं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="vatthaṃ">वत्थं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="yānaṃ">यानं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="mālaṃ">मालं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="gandhaṃ">गन्धं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="vilepanaṃ">विलेपनं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="seyyaṃ">सेय्यं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="āvasathaṃ">आवसथं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="padīpeyyaṃ">पदीपेय्यं</span> <span class="paliword" data-word="deti">देति।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjati">उपपज्‍जति।</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="hetu">हेतु,</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="paccayo">पच्‍चयो,</span> <span class="paliword" data-word="yena">येन</span> <span class="paliword" data-word="midhekacco">मिधेकच्‍चो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="mūlagandhe">मूलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjatīti">उपपज्‍जती’’ति।</span> <span class="paliword" data-word="bāvīsatimaṃ">बावीसतिमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01226_hi">
+                ४५०-४५९.
+सावत्थी में।
+एक ओर बैठे हुए उस भिक्षु ने भगवान से यह कहा – "भन्ते, क्या हेतु है, क्या प्रत्यय है, जिससे यहाँ कोई व्यक्ति शरीर के टूटने पर, मृत्यु के पश्चात, मूल-गन्ध (जड़ों की सुगंध) में निवास करने वाले देवों के साथ उत्पन्न होता है?"
+"भिक्षु, यहाँ कोई व्यक्ति काया से सुचरित करता है, वाणी से सुचरित करता है, और मन से सुचरित करता है।
+उसने ऐसा सुना होता है – 'मूल-गन्ध में निवास करने वाले देव दीर्घायु, वर्णवान और अत्यंत सुखी होते हैं।'
+उसे ऐसा विचार आता है – 'अहो! काश मैं शरीर के टूटने पर, मृत्यु के पश्चात, मूल-गन्ध में निवास करने वाले देवों के साथ उत्पन्न होऊँ।'
+वह अन्न देता है... पे... पान देता है... वस्त्र देता है... यान देता है... माला देता है... गन्ध देता है... विलेपन देता है... शय्या देता है... आवास देता है... और दीप-सामग्री दान करता है।
+वह शरीर के टूटने पर, मृत्यु के पश्चात, मूल-गन्ध में निवास करने वाले देवों के साथ उत्पन्न होता है।
+भिक्षु, यही हेतु है, यही प्रत्यय है, जिससे यहाँ कोई व्यक्ति शरीर के टूटने पर, मृत्यु के पश्चात, मूल-गन्ध में निवास करने वाले देवों के साथ उत्पन्न होता है।"
+बाईसवां (अध्याय)।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01227'><span class="paliword" data-word="23-112">२३-११२.</span> <span class="paliword" data-word="sāragandhādidānūpakārasuttanavutikaṃ">सारगन्धादिदानूपकारसुत्तनवुतिकं</span></h3>
+<div class='hindi' id='s0303m.mul_01227_hi'>२३-११२. सारगन्धादिदानूपकारसुत्तनवुतिकं</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01228_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="460-549">४६०-५४९.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="ekamantaṃ">एकमन्तं</span> <span class="paliword" data-word="nisinno">निसिन्‍नो</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="bhikkhu">भिक्खु</span> <span class="paliword" data-word="bhagavantaṃ">भगवन्तं</span> <span class="paliword" data-word="etadavoca">एतदवोच</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ko">‘‘को</span> <span class="paliword" data-word="nu">नु</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhante">भन्ते,</span> <span class="paliword" data-word="hetu">हेतु,</span> <span class="paliword" data-word="ko">को</span> <span class="paliword" data-word="paccayo">पच्‍चयो,</span> <span class="paliword" data-word="yena">येन</span> <span class="paliword" data-word="midhekacco">मिधेकच्‍चो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="sāragandhe">सारगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃpe॰">देवानं…पे॰…</span> <span class="paliword" data-word="pheggugandhe">फेग्गुगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="tacagandhe">तचगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="">…</span> <span class="paliword" data-word="papaṭikagandhe">पपटिकगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="pattagandhe">पत्तगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="pupphagandhe">पुप्फगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="phalagandhe">फलगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="rasagandhe">रसगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं…</span> <span class="paliword" data-word="gandhagandhe">गन्धगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjatīti">उपपज्‍जती’’ति?</span> <span class="paliword" data-word="idha">‘‘इध,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="ekacco">एकच्‍चो</span> <span class="paliword" data-word="kāyena">कायेन</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति,</span> <span class="paliword" data-word="vācāya">वाचाय</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति,</span> <span class="paliword" data-word="manasā">मनसा</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं</span> <span class="paliword" data-word="carati">चरति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="sutaṃ">सुतं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="gandhagandhe">‘गन्धगन्धे</span> <span class="paliword" data-word="adhivatthā">अधिवत्था</span> <span class="paliword" data-word="devā">देवा</span> <span class="paliword" data-word="dīghāyukā">दीघायुका</span> <span class="paliword" data-word="vaṇṇavanto">वण्णवन्तो</span> <span class="paliword" data-word="sukhabahulāti">सुखबहुला’ति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="aho">‘अहो</span> <span class="paliword" data-word="vatāhaṃ">वताहं</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="gandhagandhe">गन्धगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjeyyanti">उपपज्‍जेय्य’न्ति।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="annaṃ">अन्‍नं</span> <span class="paliword" data-word="detipe॰">देति…पे॰…</span> <span class="paliword" data-word="pānaṃ">पानं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="vatthaṃ">वत्थं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="yānaṃ">यानं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="mālaṃ">मालं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="gandhaṃ">गन्धं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="vilepanaṃ">विलेपनं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="seyyaṃ">सेय्यं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="āvasathaṃ">आवसथं</span> <span class="paliword" data-word="deti">देति…</span> <span class="paliword" data-word="padīpeyyaṃ">पदीपेय्यं</span> <span class="paliword" data-word="deti">देति।</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="gandhagandhe">गन्धगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjati">उपपज्‍जति।</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhu">भिक्खु,</span> <span class="paliword" data-word="hetu">हेतु,</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="paccayo">पच्‍चयो,</span> <span class="paliword" data-word="yena">येन</span> <span class="paliword" data-word="midhekacco">मिधेकच्‍चो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="gandhagandhe">गन्धगन्धे</span> <span class="paliword" data-word="adhivatthānaṃ">अधिवत्थानं</span> <span class="paliword" data-word="devānaṃ">देवानं</span> <span class="paliword" data-word="sahabyataṃ">सहब्यतं</span> <span class="paliword" data-word="upapajjatīti">उपपज्‍जती’’ति।</span> <span class="paliword" data-word="dvādasasatimaṃ">द्वादससतिमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01228_hi">
+                ४६०-५४९.
+सावत्थी में।
+एक ओर बैठे हुए उस भिक्षु ने भगवान से यह कहा – "भन्ते, वह क्या हेतु है, वह क्या प्रत्यय है, जिससे यहाँ कोई प्राणी शरीर के टूटने पर, मृत्यु के पश्चात, सार-गन्ध (काष्ठ-सुगन्ध) में अधिष्ठित देवों...पे... फेग्गु-गन्ध (सारहीन काष्ठ) में अधिष्ठित देवों... त्वचा-गन्ध (छाल) में अधिष्ठित देवों... पपटिका-गन्ध (पपड़ी) में अधिष्ठित देवों... पत्र-गन्ध (पत्ते) में अधिष्ठित देवों... पुष्प-गन्ध में अधिष्ठित देवों... फल-गन्ध में अधिष्ठित देवों... रस-गन्ध में अधिष्ठित देवों... गन्ध-गन्ध (सुगन्धों की सुगन्ध) में अधिष्ठित देवों के सान्निध्य में उत्पन्न होता है?" "भिक्षु, यहाँ कोई काया से सुचरित करता है, वाणी से सुचरित करता है, मन से सुचरित करता है।
+वह सुनता है – 'गन्ध-गन्ध में अधिष्ठित देव दीर्घायु, वर्णवान और अत्यंत सुखी होते हैं।'
+वह ऐसा सोचता है – 'अहो! शरीर के टूटने पर, मृत्यु के बाद, मैं गन्ध-गन्ध में अधिष्ठित देवों के सान्निध्य में उत्पन्न होऊँ।'
+वह अन्न देता है...पे... पान देता है... वस्त्र देता है... यान (सवारी) देता है... माला देता है... गन्ध देता है... विलेपन देता है... शय्या देता है... आवास देता है... प्रदीप (दीपक) देता है।
+वह शरीर के टूटने पर, मृत्यु के पश्चात, गन्ध-गन्ध में अधिष्ठित देवों के सान्निध्य में उत्पन्न होता है।
+भिक्षु, यही वह हेतु है, यही वह प्रत्यय है, जिससे यहाँ कोई प्राणी शरीर के टूटने पर, मृत्यु के पश्चात, गन्ध-गन्ध में अधिष्ठित देवों के सान्निध्य में उत्पन्न होता है।"
+एक सौ बारहवाँ (सुत्त समाप्त)।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01229_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="evaṃ">(एवं</span> <span class="paliword" data-word="piṇḍakena">पिण्डकेन</span> <span class="paliword" data-word="ekasatañca">एकसतञ्‍च</span> <span class="paliword" data-word="dvādasa">द्वादस</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="suttantā">सुत्तन्ता</span> <span class="paliword" data-word="honti">होन्ति।)</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01229_hi">
+                इस प्रकार कुल मिलाकर एक सौ बारह सुत्तन्त होते हैं।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01230_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01230_hi">
+                इसका सारांश यह है:
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01231_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="suddhikañca">सुद्धिकञ्‍च</span> <span class="paliword" data-word="sucaritaṃ">सुचरितं,</span> <span class="paliword" data-word="dātā">दाता</span> <span class="paliword" data-word="hi">हि</span> <span class="paliword" data-word="apare">अपरे</span> <span class="paliword" data-word="dasa">दस।</span> <span class="paliword" data-word="dānūpakārā">दानूपकारा</span> <span class="paliword" data-word="satadhā">सतधा,</span> <span class="paliword" data-word="gandhabbe">गन्धब्बे</span> <span class="paliword" data-word="suppakāsitāti||">सुप्पकासिताति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01231_hi">
+                शुद्ध और सदाचारी कर्मों का फल शुभ होता है, क्योंकि इसके उपरांत दस अन्य दाता प्रकट होते हैं। दान के सौ प्रकार के लाभ गंधर्वों के बीच भली-भांति प्रकाशित किए गए हैं।
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

@@ -1,0 +1,951 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"pañcime": "1 <i>sand</i> these five [sandhi, adj + pron]", "asucinā": "1 <i>adj</i> impure; unclean; filthy; foul; disgusting [adj] ‹ √suc<br>2 <i>masc</i> impurity; filth [masc] ‹ √suc<br>3 <i>nt</i> impure thing; something dirty; foul thing [nt] ‹ √suc (lit. impurity)<br>4 <i>nt</i> sperm; semen [nt] ‹ √suc (lit. impurity)", "tathūpamāhaṃ": "1 <i>sand</i> comparable in the same way I [sandhi, adv + adj + pron] (lit. like this comparison I)", "hoti": "1 <i>pr</i> is; becomes [pr]<br>2 <i>pr</i> exists (for) [pr]<br>3 <i>pr</i> stays; remains; continues to be [pr] (lit. is)", "uttānatthamevāti": "1 <i>sand</i> the meaning is clear just as it is [sandhi, adj + masc + ind + ind]", "anuvicca": "1 <i>ger</i> investigating; finding out; learning about; knowing about [ger of anuvijjati] ‹ anuvijjati (lit. knowing along)", "duggatiṃ": "1 <i>fem</i> state of misery; bad destination; hell [fem, abstr, from gati] ‹ gati (lit. going badly)", "āpajjanti": "1 <i>pr</i> comes to; experiences; gets (pleasure); suffers (pain); meets (with) [pr]<br>2 <i>pr</i> arouses; exhibits; produces; brings into being<br>3 <i>pr</i> engages in [pr]<br>4 <i>pr</i> (of an offence) commits; falls into [pr]<br>5 <i>pr</i> causes; effects [pr]<br>6 <i>pr</i> enters into a state or condition; becomes [pr]<br>7 <i>pr</i> [pr]<br>8 <i>pr</i> achieves; reaches; attains [pr]", "āpattiṃ": "1 <i>fem</i> entering; going into [fem, from āpajjati] ‹ आपज्जति<br>2 <i>fem</i> (vinaya) offence; wrongdoing; transgression [fem, abstr, from āpajjati] ‹ आपज्जति<br>3 <i>fem</i> [fem]", "ye": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>pr</i> goes; goes to; goes forward; proceeds; travels<br>6 <i>pr</i> (of an army) marches against; pursues; routs [pr]<br>7 <i>pron</i> whoever; whatever; whichever; those who [pron, masc & nt nom pl of ya] ‹ ya<br>8 <i>pron</i> whoever; whatever; whichever; those who (object) [pron, masc & nt acc pl of ya] ‹ ya", "dutiyo": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>fem</i> [fem, from dūta] ‹ दूत<br>5 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "saddhammā": "1 <i>masc</i> good teaching; true doctrine; true nature of things; (comm) the five precepts, ten precepts, four foundations of mindfulness etc. [masc,]<br>2 <i>masc</i> good quality; positive characteristic [masc,]<br>3 <i>masc</i> one's own teaching; personal doctrine [masc,]", "asucitāya": "1 <i>fem</i> impurity; uncleanliness; filthiness; foulness; fact of being disgusting [fem, abstr, from na suci] ‹ suci", "sā": "1 <i>pron</i> that [pron, base]<br>2 <i>pron</i> own; one's own; one's own possession [pron, base, reflx]<br>3 <i>adj</i> self-; personal- [adj, in s, reflx]<br>4 <i>lett</i> (gram) letter s; 36th letter of the alphabet; dental consonant [letter, masc]<br>5 <i>masc</i> dog [masc, atta group]<br>6 <i>pron</i> she; that; it [pron, fem nom sg of ta] ‹ ta", "suṇāti": "1 <i>pr</i> hears [pr]<br>2 <i>pr</i> listens (to) [pr]", "manāpo": "1 <i>adj</i> pleasant; likeable; attractive; agreeable [adj] (lit. obtained by mind)", "abhippasanno": "1 <i>pp</i> who believes; with total faith; with complete confidence; who totally trusts (in) [pp of abhippasīdati] ‹ अभिप्पसीदति", "evamevaṃ": "1 <i>sand</i> similarly; in exactly the same way; so too [sandhi, adv + adv]", "karoti": "1 <i>pr</i> does; acts; performs [pr]<br>2 <i>pr</i> makes [pr]<br>3 <i>pr</i> builds; constructs [pr]", "dutiyaṃ": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>ind</i> second time [ind, adv, acc sg of dutiya] ‹ dutiya<br>5 <i>fem</i> second woman; another woman; female companion [fem, from dvi] ‹ dvi<br>6 <i>fem</i> [fem]<br>7 <i>fem</i> [fem, from dūta] ‹ दूत<br>8 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "asaddhammeti": "1 <i>masc</i> unvirtuous practice; vulgar habit [masc,]<br>2 <i>masc</i> untrue teaching; false doctrine [masc,]<br>3 <i>masc</i> sex; sexual intercourse [masc,]", "sappaṭibhayasmiṃ": "1 <i>adj</i> fearful; frightful; perilous; risky; dangerous [adj, from bhaya] ‹ bhaya", "puggalappasādasuttaṃ": "1 <i>nt</i> [nt,]", "puggaleti": "1 <i>masc</i> person; individual [masc]", "puggalappasādeti": "1 <i>masc</i> faith in a person; confidence in an individual [masc,]", "āvāso": "1 <i>masc</i> home; dwelling place; residence (of) [masc, from āvasati] ‹ आवसति (lit. living here)<br>2 <i>masc</i> sphere of existence; plane of existence [masc, from āvasati] ‹ आवसति (lit. living here)", "aññe": "1 <i>pron</i> another; other; different; someone else; not oneself [pron]<br>2 <i>pron</i> something more; something further; something else [pron]<br>3 <i>fem</i> gnosis; spiritual insight; awakening; final knowledge [fem, abstr, from ājānāti] ‹ आजानाति<br>4 <i>pr</i> knows; understands; is aware (of) [pr]<br>5 <i>pron</i> others; other people; the rest [pron, masc nom & acc pl of añña] ‹ अञ्ञ<br>6 <i>adj</i> ignorant; foolish; stupid [adj, from na jānāti] ‹ जानाति (lit. who does not know)<br>7 <i>pron</i> other (than); apart (from) [pron]", "mayaṃ": "1 <i>pron</i> I [pron]<br>2 <i>adj</i> made of; constructed by; built of [adj, in s, from miṇāti] ‹ मिणाति<br>3 <i>pron</i> we [pron, 1st nom pl of ahaṃ] ‹ अहं<br>4 <i>pron</i> (royal plural) I [pron, 1st nom pl of ahaṃ] ‹ अहं (lit. we)", "manosucariteti": "1 <i>nt</i> good mental conduct; wholesome thought [nt,]", "kalyāṇo": "1 <i>adj</i> good; favourable; propitious; beneficial; beautiful; lovely; ethical [adj]<br>2 <i>adj</i> (of speech) polite; kind; charming; (comm) soft and gentle [adj] (lit. good)", "ādīnavo": "1 <i>masc</i> danger; problem (in) [masc, from ādīna] ‹ आदीन<br>2 <i>masc</i> disadvantage; drawback; unsatisfactoriness; inadequacy (of) [masc, from ādīna] ‹ आदीन", "idaṃ": "1 <i>pron</i> this; this thing [pron, nt nom sg of ima] ‹ ima<br>2 <i>pron</i> this; this thing; this place (object) [pron, nt acc sg of ima] ‹ ima<br>3 <i>pron</i> this [pron, base]<br>4 <i>ind</i> here; in this case [ind, adv, acc sg of ima] ‹ ima", "nirayaṃ": "1 <i>masc</i> hell; hell realm [masc, from aya] ‹ aya (lit. no good fortune)", "sabrahmacārī": "1 <i>masc</i> fellow monk; spiritual companion [masc, , from brahmacāri] ‹ ब्रह्मचारि<br>2 <i>masc</i> fellow monk; spiritual companion [masc, , from brahmacārī] ‹ ब्रह्मचारी", "āpanno": "1 <i>pp</i> fallen into; entered into; met with [pp of āpajjati] ‹ आपज्जति<br>2 <i>pp</i> possessed of; filled with; having [pp of āpajjati] ‹ आपज्जति (lit. entered)<br>3 <i>pp</i> (of an offence) committed; fallen into [pp of āpajjati] ‹ आपज्जति<br>4 <i>pp</i> (of a monk) who has committed; who has fallen into (an offence) [pp of āpajjati] ‹ आपज्जति<br>5 <i>pp</i> caused; effected [pp of āpajjati] ‹ आपज्जति", "catutthaṃ": "1 <i>ordi</i> fourth (4th) [ordin of catu] ‹ catu<br>2 <i>masc</i> (gram) fourth consonant of each vagga; gh, jh, ḍh, dh, bh [masc, from catu] ‹ catu (lit. fourth)<br>3 <i>ind</i> for the fourth time; on the fourth day [ind, adv, acc sg of catuttha] ‹ catuttha", "saddhamme": "1 <i>masc</i> good teaching; true doctrine; true nature of things; (comm) the five precepts, ten precepts, four foundations of mindfulness etc. [masc,]<br>2 <i>masc</i> good quality; positive characteristic [masc,]<br>3 <i>masc</i> one's own teaching; personal doctrine [masc,]", "asucināti": "1 <i>adj</i> impure; unclean; filthy; foul; disgusting [adj] ‹ √suc<br>2 <i>masc</i> impurity; filth [masc] ‹ √suc<br>3 <i>nt</i> impure thing; something dirty; foul thing [nt] ‹ √suc (lit. impurity)<br>4 <i>nt</i> sperm; semen [nt] ‹ √suc (lit. impurity)", "puggalaṃ": "1 <i>masc</i> person; individual [masc]", "upasampadāvaggo": "1 <i>masc</i> [masc,]", "sugatiṃ": "1 <i>fem</i> good destination; happy fate [fem, abstr, from gati] ‹ gati (lit. good going)<br>2 <i>adj</i> righteous; good; just; fortunate [adj, from gata] ‹ gata (lit. who goes well)", "paraṃ": "1 <i>pron</i> other; another (person) [pron]<br>2 <i>adj</i> next (world); next (life); after (life) [adj]<br>3 <i>adj</i> (gram) next; following; last; after [adj]<br>4 <i>adj</i> foreign; alien; not oneself [adj]<br>5 <i>masc</i> (gram) next letter; following vowel [masc]<br>6 <i>adj</i> engrossed in; given to; aiming for [adj, in s]<br>7 <i>adj</i> higher; greater; more (than) [adj]<br>8 <i>ind</i> after; beyond; on the other side (of) [ind, prep, acc sg of para] ‹ para", "dukkhaṃ": "1 <i>adj</i> uncomfortable; unpleasant [adj] ‹ √dukkh<br>2 <i>adj</i> painful [adj] ‹ √dukkh<br>3 <i>nt</i> discomfort; suffering; unease; unpleasantness; something unsatisfactory; trouble; a bummer; stress ‹ √dukkh<br>4 <i>nt</i> pain; physical discomfort [nt] ‹ √dukkh<br>5 <i>ind</i> badly; with difficulty; uncomfortably [ind, adv, acc sg of dukkha] ‹ dukkha", "ayaṃ": "1 <i>masc</i> good luck; good fortune [masc, from eti] ‹ eti<br>2 <i>adj</i> coming; going [adj, in s, from eti] ‹ eti<br>3 <i>masc</i> [masc]<br>4 <i>nt</i> iron [nt, in s]<br>5 <i>masc</i> iron [masc, mano group]<br>6 <i>pron</i> this; this person; this thing [pron, masc & fem nom sg of ima] ‹ ima<br>7 <i>pron</i> this [pron, base]", "dutiyavacīduccaritasuttaṃ": "1 <i>nt</i> [nt,]", "garahanti": "1 <i>pr</i> criticizes; abuses; blames [pr]", "pesalā": "1 <i>adj</i> well-behaved; good; honest [adj]<br>2 <i>adj</i> good quality; fine; excellent [adj]", "ukkhittoti": "1 <i>pp</i> lifted up; drawn up; raised [pp of ukkhipati] ‹ ukkhipati (lit. thrown up)<br>2 <i>pp</i> (vinaya) suspended [pp of ukkhipati] ‹ ukkhipati (lit. thrown up)", "paṭhamamanoduccaritasuttaṃ": "1 <i>nt</i> [nt,]", "khīyanadhammaṃ": "1 <i>masc</i> act of complaining; practice of complaining [masc,]", "nisīdāpitoti": "1 <i>pp</i> [pp of nisīdāpeti] ‹ निसीदापेति (lit. caused to sit down)", "attānaṃ": "1 <i>masc</i> self; soul; spirit; essence [masc, atta group]<br>2 <i>adj</i> personal; related to oneself [adj, in s]<br>3 <i>nt</i> taking up; accepting; seizing; grasping [nt, pp of ādadāti] ‹ आददाति (lit. taken)<br>4 <i>pp</i> taken up; accepted; seized; grasped [pp of ādadāti] ‹ आददाति<br>5 <i>nt</i> (gram) the negative prefix a [nt, abstr, from na] ‹ na (lit. na state)<br>6 <i>masc</i> self; himself; herself; itself; yourself; oneself (object) [masc, acc sg of atta, atta group] ‹ atta", "idamassa": "1 <i>sand</i> this is his; this of that [sandhi, pron + pron]", "viññū": "1 <i>adj</i> wise; intelligent; discerning; knowledgeable [adj, from vijānāti] ‹ विजानाति<br>2 <i>masc</i> wise person; sage; knowledgable man; intelligent person [masc, agent, from vijānāti] ‹ विजानाति", "navamaṃ": "1 <i>ordi</i> ninth (9th) [ordin of nava] ‹ nava", "ukkhipati": "1 <i>pr</i> throws out; suspends [pr] (lit. throws up)<br>2 <i>pr</i> raises up; lifts up; holds up [pr] (lit. throws up)", "asuṇanto": "1 <i>prp</i> not hearing; not listening (to) [prp of na suṇāti] ‹ सुणाति<br>2 <i>prp</i> being disobedient [prp of na suṇāti] ‹ सुणाति (lit. not listening)", "saddhammāti": "1 <i>masc</i> good teaching; true doctrine; true nature of things; (comm) the five precepts, ten precepts, four foundations of mindfulness etc. [masc,]<br>2 <i>masc</i> good quality; positive characteristic [masc,]<br>3 <i>masc</i> one's own teaching; personal doctrine [masc,]", "yo": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>pron</i> whoever; whatever; whichever [pron, masc nom sg of ya] ‹ ya", "sivathikasuttaṃ": "1 <i>nt</i> [nt,]", "dasamaṃ": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "pañcamaṃ": "1 <i>ordi</i> fifth (5th) [ordin of pañca] ‹ पञ्च<br>2 <i>masc</i> fifth of the seven primary musical notes [masc, ordin of pañca] ‹ पञ्च (lit. fifth)", "samannāgatassa": "1 <i>pp</i> possessing; endowed (with); having [pp of saṃ anu ā √gam] ‹ सं अनु आ √गम् (lit. going together)", "kho": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "manosucarite": "1 <i>nt</i> good mental conduct; wholesome thought [nt,]", "bhedato": "1 <i>masc</i> death [masc, from bhindati] ‹ bhindati (lit. breakup)<br>2 <i>masc</i> schism; split; breakup; disunion [masc, from bhindati] ‹ bhindati<br>3 <i>adj</i> breaking; splitting; tearing [adj, from bhindati] ‹ bhindati<br>4 <i>adj</i> like; type of; consisting of; having [adj, from bhindati] ‹ bhindati<br>5 <i>adj</i> disturbing; upsetting; violating [adj, from bhindati] ‹ bhindati<br>6 <i>masc</i> variety; distinction; difference [masc, from bhindati] ‹ bhindati<br>7 <i>adj</i> distinguished (by) [adj, from bhindati] ‹ bhindati<br>8 <i>adj</i> consisting of; comprised of [adj, in s, from bhindati] ‹ bhindati (lit. divided)<br>9 <i>masc</i> breakup; dissolution; destruction (of) [masc, from bhindati] ‹ bhindati", "puna": "1 <i>ind</i> again; once more [ind, adv]<br>2 <i>pr</i> cleans; purifies [pr]", "upapajjati": "1 <i>pr</i> is reborn; re-arises (in) [pr] (lit. goes towards)<br>2 <i>pr</i> appears; arises [pr] (lit. goes towards)<br>3 <i>pr</i> is suitable; is acceptable; is admissible [pr] (lit. goes towards)", "imaṃ": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> this; this person; this thing [pron, masc fem & nt acc sg of ima] ‹ ima", "sivathikūpame": "1 <i>adj</i> like a charnel ground [adj,]", "sivathikāya": "1 <i>fem</i> charnel ground [fem,] (lit. safe place for bones; where bones sleep)", "saggaṃ": "1 <i>adj</i> heavenly [adj] ‹ √sar<br>2 <i>masc</i> heaven; paradise [masc, abstr] ‹ √sar<br>3 <i>masc</i> [masc]", "paṭhame": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>fem</i> [fem]", "sabbattha": "1 <i>ind</i> everywhere; every place [ind, adv, from sabba] ‹ sabba<br>2 <i>ind</i> in every way; in every respect; entirely [ind, adv, from sabba] ‹ sabba<br>3 <i>ind</i> (gram) in all cases; in all instances [ind, adv, from sabba] ‹ sabba<br>4 <i>masc</i> all cases; all matters; all things [masc pl,]", "kālaṅkato": "1 <i>pp</i> died; dead; deceased; passed away (in) [pp of kālaṅkaroti,  vb] ‹ कालङ्करोति (lit. done (one's) time)<br>2 <i>masc</i> dead person; deceased [masc, , pp of kālaṅkaroti] ‹ कालङ्करोति (lit. done (one's) time)", "sabhāgehi": "1 <i>adj</i> in common; same; universal [adj, from bhāga] ‹ भाग<br>2 <i>masc</i> resemblance; likeness; similarity [masc, in s, from bhāga] ‹ भाग", "navame": "1 <i>ordi</i> ninth (9th) [ordin of nava] ‹ nava", "kāyassa": "1 <i>masc</i> body; physical body; physical process [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>2 <i>masc</i> group; host; company; collection; multitude; mass [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>3 <i>masc</i> process; collection [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>4 <i>masc</i> category; class; group (of) [masc, in s, from cināti] ‹ चिनाति (lit. accumulation)<br>5 <i>masc</i> physical existence; material existence [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>6 <i>masc</i> group of beings; class of beings; state of existence [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>7 <i>masc</i> mass; heap; bulk; body [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>8 <i>adj</i> with a body; having (a certain kind of) body; -bodied [adj, from cināti] ‹ चिनाति (lit. accumulation)<br>9 <i>masc</i> embodiment; living manifestation [masc, from cināti] ‹ चिनाति (lit. accumulation)", "āpattiyā": "1 <i>fem</i> entering; going into [fem, from āpajjati] ‹ आपज्जति<br>2 <i>fem</i> (vinaya) offence; wrongdoing; transgression [fem, abstr, from āpajjati] ‹ आपज्जति<br>3 <i>fem</i> [fem]", "tassuddānaṃ": "1 <i>sand</i> summary; a short verse given at the end of each vagga listing the titles or topics of the relevant suttas [sandhi, pron + nt] (lit. tying up of that)", "parivajjanti": "1 <i>pr</i> avoids; shuns; steers clear (of) [pr]", "bhedā": "1 <i>masc</i> death [masc, from bhindati] ‹ bhindati (lit. breakup)<br>2 <i>masc</i> schism; split; breakup; disunion [masc, from bhindati] ‹ bhindati<br>3 <i>adj</i> breaking; splitting; tearing [adj, from bhindati] ‹ bhindati<br>4 <i>adj</i> like; type of; consisting of; having [adj, from bhindati] ‹ bhindati<br>5 <i>adj</i> disturbing; upsetting; violating [adj, from bhindati] ‹ bhindati<br>6 <i>masc</i> variety; distinction; difference [masc, from bhindati] ‹ bhindati<br>7 <i>adj</i> distinguished (by) [adj, from bhindati] ‹ bhindati<br>8 <i>adj</i> consisting of; comprised of [adj, in s, from bhindati] ‹ bhindati (lit. divided)<br>9 <i>masc</i> breakup; dissolution; destruction (of) [masc, from bhindati] ‹ bhindati", "duggandhatāya": "1 <i>fem</i> fact of being foul smelling; fetidness; malodorousness; stinkiness [fem, abstr, from duggandha] ‹ duggandha", "vata": "1 <i>ind</i> oh!; oh no!; oh dear!; wow! [ind, excl]<br>2 <i>ind</i> certainly; surely; indeed [ind, emph]<br>3 <i>nt</i> religious duty; spiritual practice; ritual observance; vow [nt] ‹ √vat<br>4 <i>adj</i> undertaking a religious practice; having a spiritual practice; performing a ritual observance [adj] ‹ √vat", "susāne": "1 <i>nt</i> burial ground for bones of cremated corpses; cemetery [nt]", "ime": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> these [pron, masc nom & acc pl of ima] ‹ ima", "nisīdāpeti": "1 <i>pr</i> makes (someone) take a seat; makes sit down [pr, caus of nisīdati] ‹ निसीदति (lit. causes to sit down)", "dutiyaduccaritasuttaṃ": "1 <i>nt</i> [nt,]", "jigucchanīyena": "1 <i>ptp</i> disgusting; repulsive; nauseating [ptp of jigucchati] ‹ jigucchati (lit. to be disliked)", "ekapuggalasmiṃ": "1 <i>masc</i> single person; individual [masc,]", "sucariteti": "1 <i>adj</i> good; right; moral [adj, from carita] ‹ carita (lit. well behaved)<br>2 <i>nt</i> good conduct; good behaviour (by) [nt, from carita] ‹ carita (lit. well behaved)", "chaṭṭhaṃ": "1 <i>ordi</i> sixth (6th) [ordin of cha] ‹ cha", "kālaṃ": "1 <i>masc</i> time; occasion (for) [masc] ‹ √kal<br>2 <i>masc</i> suitable time; appropriate occasion; right time [masc] ‹ √kal (lit. time)<br>3 <i>masc</i> (gram) tense; mood [masc] ‹ √kal (lit. time)<br>4 <i>masc</i> (gram) rest; pause; space [masc] ‹ √kal (lit. time)<br>5 <i>masc</i> time of death; death moment [masc] ‹ √kal (lit. time)<br>6 <i>masc</i> daybreak; early morning [masc] (lit. time)<br>7 <i>masc</i> necklace plant; Sophora tomentosa [masc]", "caparaṃ": "1 <i>sand</i> and further; and what is more; furthermore [sandhi, ind + adv]", "dasame": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "pāpako": "1 <i>adj</i> bad; wicked; evil; wrong; worthless; harmful [adj, from pāpa] ‹ पाप<br>2 <i>adj</i> (of speech) rough; harsh; dirty [adj, in s, from pāpa] ‹ पाप<br>3 <i>adj</i> [adj, in s, from pāpa] ‹ पाप (lit. reaching)<br>4 <i>adj</i> [adj] (lit. reaching)", "paṭhamaduccaritasuttaṃ": "1 <i>nt</i> [nt,]", "paṭhamaṃ": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>ind</i> first; firstly; at first; first of all [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>5 <i>ind</i> before; recently; newly; just [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>6 <i>fem</i> [fem]", "ānisaṃsā": "1 <i>masc</i> profit (in); benefit (in); advantage (of); good result (of) [masc]<br>2 <i>adj</i> for the benefit of; for the advantage of; for the good of [adj, in s]<br>3 <i>adj</i> expecting; anticipating [adj]", "kittisaddo": "1 <i>masc</i> reputation; renown [masc,] (lit. sound of fame)", "pañca": "1 <i>card</i> five (5) [card, x pl]", "no": "1 <i>pron</i> I [pron]<br>2 <i>masc</i> (gram) negative prefix na [masc, prefix]<br>3 <i>ind</i> no; not [ind]<br>4 <i>ind</i> (adds a question mark) surely?; didn't?; isn't it?; definitely [ind, interr]<br>5 <i>ind</i> then; now; indeed [ind, emph]<br>6 <i>pron</i> us (object) [pron, 1st acc pl of ahaṃ] ‹ अहं<br>7 <i>pron</i> by us; with us [pron, 1st instr pl of ahaṃ] ‹ अहं<br>8 <i>pron</i> for us; to us [pron, 1st dat pl of ahaṃ] ‹ अहं<br>9 <i>pron</i> our [pron, 1st gen pl of ahaṃ] ‹ अहं", "idha": "1 <i>ind</i> here; now; in this world [ind, adv, from ima] ‹ ima<br>2 <i>ind</i> here; in this regard; in this case [ind, adv, from ima] ‹ ima<br>3 <i>ind</i> (comm) in this teaching; here in this doctrine [ind, adv, from ima] ‹ ima", "bhikkhūnaṃ": "1 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "piyo": "1 <i>adj</i> dear (to); beloved (by); loved (by) [adj] ‹ √पी<br>2 <i>adj</i> liked; pleasant; agreeable [adj] ‹ √पी<br>3 <i>masc</i> husband; lover; partner [masc] ‹ √पी", "duggandhā": "1 <i>adj</i> foul smelling; fetid; malodorous; stinky [adj, from gandha] ‹ gandha<br>2 <i>masc</i> bad smell; foul odour [masc, from gandha] ‹ gandha", "nisīdāpetīti": "1 <i>pr</i> makes (someone) take a seat; makes sit down [pr, caus of nisīdati] ‹ निसीदति (lit. causes to sit down)", "ārodanāti": "1 <i>fem</i> [fem]", "puggale": "1 <i>masc</i> person; individual [masc]", "vuṭṭhāti": "1 <i>pr</i> (of meditation) emerges (from); comes out (of) [pr] (lit. stands up)<br>2 <i>pr</i> (of an offence) rehabilitates; re-emerges; reinstitutes [pr] (lit. stands up)<br>3 <i>pr</i> (of an illness) gets better; recovers (from) [pr] (lit. stands up)<br>4 <i>pr</i> arises; emerges; comes up (from) [pr] (lit. stands up)", "seyyathāpi": "1 <i>sand</i> just like; as if; imagine if [sandhi, pron + adv + ind]", "ārodanāya": "1 <i>fem</i> [fem]", "assaddhamme": "1 <i>masc</i> untrue teaching; false doctrine [masc,]<br>2 <i>masc</i> bad quality; negative characteristic [masc,]", "maraṇā": "1 <i>nt</i> death; dying [nt, act, from marati] ‹ marati", "saṅghena": "1 <i>masc</i> community; fellowship; monastic order [masc, from saṅghaṭeti] ‹ सङ्घटेति<br>2 <i>masc</i> group; crowd; mass; multitude; collection; entourage [masc, from saṅghaṭeti] ‹ सङ्घटेति<br>3 <i>masc</i> name of a privately awakened Buddha [masc] (lit. group)", "lokaṃ": "1 <i>masc</i> world; universe; cosmos [masc] ‹ √lok<br>2 <i>masc</i> world; plane of existence [masc] ‹ √lok<br>3 <i>masc</i> people (of the world); population [masc] ‹ √lok<br>4 <i>masc</i> world of experience; (comm) world of aggregates, sense spheres and elements [masc] ‹ √lok", "disvā": "1 <i>abs</i> having seen; having understood; having found out [abs of √dis] ‹ √dis", "abhajanto": "1 <i>prp</i> not associating; not keeping company (with) [prp of na bhajati] ‹ bhajati", "disāpakkanto": "1 <i>adj</i> who goes to another place [adj,] (lit. set out in a direction)", "khīyadhammaṃ": "1 <i>masc</i> [masc,]", "tatiyaṃ": "1 <i>ordi</i> third (3rd) [ordin of ti] ‹ ti<br>2 <i>masc</i> (gram) third consonant of each vagga; g, j, ḍ, d, b [masc, from ti] ‹ ti<br>3 <i>adj</i> [adj, from tatha] ‹ tatha<br>4 <i>ind</i> for the third time [ind, adv, acc sg of tatiya] ‹ tatiya<br>5 <i>fem</i> [fem]", "dutiyakāyaduccaritasuttaṃ": "1 <i>nt</i> [nt,]", "evarūpehi": "1 <i>adj</i> such; similar kind of; of such quality [adj,]", "vuttaṃ": "1 <i>pp</i> sown; scattered; planted [pp of vapati] ‹ vapati<br>2 <i>pp</i> shaven [pp of vapati] ‹ vapati<br>3 <i>pp</i> said; told; spoken; mentioned [pp of vacati] ‹ vacati<br>4 <i>pp</i> called; named; said (to be) [pp of vacati] ‹ vacati<br>5 <i>pp</i> spoken to [pp of vacati] ‹ vacati<br>6 <i>nt</i> [nt]<br>7 <i>pp</i> [pp]<br>8 <i>nt</i> poem; verse; stanza [nt, pp of vacati] ‹ vacati (lit. spoken)<br>9 <i>adj</i> with a livelihood (of); living off; as means of living [adj, from vutti] ‹ vutti<br>10 <i>nt</i> (gram) meter; prosody [nt, pp of vacati] ‹ vacati (lit. spoken)", "saṃvasāmāti": "1 <i>pr</i> lives together; cohabits; lives (with) [pr]", "samannāgato": "1 <i>pp</i> possessing; endowed (with); having [pp of saṃ anu ā √gam] ‹ सं अनु आ √गम् (lit. going together)", "myāyaṃ": "1 <i>sand</i> by me this [sandhi, pron + pron]<br>2 <i>sand</i> of me this [sandhi, pron + pron]<br>3 <i>sand</i> for me this [sandhi, pron + pron]<br>4 <i>sand</i> to me this [sandhi, pron + pron]<br>5 <i>sand</i> this person (tolerates) me [sandhi, pron + pron]", "sīvathikāya": "1 <i>fem</i> charnel ground [fem,] (lit. safe place for bones; where bones sleep)", "saddhiṃ": "1 <i>ind</i> together (with); with [ind, prep]", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "abhedato": "1 <i>adj</i> [adj]", "paṭhamakāyaduccaritasuttaṃ": "1 <i>nt</i> [nt,]", "sappaṭibhayā": "1 <i>adj</i> fearful; frightful; perilous; risky; dangerous [adj, from bhaya] ‹ bhaya", "vasena": "1 <i>masc</i> wish; desire; will [masc] ‹ √vas<br>2 <i>masc</i> control; authority; power; mastery (over) [masc] ‹ √vas<br>3 <i>masc</i> financial ability [masc] ‹ √vas (lit. power)<br>4 <i>root</i> (gram) √vas (live) [root, masc]<br>5 <i>ind</i> due to; through; by means (of) [ind, adv, in s, instr sg of vasa] ‹ vasa (lit. by the power)<br>6 <i>ind</i> as [ind, adv, in s, instr sg of vasa] ‹ vasa (lit. by the power)<br>7 <i>ind</i> concerning [ind, adv, in s, instr sg of vasa] ‹ vasa (lit. by the power)<br>8 <i>adj</i> [adj, from vasā]", "parihāyati": "1 <i>pr</i> dwindles; decreases; deteriorates; wastes away [pr]<br>2 <i>pr</i> falls away (from); declines (in) [pr]<br>3 <i>pr</i> is deprived; suffers the loss (of)", "puggalehi": "1 <i>masc</i> person; individual [masc]", "abbhuggacchati": "1 <i>pr</i> arises; spreads about; circulates (lit. goes up to the top)", "saddhammaṃ": "1 <i>masc</i> good teaching; true doctrine; true nature of things; (comm) the five precepts, ten precepts, four foundations of mindfulness etc. [masc,]<br>2 <i>masc</i> good quality; positive characteristic [masc,]<br>3 <i>masc</i> one's own teaching; personal doctrine [masc,]", "samāno": "1 <i>adj</i> equal (to); same (as); similar (to); like; even [adj, from māna] ‹ मान<br>2 <i>adj</i> harmonious; united [adj, from māna] ‹ मान (lit. even)<br>3 <i>prp</i> being; having; existing [prp of atthi] ‹ atthi", "patiṭṭhāti": "1 <i>pr</i> confirms; establishes; confesses; admits; stands by something [pr] (lit. stands back)<br>2 <i>pr</i> stands firm (in); persists (with); stays (in) [pr] (lit. stands back)", "saṃvasati": "1 <i>pr</i> lives together; cohabits; lives (with) [pr]", "yathārūpāya": "1 <i>adj</i> of such form; such kind of; of such value [adj,]", "duccarite": "1 <i>adj</i> bad; immoral; wicked [adj, from carita] ‹ carita (lit. badly conducted)<br>2 <i>nt</i> misconduct; misbehaviour; bad behaviour (by) [nt, from carita] ‹ carita", "ekacco": "1 <i>pron</i> certain; one of [pron, from eka] ‹ eka<br>2 <i>pron</i> some; a few [pron, from eka] ‹ eka<br>3 <i>adj</i> part of; partial; in part [adj, from eka] ‹ eka", "vibbhanto": "1 <i>pp</i> wandering; straying; roaming; runaway [pp of vibbhamati] ‹ vibbhamati (lit. spun away)<br>2 <i>pp</i> strayed (from); left [pp of vibbhamati] ‹ vibbhamati (lit. spun away)<br>3 <i>pp</i> left the monkhood; gone back to laylife [pp of vibbhamati] ‹ vibbhamati (lit. spun away)", "vadāmi": "1 <i>pr</i> says; speaks; tells (to) [pr]<br>2 <i>pr</i> disputes; argues; debates [pr] (lit. speaks)<br>3 <i>pr</i> (of a musical instrument) plays; makes sound [pr] (lit. speaks)<br>4 <i>pr</i> advises; instructs [pr] (lit. speaks)<br>5 <i>pr</i> (of a text) says; means [pr] (lit. speaks)<br>6 <i>pr</i> I say; I speak; I tell [pr 1st sg of vadati] ‹ vadati", "puggalo": "1 <i>masc</i> person; individual [masc]", "aho": "1 <i>ind</i> (expressing a wish) oh may!; please let! [ind, excl]<br>2 <i>masc</i> day [masc, in s]<br>3 <i>ind</i> day [ind, adv, in s]<br>4 <i>ind</i> (expressing pleasure, surprise or disbelief) oh!; wow! [ind, excl]<br>5 <i>ind</i> surely; indeed; truly [ind, emph]<br>6 <i>ind</i> (expressing dismay) oh dear!; oh no! [ind, excl]", "yasmiṃ": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>pron</i> in whoever; in whichever; at whichever [pron, masc & nt loc sg of ya] ‹ ya<br>6 <i>pron</i> about which; in which [pron, masc & nt loc sg of ya] ‹ ya", "upavadati": "1 <i>pr</i> blames; criticizes; finds fault (with someone about) [pr] (lit. speaks near)<br>2 <i>pr</i> [pr] (lit. speaks near)", "ādīnavā": "1 <i>masc</i> danger; problem (in) [masc, from ādīna] ‹ आदीन<br>2 <i>masc</i> disadvantage; drawback; unsatisfactoriness; inadequacy (of) [masc, from ādīna] ‹ आदीन", "na": "1 <i>ind</i> no; not; neither; nor [ind]<br>2 <i>ind</i> (adds a question mark) surely?; does one not? [ind, interr]<br>3 <i>pref</i> not [prefix, in s]<br>4 <i>masc</i> (gram) negative prefix na [masc, prefix]", "asaddhammā": "1 <i>masc</i> unvirtuous practice; vulgar habit [masc,]<br>2 <i>masc</i> untrue teaching; false doctrine [masc,]<br>3 <i>masc</i> sex; sexual intercourse [masc,]", "tamenaṃ": "1 <i>sand</i> that one; him; her; that thing; that person [sandhi, pron + pron]", "aṭṭhamaṃ": "1 <i>ordi</i> eighth (8th) [ordin of aṭṭha] ‹ अट्ठ<br>2 <i>masc</i> name of a privately awakened Buddha [masc, ordin of aṭṭha] ‹ अट्ठ (lit. eighth)<br>3 <i>ind</i> for the eighth time [ind, adv, acc sg of aṭṭhama] ‹ अट्ठम", "kālaṅkatoti": "1 <i>pp</i> died; dead; deceased; passed away (in) [pp of kālaṅkaroti,  vb] ‹ कालङ्करोति (lit. done (one's) time)<br>2 <i>masc</i> dead person; deceased [masc, , pp of kālaṅkaroti] ‹ कालङ्करोति (lit. done (one's) time)", "manokammena": "1 <i>nt</i> mental action; thought; intention [nt,] (lit. mind action)", "asaddhamme": "1 <i>masc</i> unvirtuous practice; vulgar habit [masc,]<br>2 <i>masc</i> untrue teaching; false doctrine [masc,]<br>3 <i>masc</i> sex; sexual intercourse [masc,]", "samannāgataṃ": "1 <i>pp</i> possessing; endowed (with); having [pp of saṃ anu ā √gam] ‹ सं अनु आ √गम् (lit. going together)", "so": "1 <i>pron</i> that [pron, base]<br>2 <i>pron</i> own; one's own; one's own possession [pron, base, reflx]<br>3 <i>adj</i> self-; personal- [adj, in s, reflx]<br>4 <i>lett</i> (gram) letter s; 36th letter of the alphabet; dental consonant [letter, masc]<br>5 <i>pron</i> he; that person; that thing [pron, masc nom sg of ta] ‹ ta<br>6 <i>ind</i> (emphatic usage; referring to what has just been said) [ind, emph] (lit. that)<br>7 <i>suff</i> as; according to; by way of; by means of [suffix, adv, abl sg]<br>8 <i>suff</i> (gram) by; in x ways [suffix, adv]", "saṅgho": "1 <i>masc</i> community; fellowship; monastic order [masc, from saṅghaṭeti] ‹ सङ्घटेति<br>2 <i>masc</i> group; crowd; mass; multitude; collection; entourage [masc, from saṅghaṭeti] ‹ सङ्घटेति<br>3 <i>masc</i> name of a privately awakened Buddha [masc] (lit. group)", "tathārūpaṃ": "1 <i>adj</i> such; such kind; of such quality; so formed [adj,] (lit. form like this)<br>2 <i>adj</i> suitable; appropriate; fitting [adj,] (lit. form like this)", "puggalappasāde": "1 <i>masc</i> faith in a person; confidence in an individual [masc,]", "sivathikāyāti": "1 <i>fem</i> charnel ground [fem,] (lit. safe place for bones; where bones sleep)", "dutiyamanoduccaritasuttaṃ": "1 <i>nt</i> [nt,]", "apāyaṃ": "1 <i>masc</i> state of loss; state of misery [masc, from apeti] ‹ apeti (lit. going away)<br>2 <i>masc</i> departure (from); separation (from); loss (of) [masc, from apeti] ‹ apeti (lit. going away)<br>3 <i>masc</i> decline; deterioration; downfall; ruin [masc, from apeti] ‹ apeti (lit. going away)<br>4 <i>prp</i> not breastfeeding [prp of na pāyeti] ‹ पायेति<br>5 <i>aor</i> drank; sipped [aor of pivati] ‹ pivati<br>6 <i>aor</i> retreated; fled [aor of apeti] ‹ apeti (lit. went away)<br>7 <i>masc</i> (of water) outlet [masc, from apeti] ‹ apeti (lit. going away)", "kāyakammena": "1 <i>nt</i> physical action; bodily act [nt,]", "bhikkhūsu": "1 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "ārakā": "1 <i>adj</i> distant; away from; far from [adj, from āra] ‹ आर<br>2 <i>ind</i> far; far away (from) [ind, prep, abl sg of āraka] ‹ आरक<br>3 <i>ind</i> (from) far away [ind, prep, abl sg of āraka] ‹ आरक", "sucarite": "1 <i>adj</i> good; right; moral [adj, from carita] ‹ carita (lit. well behaved)<br>2 <i>nt</i> good conduct; good behaviour (by) [nt, from carita] ‹ carita (lit. well behaved)", "evaṃ": "1 <i>ind</i> thus; this; like this; similarly; in the same manner; just as; such [ind, adv]<br>2 <i>ind</i> yes!; that is right!; correct! [ind, excl]", "bahuno": "1 <i>adj</i> many; much; lots; a lot (of); great; large [adj] ‹ √bah", "amanussānaṃ": "1 <i>masc</i> deity; god; daemon; ghost [masc, from na manu] ‹ manu (lit. non-human being)<br>2 <i>adj</i> without people; uninhabited; unpopulated; (comm) haunted [adj, from na manu] ‹ manu (lit. no men)", "pasaṃsanti": "1 <i>pr</i> praises; approves (of); commends", "bhikkhū": "1 <i>aor</i> begged; begged for alms [aor of bhikkhati] ‹ bhikkhati<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "bhajati": "1 <i>pr</i> associates; keeps company (with) [pr]<br>2 <i>pr</i> goes (to); resorts (to); retires (to); lives (in) [pr] (lit. associates)<br>3 <i>pr</i> accrues; redounds (to) [pr] (lit. distributes)<br>4 <i>pr</i> devotes oneself; applies oneself; gives oneself (to) [pr]", "attāpi": "1 <i>masc</i> self; soul; spirit; essence [masc, atta group]<br>2 <i>adj</i> personal; related to oneself [adj, in s]<br>3 <i>nt</i> taking up; accepting; seizing; grasping [nt, pp of ādadāti] ‹ आददाति (lit. taken)<br>4 <i>pp</i> taken up; accepted; seized; grasped [pp of ādadāti] ‹ आददाति<br>5 <i>nt</i> (gram) the negative prefix a [nt, abstr, from na] ‹ na (lit. na state)", "ārodanā": "1 <i>fem</i> [fem]", "tassa": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> to him; for him; to that; for that [pron, masc & nt dat sg of ta] ‹ ta<br>4 <i>pron</i> of that; his; its [pron, masc & nt gen sg of ta] ‹ ta<br>5 <i>pron</i> when he; when it [pron, masc & nt gen sg of ta, gen abs] ‹ ta (lit. of that)<br>6 <i>ind</i> therefore; thus; so; because of that; regarding that [ind, adv, masc & nt gen sg of ta] ‹ ta (lit. of that)", "paṭhamavacīduccaritasuttaṃ": "1 <i>nt</i> [nt,]", "asuci": "1 <i>adj</i> impure; unclean; filthy; foul; disgusting [adj] ‹ √suc<br>2 <i>masc</i> impurity; filth [masc] ‹ √suc<br>3 <i>nt</i> impure thing; something dirty; foul thing [nt] ‹ √suc (lit. impurity)<br>4 <i>nt</i> sperm; semen [nt] ‹ √suc (lit. impurity)", "ante": "1 <i>adj</i> (gram) final; ending with; finishing with [adj, in s] (lit. end)<br>2 <i>masc</i> end; limit; finish; conclusion (of) [masc]<br>3 <i>masc</i> end; side; extreme [masc]<br>4 <i>nt</i> intestines; entrails (lit. end)<br>5 <i>masc</i> (gram) end; last letter; final syllable; final vowel (of) [masc]<br>6 <i>adj</i> inside (of); within [adj, prep, in s] (lit. end)<br>7 <i>masc</i> [masc] (lit. end)<br>8 <i>ve</i> (gram) verbal ending of the present tense 3rd person plural [ve, masc]<br>9 <i>pref</i> inside; inner; within [prefix]<br>10 <i>masc</i> the worst; the lowest (of) [masc] (lit. end)<br>11 <i>adj</i> ending up as; finishing in; resulting in [adj, in s]", "appasādabahulo": "1 <i>adj</i> full of distrust (for); suspicious (of); unhappy (with) [adj,]", "sattamaṃ": "1 <i>ordi</i> seventh (7th) [ordin of satta] ‹ satta<br>2 <i>adj</i> best; most excellent; highest [adj, superl of santa] ‹ santa", "janassa": "1 <i>masc</i> man; person; fellow [masc, agent, from jāyati] ‹ जायति<br>2 <i>masc</i> men; people; population [masc, from jāyati] ‹ जायति<br>3 <i>nt</i> man; person; people [nt, agent, from jāyati] ‹ जायति", "paṭhamo": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)", "āsanapariyante": "1 <i>masc</i> [masc] ‹ आसन", "katame": "1 <i>pron</i> what?; which (of the many)? [pron, interr, from ka] ‹ ka", "vinipātaṃ": "1 <i>masc</i> state of suffering; lower realm; underworld [masc] ‹ vi ni √pat (lit. bad fall)", "pañcamassa": "1 <i>ordi</i> fifth (5th) [ordin of pañca] ‹ पञ्च<br>2 <i>masc</i> fifth of the seven primary musical notes [masc, ordin of pañca] ‹ पञ्च (lit. fifth)", "pañcamo": "1 <i>ordi</i> fifth (5th) [ordin of pañca] ‹ पञ्च<br>2 <i>masc</i> fifth of the seven primary musical notes [masc, ordin of pañca] ‹ पञ्च (lit. fifth)", "sivathikā": "1 <i>fem</i> charnel ground [fem,] (lit. safe place for bones; where bones sleep)", "vacīkammena": "1 <i>nt</i> verbal action; vocal act; speech [nt,]", "sesaṃ": "1 <i>pron</i> own; one's own; one's own possession [pron, base, reflx]<br>2 <i>adj</i> remaining; left; left over [adj, from sissati] ‹ sissati<br>3 <i>masc</i> leftovers; remains; remainder; remnant [masc, from sissati] ‹ sissati<br>4 <i>nt</i> rest; remainder [nt, from sissati] ‹ sissati"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>(२५) ५. दुश्चरित वर्ग (duścarita-varga) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<h3 id='s0403m1.mul_01490'><span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="paṭhamaduccaritasuttaṃ">पठमदुच्‍चरितसुत्तं</span></h3>
+<div class='hindi' id='s0403m1.mul_01490_hi'>१. प्रथम दुश्चरित सुत्त (paṭhama-duccarita-sutta)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01491_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0403m1.mul_01491_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="241">२४१.</span> <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="duccarite">दुच्‍चरिते।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="attāpi">अत्तापि</span> <span class="paliword" data-word="attānaṃ">अत्तानं</span> <span class="paliword" data-word="upavadati">उपवदति;</span> <span class="paliword" data-word="anuvicca">अनुविच्‍च</span> <span class="paliword" data-word="viññū">विञ्‍ञू</span> <span class="paliword" data-word="garahanti">गरहन्ति;</span> <span class="paliword" data-word="pāpako">पापको</span> <span class="paliword" data-word="kittisaddo">कित्तिसद्दो</span> <span class="paliword" data-word="abbhuggacchati">अब्भुग्गच्छति;</span> <span class="paliword" data-word="sammūḻho">सम्मूळ्हो</span> <span class="paliword" data-word="kālaṃ">कालं</span> <span class="paliword" data-word="karoti">करोति;</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="apāyaṃ">अपायं</span> <span class="paliword" data-word="duggatiṃ">दुग्गतिं</span> <span class="paliword" data-word="vinipātaṃ">विनिपातं</span> <span class="paliword" data-word="nirayaṃ">निरयं</span> <span class="paliword" data-word="upapajjati">उपपज्‍जति।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="duccarite">दुच्‍चरिते।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01491_hi">
+                २४१.
+“भिक्षुओं, दुराचरण के ये पाँच दोष हैं।
+वे पाँच कौन से हैं? स्वयं भी अपनी निंदा करता है; जाँच-परखकर विद्वान लोग भर्त्सना करते हैं; अपयश फैलता है; मोहग्रस्त होकर मृत्यु को प्राप्त होता है; और शरीर के त्याग के बाद, मृत्यु के उपरांत, वह अपाय, दुर्गति, विनिपात और नरक में उत्पन्न होता है।
+भिक्षुओं, दुराचरण के ये ही पाँच दोष हैं।”
+            </div>
+            
+
+            <div class="commentary" id="s0403m1.mul_01491_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="241">२४१.</span> <span class="paliword" data-word="pañcamassa">पञ्‍चमस्स</span> <span class="paliword" data-word="paṭhame">पठमे</span> <span class="paliword" data-word="duccarite">दुच्‍चरिते</span> <span class="paliword" data-word="sucariteti">सुचरितेति</span> <span class="paliword" data-word="idaṃ">इदं</span> <span class="paliword" data-word="abhedato">अभेदतो</span> <span class="paliword" data-word="vuttaṃ">वुत्तं,</span> <span class="paliword" data-word="kāyaduccaritetiādi">कायदुच्‍चरितेतिआदि</span> <span class="paliword" data-word="kāyadvārādīnaṃ">कायद्वारादीनं</span> <span class="paliword" data-word="vasena">वसेन</span> <span class="paliword" data-word="bhedato">भेदतो।</span> <span class="paliword" data-word="saddhammāti">सद्धम्माति</span> <span class="paliword" data-word="dasakusalakammapathadhammato">दसकुसलकम्मपथधम्मतो।</span> <span class="paliword" data-word="asaddhammeti">असद्धम्मेति</span> <span class="paliword" data-word="akusalakammapathasaṅkhāte">अकुसलकम्मपथसङ्खाते</span> <span class="paliword" data-word="assaddhamme">अस्सद्धम्मे।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0403a.att_00457_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0403a.att_00457_hi">
+                    २४१.
+पांचवें के प्रथम (भाग) में, 'दुश्चरित्र' और 'सुचरित्र'—यह बिना किसी भेद के कहा गया है; जबकि 'काय-दुश्चरित्र' आदि शब्द शरीर के द्वारों आदि के आधार पर भेद के साथ कहे गए हैं।
+'सद्धर्म' से तात्पर्य दस कुशल कर्मपथ रूपी धर्मों से है।
+'असद्धर्म' से तात्पर्य अकुशल कर्मपथ के रूप में ज्ञात अधर्मों (अश्रद्धर्मों) से है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="9">९.</span> <span class="paliword" data-word="sivathikasuttavaṇṇanā">सिवथिकसुत्तवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0403a.att_00458_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0403a.att_00458_hi">
+                    ९. शिवथिक सूत्र की व्याख्या (Sivathika-sutta-vaṇṇanā)
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01492_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="sucarite">सुचरिते।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="attāpi">अत्तापि</span> <span class="paliword" data-word="attānaṃ">अत्तानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="upavadati">उपवदति;</span> <span class="paliword" data-word="anuvicca">अनुविच्‍च</span> <span class="paliword" data-word="viññū">विञ्‍ञू</span> <span class="paliword" data-word="pasaṃsanti">पसंसन्ति;</span> <span class="paliword" data-word="kalyāṇo">कल्याणो</span> <span class="paliword" data-word="kittisaddo">कित्तिसद्दो</span> <span class="paliword" data-word="abbhuggacchati">अब्भुग्गच्छति;</span> <span class="paliword" data-word="asammūḻho">असम्मूळ्हो</span> <span class="paliword" data-word="kālaṃ">कालं</span> <span class="paliword" data-word="karoti">करोति;</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="sugatiṃ">सुगतिं</span> <span class="paliword" data-word="saggaṃ">सग्गं</span> <span class="paliword" data-word="lokaṃ">लोकं</span> <span class="paliword" data-word="upapajjati">उपपज्‍जति।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="sucariteti">सुचरिते’’ति।</span> <span class="paliword" data-word="paṭhamaṃ">पठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01492_hi">
+                “भिक्षुओ, सदाचार के ये पाँच लाभ हैं।
+वे पाँच कौन से हैं? स्वयं अपनी निंदा नहीं करता; बुद्धिमान लोग जाँच-परखकर प्रशंसा करते हैं; कल्याणकारी कीर्ति का प्रसार होता है; बिना मोह या व्यामोह के मृत्यु को प्राप्त होता है; और शरीर त्यागने के बाद, मृत्यु के पश्चात, वह सुगति वाले स्वर्ग लोक में जन्म लेता है।
+भिक्षुओ, निश्चय ही सदाचार के ये पाँच लाभ हैं।”
+प्रथम।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m1.mul_01493'><span class="paliword" data-word="2">२.</span> <span class="paliword" data-word="paṭhamakāyaduccaritasuttaṃ">पठमकायदुच्‍चरितसुत्तं</span></h3>
+<div class='hindi' id='s0403m1.mul_01493_hi'>२. शारीरिक दुराचरण पर प्रथम सूत्र (पठमकायदुच्चरितसुत्त)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01494_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="242">२४२.</span> <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="kāyaduccaritepe॰">कायदुच्‍चरिते…पे॰…</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="kāyasucaritepe॰">कायसुचरिते…पे॰…।</span> <span class="paliword" data-word="dutiyaṃ">दुतियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01494_hi">
+                २४२.
+“हे भिक्षुओं, शारीरिक दुराचार (कायदुश्चरित - kāyaduccarita) के ये पांच दोष हैं... और शारीरिक सदाचार (कायसुचरित - kāyasucarita) के ये पांच लाभ हैं...।”
+
+यह दूसरा है।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m1.mul_01495'><span class="paliword" data-word="3">३.</span> <span class="paliword" data-word="paṭhamavacīduccaritasuttaṃ">पठमवचीदुच्‍चरितसुत्तं</span></h3>
+<div class='hindi' id='s0403m1.mul_01495_hi'>३. प्रथम वचोदुश्चरित सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01496_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="243">२४३.</span> <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="vacīduccaritepe॰">वचीदुच्‍चरिते…पे॰…</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="vacīsucaritepe॰">वचीसुचरिते…पे॰…।</span> <span class="paliword" data-word="tatiyaṃ">ततियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01496_hi">
+                २४३.
+"भिक्षुओं, वाणी के दुराचरण (वची-दुच्चरित) में ये पांच दोष हैं... (विस्तार)... और वाणी के सुचरण (वची-सुचरित) में पांच लाभ हैं... (विस्तार)।
+इसी प्रकार तीसरा।"
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m1.mul_01497'><span class="paliword" data-word="4">४.</span> <span class="paliword" data-word="paṭhamamanoduccaritasuttaṃ">पठममनोदुच्‍चरितसुत्तं</span></h3>
+<div class='hindi' id='s0403m1.mul_01497_hi'>४. प्रथममनोदुश्चरितसूत्र (मन के प्रथम दुराचरण पर सूत्र)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01498_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="244">२४४.</span> <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="manoduccaritepe॰">मनोदुच्‍चरिते…पे॰…</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="manosucarite">मनोसुचरिते।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="attāpi">अत्तापि</span> <span class="paliword" data-word="attānaṃ">अत्तानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="upavadati">उपवदति;</span> <span class="paliword" data-word="anuvicca">अनुविच्‍च</span> <span class="paliword" data-word="viññū">विञ्‍ञू</span> <span class="paliword" data-word="pasaṃsanti">पसंसन्ति;</span> <span class="paliword" data-word="kalyāṇo">कल्याणो</span> <span class="paliword" data-word="kittisaddo">कित्तिसद्दो</span> <span class="paliword" data-word="abbhuggacchati">अब्भुग्गच्छति;</span> <span class="paliword" data-word="asammūḻho">असम्मूळ्हो</span> <span class="paliword" data-word="kālaṃ">कालं</span> <span class="paliword" data-word="karoti">करोति;</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="bhedā">भेदा</span> <span class="paliword" data-word="paraṃ">परं</span> <span class="paliword" data-word="maraṇā">मरणा</span> <span class="paliword" data-word="sugatiṃ">सुगतिं</span> <span class="paliword" data-word="saggaṃ">सग्गं</span> <span class="paliword" data-word="lokaṃ">लोकं</span> <span class="paliword" data-word="upapajjati">उपपज्‍जति।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="manosucariteti">मनोसुचरिते’’ति।</span> <span class="paliword" data-word="catutthaṃ">चतुत्थं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01498_hi">
+                २४४.
+“हे भिक्षुओं, मन के दुराचरण (मनोदुश्चरित) में ये पांच दोष हैं... और मन के सुआचरण (मनोसुचरित) में पांच लाभ हैं।
+वे पांच कौन से हैं? व्यक्ति स्वयं अपनी निंदा नहीं करता; जांच-परख कर विद्वान उसकी प्रशंसा करते हैं; उसकी उत्तम कीर्ति का शब्द चारों ओर फैलता है; वह बिना मोह या व्यामोह के मृत्यु को प्राप्त होता है; और शरीर के त्याग के पश्चात, मृत्यु के उपरांत, वह सद्गति और स्वर्ग लोक में जन्म लेता है।
+हे भिक्षुओं, ये मन के सुआचरण के पांच लाभ हैं।”
+चतुर्थ।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m1.mul_01499'><span class="paliword" data-word="5">५.</span> <span class="paliword" data-word="dutiyaduccaritasuttaṃ">दुतियदुच्‍चरितसुत्तं</span></h3>
+<div class='hindi' id='s0403m1.mul_01499_hi'>५. द्वितीय दुश्चरित सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01500_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="245">२४५.</span> <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="duccarite">दुच्‍चरिते।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="attāpi">अत्तापि</span> <span class="paliword" data-word="attānaṃ">अत्तानं</span> <span class="paliword" data-word="upavadati">उपवदति;</span> <span class="paliword" data-word="anuvicca">अनुविच्‍च</span> <span class="paliword" data-word="viññū">विञ्‍ञू</span> <span class="paliword" data-word="garahanti">गरहन्ति;</span> <span class="paliword" data-word="pāpako">पापको</span> <span class="paliword" data-word="kittisaddo">कित्तिसद्दो</span> <span class="paliword" data-word="abbhuggacchati">अब्भुग्गच्छति;</span> <span class="paliword" data-word="saddhammā">सद्धम्मा</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति;</span> <span class="paliword" data-word="asaddhamme">असद्धम्मे</span> <span class="paliword" data-word="patiṭṭhāti">पतिट्ठाति।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="duccarite">दुच्‍चरिते।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01500_hi">
+                २४५.
+‘‘हे भिक्षुओं, दुराचरण के ये पाँच दोष हैं।
+वे पाँच कौन से हैं? स्वयं अपनी आत्मा ही स्वयं को धिक्कारती है; बुद्धिमान व्यक्ति जाँच-परखकर निंदा करते हैं; अपयश फैलता है; व्यक्ति सद्धर्म (सद्धर्म - *saddharma*) से विमुख हो जाता है; और अधर्म में स्थित हो जाता है।
+हे भिक्षुओं, दुराचरण के ये ही पाँच दोष हैं।’’
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01501_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="sucarite">सुचरिते।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="attāpi">अत्तापि</span> <span class="paliword" data-word="attānaṃ">अत्तानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="upavadati">उपवदति;</span> <span class="paliword" data-word="anuvicca">अनुविच्‍च</span> <span class="paliword" data-word="viññū">विञ्‍ञू</span> <span class="paliword" data-word="pasaṃsanti">पसंसन्ति;</span> <span class="paliword" data-word="kalyāṇo">कल्याणो</span> <span class="paliword" data-word="kittisaddo">कित्तिसद्दो</span> <span class="paliword" data-word="abbhuggacchati">अब्भुग्गच्छति;</span> <span class="paliword" data-word="asaddhammā">असद्धम्मा</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति;</span> <span class="paliword" data-word="saddhamme">सद्धम्मे</span> <span class="paliword" data-word="patiṭṭhāti">पतिट्ठाति।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="sucariteti">सुचरिते’’ति।</span> <span class="paliword" data-word="pañcamaṃ">पञ्‍चमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01501_hi">
+                ‘‘भिक्षुओं, सदाचरण के ये पाँच लाभ हैं।
+वे पाँच कौन से हैं? स्वयं को स्वयं का दोष नहीं सहना पड़ता; बुद्धिमान लोग जाँच-परखकर प्रशंसा करते हैं; सुंदर कीर्ति का यश फैलता है; वह अधर्म से मुक्त होता है; और सद्धर्म में प्रतिष्ठित होता है।
+भिक्षुओं, ये ही सदाचरण के पाँच लाभ हैं।’’
+पाँचवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m1.mul_01502'><span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="dutiyakāyaduccaritasuttaṃ">दुतियकायदुच्‍चरितसुत्तं</span></h3>
+<div class='hindi' id='s0403m1.mul_01502_hi'>६. द्वितीय कायदुश्चरित सूत्र</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01503_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="246">२४६.</span> <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="kāyaduccaritepe॰">कायदुच्‍चरिते…पे॰…</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="kāyasucaritepe॰">कायसुचरिते…पे॰…।</span> <span class="paliword" data-word="chaṭṭhaṃ">छट्ठं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01503_hi">
+                २४६.
+“भिक्षुओं, शारीरिक दुराचरण (कायदुच्चरित - kāyaduccarita) के ये पांच दोष हैं... और शारीरिक सदाचरण (कायसुचरित - kāyasucarita) के ये पांच लाभ हैं...।
+छठा अध्याय।”
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m1.mul_01504'><span class="paliword" data-word="7">७.</span> <span class="paliword" data-word="dutiyavacīduccaritasuttaṃ">दुतियवचीदुच्‍चरितसुत्तं</span></h3>
+<div class='hindi' id='s0403m1.mul_01504_hi'>७. द्वितीय वाग्दुश्चरित सूत्र (vāk-duścarita-sūtra)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01505_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="247">२४७.</span> <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="vacīduccaritepe॰">वचीदुच्‍चरिते…पे॰…</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="vacīsucaritepe॰">वचीसुचरिते…पे॰…।</span> <span class="paliword" data-word="sattamaṃ">सत्तमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01505_hi">
+                २४७. "भिक्षुओं, वाणी के दुराचरण (वची-दुच्चरित) में ये पाँच दोष हैं... और वाणी के सुचरित (वची-सुचरित) में ये पाँच लाभ (आनिसंस) हैं..."
+
+सातवाँ सूत्र।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m1.mul_01506'><span class="paliword" data-word="8">८.</span> <span class="paliword" data-word="dutiyamanoduccaritasuttaṃ">दुतियमनोदुच्‍चरितसुत्तं</span></h3>
+<div class='hindi' id='s0403m1.mul_01506_hi'>८. द्वितीय मनोदुश्चरित सूत्र (dvitīyamānoduścaritasuttaṃ)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01507_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="248">२४८.</span> <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="manoduccaritepe॰">मनोदुच्‍चरिते…पे॰…</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="manosucarite">मनोसुचरिते।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="attāpi">अत्तापि</span> <span class="paliword" data-word="attānaṃ">अत्तानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="upavadati">उपवदति;</span> <span class="paliword" data-word="anuvicca">अनुविच्‍च</span> <span class="paliword" data-word="viññū">विञ्‍ञू</span> <span class="paliword" data-word="pasaṃsanti">पसंसन्ति;</span> <span class="paliword" data-word="kalyāṇo">कल्याणो</span> <span class="paliword" data-word="kittisaddo">कित्तिसद्दो</span> <span class="paliword" data-word="abbhuggacchati">अब्भुग्गच्छति;</span> <span class="paliword" data-word="asaddhammā">असद्धम्मा</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति;</span> <span class="paliword" data-word="saddhamme">सद्धम्मे</span> <span class="paliword" data-word="patiṭṭhāti">पतिट्ठाति।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="ānisaṃsā">आनिसंसा</span> <span class="paliword" data-word="manosucariteti">मनोसुचरिते’’ति।</span> <span class="paliword" data-word="aṭṭhamaṃ">अट्ठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01507_hi">
+                २४८.
+“भिक्षुओं, मन के दुराचरण में ये पांच दोष हैं... और मन के सुचरण में पांच लाभ हैं।
+वे पांच कौन से हैं? स्वयं का अंतर्मन स्वयं को दोष नहीं देता; बुद्धिमान लोग भली-भांति जांच कर प्रशंसा करते हैं; मंगलकारी यश और कीर्ति का विस्तार होता है; व्यक्ति अधर्म से बाहर निकलता है; और सद्धर्म में प्रतिष्ठित होता है।
+भिक्षुओं, मन के सुचरण में ये ही पांच लाभ हैं।”
+आठवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m1.mul_01508'><span class="paliword" data-word="9">९.</span> <span class="paliword" data-word="sivathikasuttaṃ">सिवथिकसुत्तं</span></h3>
+<div class='hindi' id='s0403m1.mul_01508_hi'>९. शिवथिक सूत्र (श्मशान विषयक सूत्र)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01509_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0403m1.mul_01509_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="249">२४९.</span> <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="sivathikāya">सिवथिकाय</span> <span class="paliword" data-word="sīvathikāya">सीवथिकाय</span> <span class="paliword" data-word="sī॰">(सी॰</span> <span class="paliword" data-word="syā॰">स्या॰</span> <span class="paliword" data-word="kaṃ॰">कं॰</span> <span class="paliword" data-word="pī॰">पी॰)।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="asuci">असुचि,</span> <span class="paliword" data-word="duggandhā">दुग्गन्धा,</span> <span class="paliword" data-word="sappaṭibhayā">सप्पटिभया,</span> <span class="paliword" data-word="vāḻānaṃ">वाळानं</span> <span class="paliword" data-word="amanussānaṃ">अमनुस्सानं</span> <span class="paliword" data-word="āvāso">आवासो,</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="ārodanā">आरोदना</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="sivathikāya">सिवथिकाय।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01509_hi">
+                २४९. ‘‘भिक्षुओं, श्मशान के ये पाँच दोष हैं।
+वे पाँच कौन से हैं? यह अशुचि है, दुर्गन्धयुक्त है, भयानक है, यह हिंसक पशुओं और अमनुष्यों (भूत-प्रेतों) का निवास स्थान है, और यहाँ बहुत से लोग रोते-बिलखते हैं — भिक्षुओं, श्मशान के ये ही पाँच दोष हैं।”
+            </div>
+            
+
+            <div class="commentary" id="s0403m1.mul_01509_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="249">२४९.</span> <span class="paliword" data-word="navame">नवमे</span> <span class="paliword" data-word="sivathikāyāti">सिवथिकायाति</span> <span class="paliword" data-word="susāne">सुसाने।</span> <span class="paliword" data-word="ārodanāti">आरोदनाति</span> <span class="paliword" data-word="ārodanaṭṭhānaṃ">आरोदनट्ठानं।</span> <span class="paliword" data-word="asucināti">असुचिनाति</span> <span class="paliword" data-word="jigucchanīyena">जिगुच्छनीयेन।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0403a.att_00459_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0403a.att_00459_hi">
+                    २४९.
+नौवें श्मशान के संबंध में इसका अर्थ है—श्मशान घाट पर।
+रोने-धोने का तात्पर्य है—वह स्थान जहाँ विलाप किया जाता है।
+अपवित्रता अथवा अशुचि का अर्थ है—वह जो घृणा के योग्य या बीभत्स हो।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="10">१०.</span> <span class="paliword" data-word="puggalappasādasuttavaṇṇanā">पुग्गलप्पसादसुत्तवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0403a.att_00460_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0403a.att_00460_hi">
+                    १०. पुग्गलप्पसाद सुत्त की व्याख्या (पुद्गलप्रसादसूत्रवर्णना)
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01510_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="evamevaṃ">‘‘एवमेवं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañcime">पञ्‍चिमे</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="sivathikūpame">सिवथिकूपमे</span> <span class="paliword" data-word="puggale">पुग्गले।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="idha">इध,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ekacco">एकच्‍चो</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="kāyakammena">कायकम्मेन</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो</span> <span class="paliword" data-word="hoti">होति;</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="vacīkammena">वचीकम्मेन</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो</span> <span class="paliword" data-word="hoti">होति;</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="manokammena">मनोकम्मेन</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो</span> <span class="paliword" data-word="hoti">होति।</span> <span class="paliword" data-word="idamassa">इदमस्स</span> <span class="paliword" data-word="asucitāya">असुचिताय</span> <span class="paliword" data-word="vadāmi">वदामि।</span> <span class="paliword" data-word="seyyathāpi">सेय्यथापि</span> <span class="paliword" data-word="sā">सा,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sivathikā">सिवथिका</span> <span class="paliword" data-word="asuci">असुचि;</span> <span class="paliword" data-word="tathūpamāhaṃ">तथूपमाहं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imaṃ">इमं</span> <span class="paliword" data-word="puggalaṃ">पुग्गलं</span> <span class="paliword" data-word="vadāmi">वदामि।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01510_hi">
+                ‘‘भिक्षुओं, ठीक इसी तरह श्मशान के समान इन पाँच व्यक्तियों में पाँच दोष पाए जाते हैं।
+वे पाँच कौन से हैं? यहाँ, भिक्षुओं, कोई व्यक्ति अशुद्ध कायिक कर्म (शरीर के कर्म) से युक्त होता है; अशुद्ध वाचिक कर्म (वाणी के कर्म) से युक्त होता है; और अशुद्ध मानसिक कर्म (मन के कर्म) से युक्त होता है।
+मैं इसे उसकी अशुद्धि कहता हूँ।
+भिक्षुओं, जैसे वह श्मशान अशुद्ध होता है, वैसे ही मैं इस व्यक्ति को (उस श्मशान के) समान कहता हूँ।’’
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01511_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassa">‘‘तस्स</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="kāyakammena">कायकम्मेन</span> <span class="paliword" data-word="samannāgatassa">समन्‍नागतस्स,</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="vacīkammena">वचीकम्मेन</span> <span class="paliword" data-word="samannāgatassa">समन्‍नागतस्स,</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="manokammena">मनोकम्मेन</span> <span class="paliword" data-word="samannāgatassa">समन्‍नागतस्स</span> <span class="paliword" data-word="pāpako">पापको</span> <span class="paliword" data-word="kittisaddo">कित्तिसद्दो</span> <span class="paliword" data-word="abbhuggacchati">अब्भुग्गच्छति।</span> <span class="paliword" data-word="idamassa">इदमस्स</span> <span class="paliword" data-word="duggandhatāya">दुग्गन्धताय</span> <span class="paliword" data-word="vadāmi">वदामि।</span> <span class="paliword" data-word="seyyathāpi">सेय्यथापि</span> <span class="paliword" data-word="sā">सा,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sivathikā">सिवथिका</span> <span class="paliword" data-word="duggandhā">दुग्गन्धा;</span> <span class="paliword" data-word="tathūpamāhaṃ">तथूपमाहं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imaṃ">इमं</span> <span class="paliword" data-word="puggalaṃ">पुग्गलं</span> <span class="paliword" data-word="vadāmi">वदामि।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01511_hi">
+                जो व्यक्ति शरीर, वाणी और मन के अपवित्र कर्मों में लिप्त रहता है, उसकी बुराई और अपकीर्ति चारों ओर फैल जाती है। मैं इसे ही उसकी दुर्गंध कहता हूँ। हे भिक्षुओं, जैसे श्मशान दुर्गंधयुक्त होता है, वैसे ही मैं उस व्यक्ति को उसके समान मानता हूँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01512_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tamenaṃ">‘‘तमेनं</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="kāyakammena">कायकम्मेन</span> <span class="paliword" data-word="samannāgataṃ">समन्‍नागतं,</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="vacīkammena">वचीकम्मेन</span> <span class="paliword" data-word="samannāgataṃ">समन्‍नागतं,</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="manokammena">मनोकम्मेन</span> <span class="paliword" data-word="samannāgataṃ">समन्‍नागतं</span> <span class="paliword" data-word="pesalā">पेसला</span> <span class="paliword" data-word="sabrahmacārī">सब्रह्मचारी</span> <span class="paliword" data-word="ārakā">आरका</span> <span class="paliword" data-word="parivajjanti">परिवज्‍जन्ति।</span> <span class="paliword" data-word="idamassa">इदमस्स</span> <span class="paliword" data-word="sappaṭibhayasmiṃ">सप्पटिभयस्मिं</span> <span class="paliword" data-word="vadāmi">वदामि।</span> <span class="paliword" data-word="seyyathāpi">सेय्यथापि</span> <span class="paliword" data-word="sā">सा,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sivathikā">सिवथिका</span> <span class="paliword" data-word="sappaṭibhayā">सप्पटिभया;</span> <span class="paliword" data-word="tathūpamāhaṃ">तथूपमाहं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imaṃ">इमं</span> <span class="paliword" data-word="puggalaṃ">पुग्गलं</span> <span class="paliword" data-word="vadāmi">वदामि।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01512_hi">
+                ‘‘भिक्षुओं, जो व्यक्ति अशुद्ध शारीरिक कर्म, अशुद्ध वाचिक कर्म और अशुद्ध मानसिक कर्म से युक्त होता है, शीलवान ब्रह्मचारी उससे दूर रहते हैं और उसका त्याग कर देते हैं। मैं कहता हूँ कि यह उसकी भयानकता है। जिस प्रकार वह श्मशान अत्यंत भयानक होता है, वैसे ही मैं इस पुद्गल को उस श्मशान के समान बताता हूँ।’’
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01513_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="so">‘‘सो</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="kāyakammena">कायकम्मेन</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो,</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="vacīkammena">वचीकम्मेन</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो,</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="manokammena">मनोकम्मेन</span> <span class="paliword" data-word="samannāgato">समन्‍नागतो</span> <span class="paliword" data-word="sabhāgehi">सभागेहि</span> <span class="paliword" data-word="puggalehi">पुग्गलेहि</span> <span class="paliword" data-word="saddhiṃ">सद्धिं</span> <span class="paliword" data-word="saṃvasati">संवसति।</span> <span class="paliword" data-word="idamassa">इदमस्स</span> <span class="paliword" data-word="vāḻāvāsasmiṃ">वाळावासस्मिं</span> <span class="paliword" data-word="vadāmi">वदामि।</span> <span class="paliword" data-word="seyyathāpi">सेय्यथापि</span> <span class="paliword" data-word="sā">सा,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sivathikā">सिवथिका</span> <span class="paliword" data-word="vāḻānaṃ">वाळानं</span> <span class="paliword" data-word="amanussānaṃ">अमनुस्सानं</span> <span class="paliword" data-word="āvāso">आवासो;</span> <span class="paliword" data-word="tathūpamāhaṃ">तथूपमाहं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imaṃ">इमं</span> <span class="paliword" data-word="puggalaṃ">पुग्गलं</span> <span class="paliword" data-word="vadāmi">वदामि।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01513_hi">
+                वह अशुद्ध शारीरिक कर्मों, अशुद्ध वाचिक कर्मों और अशुद्ध मानसिक कर्मों से युक्त होकर अपने ही समान स्वभाव वाले व्यक्तियों के साथ निवास करता है।
+उसके विषय में मैं कहता हूँ कि यह हिंसक पशुओं के बीच रहने के समान है।
+भिक्षुओं, जिस प्रकार श्मशान हिंसक प्राणियों और अमानवीय शक्तियों का निवास स्थान होता है, उसी प्रकार मैं इस व्यक्ति को उनके सदृश मानता हूँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01514_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tamenaṃ">‘‘तमेनं</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="kāyakammena">कायकम्मेन</span> <span class="paliword" data-word="samannāgataṃ">समन्‍नागतं,</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="vacīkammena">वचीकम्मेन</span> <span class="paliword" data-word="samannāgataṃ">समन्‍नागतं,</span> <span class="paliword" data-word="asucinā">असुचिना</span> <span class="paliword" data-word="manokammena">मनोकम्मेन</span> <span class="paliword" data-word="samannāgataṃ">समन्‍नागतं</span> <span class="paliword" data-word="pesalā">पेसला</span> <span class="paliword" data-word="sabrahmacārī">सब्रह्मचारी</span> <span class="paliword" data-word="disvā">दिस्वा</span> <span class="paliword" data-word="khīyadhammaṃ">खीयधम्मं</span> <span class="paliword" data-word="khīyanadhammaṃ">खीयनधम्मं</span> <span class="paliword" data-word="sī॰">(सी॰)</span> <span class="paliword" data-word="āpajjanti">आपज्‍जन्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="aho">‘अहो</span> <span class="paliword" data-word="vata">वत</span> <span class="paliword" data-word="no">नो</span> <span class="paliword" data-word="dukkhaṃ">दुक्खं</span> <span class="paliword" data-word="ye">ये</span> <span class="paliword" data-word="mayaṃ">मयं</span> <span class="paliword" data-word="evarūpehi">एवरूपेहि</span> <span class="paliword" data-word="puggalehi">पुग्गलेहि</span> <span class="paliword" data-word="saddhiṃ">सद्धिं</span> <span class="paliword" data-word="saṃvasāmāti">संवसामा’ति!</span> <span class="paliword" data-word="idamassa">इदमस्स</span> <span class="paliword" data-word="ārodanāya">आरोदनाय</span> <span class="paliword" data-word="vadāmi">वदामि।</span> <span class="paliword" data-word="seyyathāpi">सेय्यथापि</span> <span class="paliword" data-word="sā">सा,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sivathikā">सिवथिका</span> <span class="paliword" data-word="bahuno">बहुनो</span> <span class="paliword" data-word="janassa">जनस्स</span> <span class="paliword" data-word="ārodanā">आरोदना;</span> <span class="paliword" data-word="tathūpamāhaṃ">तथूपमाहं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imaṃ">इमं</span> <span class="paliword" data-word="puggalaṃ">पुग्गलं</span> <span class="paliword" data-word="vadāmi">वदामि।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="sivathikūpame">सिवथिकूपमे</span> <span class="paliword" data-word="puggaleti">पुग्गले’’ति।</span> <span class="paliword" data-word="navamaṃ">नवमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01514_hi">
+                "जब शीलवान सब्रह्मचारी उसे अशुद्ध शारीरिक कर्मों, अशुद्ध वाचिक कर्मों और अशुद्ध मानसिक कर्मों से युक्त देखते हैं, तो वे उसकी निंदा और भर्त्सना करने लगते हैं और कहते हैं— 'कितने दुःख की बात है कि हमें ऐसे व्यक्तियों के साथ रहना पड़ रहा है!' मैं कहता हूँ कि यह उस व्यक्ति के लिए श्मशान के समान रोना-धोना है।
+
+हे भिक्षुओं! जैसे वह श्मशान बहुत से लोगों के रुदन का स्थान होता है, वैसे ही मैं इस व्यक्ति को उस श्मशान के समान कहता हूँ।
+
+हे भिक्षुओं! श्मशान के समान व्यक्ति में ये ही पाँच दोष होते हैं।"
+
+नवाँ (9)।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m1.mul_01515'><span class="paliword" data-word="10">१०.</span> <span class="paliword" data-word="puggalappasādasuttaṃ">पुग्गलप्पसादसुत्तं</span></h3>
+<div class='hindi' id='s0403m1.mul_01515_hi'>१०. पुग्गलप्पसाद सुत्त (व्यक्ति-विषयक श्रद्धा का सूत्र)</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01516_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0403m1.mul_01516_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="250">२५०.</span> <span class="paliword" data-word="pañcime">‘‘पञ्‍चिमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="puggalappasāde">पुग्गलप्पसादे।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="pañca">पञ्‍च?</span> <span class="paliword" data-word="yasmiṃ">यस्मिं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="puggale">पुग्गले</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="abhippasanno">अभिप्पसन्‍नो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="tathārūpaṃ">तथारूपं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="āpanno">आपन्‍नो</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="yathārūpāya">यथारूपाय</span> <span class="paliword" data-word="āpattiyā">आपत्तिया</span> <span class="paliword" data-word="saṅgho">सङ्घो</span> <span class="paliword" data-word="ukkhipati">उक्खिपति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="yo">‘यो</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="myāyaṃ">म्यायं</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="piyo">पियो</span> <span class="paliword" data-word="manāpo">मनापो</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="saṅghena">सङ्घेन</span> <span class="paliword" data-word="ukkhittoti">उक्खित्तो’ति।</span> <span class="paliword" data-word="bhikkhūsu">भिक्खूसु</span> <span class="paliword" data-word="appasādabahulo">अप्पसादबहुलो</span> <span class="paliword" data-word="hoti">होति।</span> <span class="paliword" data-word="bhikkhūsu">भिक्खूसु</span> <span class="paliword" data-word="appasādabahulo">अप्पसादबहुलो</span> <span class="paliword" data-word="samāno">समानो</span> <span class="paliword" data-word="aññe">अञ्‍ञे</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="bhajati">भजति।</span> <span class="paliword" data-word="aññe">अञ्‍ञे</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="abhajanto">अभजन्तो</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="suṇāti">सुणाति।</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="asuṇanto">असुणन्तो</span> <span class="paliword" data-word="saddhammā">सद्धम्मा</span> <span class="paliword" data-word="parihāyati">परिहायति।</span> <span class="paliword" data-word="ayaṃ">अयं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="paṭhamo">पठमो</span> <span class="paliword" data-word="ādīnavo">आदीनवो</span> <span class="paliword" data-word="puggalappasāde">पुग्गलप्पसादे।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01516_hi">
+                २५०.
+"भिक्षुओं, किसी व्यक्ति के प्रति अत्यधिक श्रद्धा रखने के ये पाँच दोष हैं।
+वे पाँच कौन से हैं? भिक्षुओं, जब कोई व्यक्ति किसी अन्य व्यक्ति के प्रति अत्यधिक श्रद्धा रखता है, और वह (श्रद्धेय) व्यक्ति ऐसा अपराध कर बैठता है जिसके कारण संघ उसे निष्कासित कर देता है।
+तब वह (श्रद्धालु) ऐसा सोचता है– 'जो व्यक्ति मुझे अत्यंत प्रिय और मनभावन था, उसे संघ ने निकाल दिया है।'
+इस कारण वह भिक्षुओं के प्रति अप्रसन्नता से भर जाता है।
+भिक्षुओं के प्रति अप्रसन्न होने के कारण वह अन्य भिक्षुओं की संगति नहीं करता।
+अन्य भिक्षुओं की संगति न करने से वह सद्धर्म (उत्तम शिक्षाओं) को नहीं सुनता।
+सद्धर्म को न सुनने के कारण वह सद्धर्म से भ्रष्ट हो जाता है।
+भिक्षुओं, किसी व्यक्ति के प्रति अत्यधिक श्रद्धा रखने का यह पहला दोष है।"
+            </div>
+            
+
+            <div class="commentary" id="s0403m1.mul_01516_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="250">२५०.</span> <span class="paliword" data-word="dasame">दसमे</span> <span class="paliword" data-word="puggalappasādeti">पुग्गलप्पसादेति</span> <span class="paliword" data-word="ekapuggalasmiṃ">एकपुग्गलस्मिं</span> <span class="paliword" data-word="uppannappasāde">उप्पन्‍नप्पसादे।</span> <span class="paliword" data-word="ante">अन्ते</span> <span class="paliword" data-word="nisīdāpetīti">निसीदापेतीति</span> <span class="paliword" data-word="bhikkhūnaṃ">भिक्खूनं</span> <span class="paliword" data-word="āsanapariyante">आसनपरियन्ते</span> <span class="paliword" data-word="nisīdāpeti">निसीदापेति।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0403a.att_00461_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0403a.att_00461_hi">
+                    २५०.
+दसवें "पुग्गलप्पसाद" (pugalappasāda - व्यक्ति के प्रति श्रद्धा) का अर्थ है, एक विशिष्ट व्यक्ति के प्रति उत्पन्न होने वाली श्रद्धा।
+"अन्ते निसीदापेति" (ante nisīdāpeti - अंत में बैठाता है) का अर्थ है, भिक्षुओं के बैठने के स्थान के अंतिम छोर पर बैठाना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="26">(२६)</span> <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="upasampadāvaggo">उपसम्पदावग्गो</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0403a.att_00462_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0403a.att_00462_hi">
+                    (२६) ६. उपसंपदा-वग्ग (उपसंपदा वर्ग)
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="1-3">१-३.</span> <span class="paliword" data-word="upasampādetabbasuttādivaṇṇanā">उपसम्पादेतब्बसुत्तादिवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0403a.att_00463_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0403a.att_00463_hi">
+                    १-३. उपसम्पादेतब्ब सुत्त आदि की व्याख्या
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01517_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="puna">‘‘पुन</span> <span class="paliword" data-word="caparaṃ">चपरं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="yasmiṃ">यस्मिं</span> <span class="paliword" data-word="puggale">पुग्गले</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="abhippasanno">अभिप्पसन्‍नो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="tathārūpaṃ">तथारूपं</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="āpanno">आपन्‍नो</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="yathārūpāya">यथारूपाय</span> <span class="paliword" data-word="āpattiyā">आपत्तिया</span> <span class="paliword" data-word="saṅgho">सङ्घो</span> <span class="paliword" data-word="ante">अन्ते</span> <span class="paliword" data-word="nisīdāpeti">निसीदापेति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="yo">‘यो</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="myāyaṃ">म्यायं</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="piyo">पियो</span> <span class="paliword" data-word="manāpo">मनापो</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="saṅghena">सङ्घेन</span> <span class="paliword" data-word="ante">अन्ते</span> <span class="paliword" data-word="nisīdāpitoti">निसीदापितो’ति।</span> <span class="paliword" data-word="bhikkhūsu">भिक्खूसु</span> <span class="paliword" data-word="appasādabahulo">अप्पसादबहुलो</span> <span class="paliword" data-word="hoti">होति।</span> <span class="paliword" data-word="bhikkhūsu">भिक्खूसु</span> <span class="paliword" data-word="appasādabahulo">अप्पसादबहुलो</span> <span class="paliword" data-word="samāno">समानो</span> <span class="paliword" data-word="aññe">अञ्‍ञे</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="bhajati">भजति।</span> <span class="paliword" data-word="aññe">अञ्‍ञे</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="abhajanto">अभजन्तो</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="suṇāti">सुणाति।</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="asuṇanto">असुणन्तो</span> <span class="paliword" data-word="saddhammā">सद्धम्मा</span> <span class="paliword" data-word="parihāyati">परिहायति।</span> <span class="paliword" data-word="ayaṃ">अयं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dutiyo">दुतियो</span> <span class="paliword" data-word="ādīnavo">आदीनवो</span> <span class="paliword" data-word="puggalappasāde">पुग्गलप्पसादे।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01517_hi">
+                “इसके अतिरिक्त, भिक्षुओं, जब कोई व्यक्ति किसी अन्य व्यक्ति पर अत्यधिक श्रद्धा रखता है और वह (दूसरा) व्यक्ति ऐसी किसी आपत्ति (अपराध) का भागी बन जाता है जिसके कारण संघ उसे निष्कासित कर देता है।
+
+तब वह (पहला व्यक्ति) इस प्रकार सोचता है — ‘यह व्यक्ति जो मुझे प्रिय और मनभावन था, उसे संघ ने निष्कासित कर दिया है।’
+
+वह भिक्षुओं के प्रति अत्यधिक अनादर (अश्रद्धा) से भर जाता है।
+भिक्षुओं के प्रति अश्रद्धा भाव रखने के कारण, वह अन्य भिक्षुओं की संगति नहीं करता।
+अन्य भिक्षुओं की संगति न करने के कारण, वह सद्धर्म (उत्तम शिक्षाओं) को नहीं सुनता।
+सद्धर्म को न सुनने के कारण, वह सद्धर्म से पतित हो जाता है।
+
+भिक्षुओं, किसी व्यक्ति विशेष के प्रति आसक्तिपूर्ण श्रद्धा रखने का यह दूसरा दोष (आदीनव) है।”
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01518_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="puna">‘‘पुन</span> <span class="paliword" data-word="caparaṃ">चपरं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="yasmiṃ">यस्मिं</span> <span class="paliword" data-word="puggale">पुग्गले</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="abhippasanno">अभिप्पसन्‍नो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="disāpakkanto">दिसापक्‍कन्तो</span> <span class="paliword" data-word="hotipe॰">होति…पे॰…</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="vibbhanto">विब्भन्तो</span> <span class="paliword" data-word="hotipe॰">होति…पे॰…</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="kālaṅkato">कालङ्कतो</span> <span class="paliword" data-word="hoti">होति।</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="yo">‘यो</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="myāyaṃ">म्यायं</span> <span class="paliword" data-word="puggalo">पुग्गलो</span> <span class="paliword" data-word="piyo">पियो</span> <span class="paliword" data-word="manāpo">मनापो</span> <span class="paliword" data-word="so">सो</span> <span class="paliword" data-word="kālaṅkatoti">कालङ्कतो’ति।</span> <span class="paliword" data-word="aññe">अञ्‍ञे</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="bhajati">भजति।</span> <span class="paliword" data-word="aññe">अञ्‍ञे</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="abhajanto">अभजन्तो</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="suṇāti">सुणाति।</span> <span class="paliword" data-word="saddhammaṃ">सद्धम्मं</span> <span class="paliword" data-word="asuṇanto">असुणन्तो</span> <span class="paliword" data-word="saddhammā">सद्धम्मा</span> <span class="paliword" data-word="parihāyati">परिहायति।</span> <span class="paliword" data-word="ayaṃ">अयं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañcamo">पञ्‍चमो</span> <span class="paliword" data-word="ādīnavo">आदीनवो</span> <span class="paliword" data-word="puggalappasāde">पुग्गलप्पसादे।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pañca">पञ्‍च</span> <span class="paliword" data-word="ādīnavā">आदीनवा</span> <span class="paliword" data-word="puggalappasādeti">पुग्गलप्पसादे’’ति।</span> <span class="paliword" data-word="dasamaṃ">दसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01518_hi">
+                ‘‘इसके अलावा, भिक्षुओं, जब कोई व्यक्ति किसी दूसरे व्यक्ति पर पूर्ण श्रद्धा रखता है और वह (श्रद्धेय व्यक्ति) कहीं दूर चला जाता है... या धर्म त्याग देता है... या मृत्यु को प्राप्त हो जाता है।
+तब उस (श्रद्धालु) के मन में ऐसा विचार आता है— ‘जो व्यक्ति मुझे प्रिय और मनभावन था, वह अब मर चुका है।’
+वह अन्य भिक्षुओं के साथ संगति नहीं करता।
+अन्य भिक्षुओं के साथ संगति न करने के कारण वह सद्धर्म को नहीं सुनता।
+सद्धर्म को न सुनने से वह सद्धर्म से विमुख (पतित) हो जाता है।
+भिक्षुओं, यह किसी व्यक्ति विशेष पर अत्यधिक श्रद्धा रखने का पाँचवाँ दोष है।
+भिक्षुओं, किसी व्यक्ति पर श्रद्धा रखने के ये ही पाँच दोष हैं।’’
+दसवां (सुत्त)।
+            </div>
+            
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m1.mul_01519_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m1.mul_01519_hi">
+                इसका सारांश इस प्रकार है:
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

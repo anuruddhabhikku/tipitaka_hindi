@@ -1,0 +1,821 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"paccayā": "1 <i>masc</i> support; requisite; necessity [masc, from pacceti] ‹ pacceti<br>2 <i>masc</i> cause; reason; supporting condition; requirement (for) [masc, from pacceti] ‹ pacceti<br>3 <i>masc</i> (gram) affix; suffix; verbal ending [masc, from pacceti] ‹ pacceti (lit. dependent)<br>4 <i>adj</i> dependent (on); reliant (on); based (on); supported (by); founded (on) [adj, from pacceti, in s] ‹ pacceti<br>5 <i>ind</i> dependent on; due to; caused by [ind, adv, in s, abl sg of paccaya] ‹ paccaya (lit. from condition)<br>6 <i>masc</i> name of an arahant monk [masc, from pacceti] ‹ pacceti (lit. dependent)", "dhammadānañca": "1 <i>nt</i> gift of Dhamma; gift of the teaching [nt,]", "ādesanāpāṭihāriyenāti": "1 <i>nt</i> miracle of mind reading [nt,] (lit. miracle of pointing)", "anuggaṇhanaṃ": "1 <i>masc</i> helping; supporting; maintaining; upholding; fostering [masc, act, from anuggaṇhāti] ‹ अनुग्गण्हाति", "āmisasaṅgaho": "1 <i>masc</i> material support [masc,]", "āmisadānaṃ": "1 <i>nt</i> material gift; worldly charity; (comm) four requisites [nt,]", "anukampānaṃ": "1 <i>fem</i> care; compassion; concern (for); pity (on) [fem, abstr, from anukampati] ‹ anukampati (lit. trembling alongside)", "dhammayāgo": "1 <i>masc</i> Dhamma offering; Dhamma sacrifice [masc,]", "yathābhataṃ": "1 <i>adj</i> as laden; as loaded [adj,]<br>2 <i>ind</i> as if carried [ind, adv,]", "tatiyassa": "1 <i>ordi</i> third (3rd) [ordin of ti] ‹ ti<br>2 <i>masc</i> (gram) third consonant of each vagga; g, j, ḍ, d, b [masc, from ti] ‹ ti<br>3 <i>adj</i> [adj, from tatha] ‹ tatha", "idaṃ": "1 <i>pron</i> this; this thing [pron, nt nom sg of ima] ‹ ima<br>2 <i>pron</i> this; this thing; this place (object) [pron, nt acc sg of ima] ‹ ima<br>3 <i>pron</i> this [pron, base]<br>4 <i>ind</i> here; in this case [ind, adv, acc sg of ima] ‹ ima", "nikkhittoti": "1 <i>pp</i> dropped; discarded; set aside; rejected [pp of nikkhipati] ‹ nikkhipati (lit. thrown down)<br>2 <i>pp</i> placed; laid down [pp of nikkhipati] ‹ nikkhipati (lit. thrown down)<br>3 <i>pp</i> stored; put aside; kept [pp of nikkhipati] ‹ nikkhipati (lit. thrown down)<br>4 <i>pp</i> [pp of nikkhipati] ‹ nikkhipati (lit. thrown down)", "paccayehi": "1 <i>masc</i> support; requisite; necessity [masc, from pacceti] ‹ pacceti<br>2 <i>masc</i> cause; reason; supporting condition; requirement (for) [masc, from pacceti] ‹ pacceti<br>3 <i>masc</i> (gram) affix; suffix; verbal ending [masc, from pacceti] ‹ pacceti (lit. dependent)<br>4 <i>adj</i> dependent (on); reliant (on); based (on); supported (by); founded (on) [adj, from pacceti, in s] ‹ pacceti<br>5 <i>masc</i> name of an arahant monk [masc, from pacceti] ‹ pacceti (lit. dependent)", "yathā": "1 <i>ind</i> like; as; as per; according to; how; in whatever way [ind, adv, from ya] ‹ ya<br>2 <i>ind</i> because; since [ind, adv, from ya] ‹ ya<br>3 <i>ind</i> (gram) for example [ind, adv, from ya] ‹ ya (lit. like)", "cattāro": "1 <i>card</i> four (4) [card, masc fem & nt pl]<br>2 <i>card</i> four (4) [card, masc nom & acc pl of catu] ‹ catu", "āmisacāgo": "1 <i>masc</i> material generosity; worldly sharing [masc,]", "anuggahānaṃ": "1 <i>adj</i> not grasping; not embracing; not taking up [adj, from na uggaṇhāti] ‹ उग्गण्हाति (lit. not grasping up)<br>2 <i>masc</i> support; help; assistance [masc, from anuggaṇhāti] ‹ अनुग्गण्हाति<br>3 <i>masc</i> acknowledgement; approval [masc, from anuggaṇhāti] ‹ अनुग्गण्हाति", "anukampā": "1 <i>prp</i> caring; having compassion (for); taking pity (on) [prp of anukampati] ‹ anukampati (lit. trembling alongside)<br>2 <i>fem</i> care; compassion; concern (for); pity (on) [fem, abstr, from anukampati] ‹ anukampati (lit. trembling alongside)<br>3 <i>aor</i> cared; had compassion; was concerned (for); took pity (on) [aor of anukampati] ‹ anukampati (lit. trembled alongside)", "asucināti": "1 <i>adj</i> impure; unclean; filthy; foul; disgusting [adj] ‹ √suc<br>2 <i>masc</i> impurity; filth [masc] ‹ √suc<br>3 <i>nt</i> impure thing; something dirty; foul thing [nt] ‹ √suc (lit. impurity)<br>4 <i>nt</i> sperm; semen [nt] ‹ √suc (lit. impurity)", "dhammānukampāti": "1 <i>fem</i> concern about teaching; compassion with regard to the teaching [fem, abstr,]", "dhammayāgoti": "1 <i>masc</i> Dhamma offering; Dhamma sacrifice [masc,]", "nāmaṃ": "1 <i>nt</i> (gram) noun; substantive (lit. name)<br>2 <i>nt</i> name [nt]<br>3 <i>nt</i> mental objects of consciousness; mentality; mental factors of feeling, perception, intention, contact and attention [nt, abstr] (lit. name)<br>4 <i>adj</i> called; named [adj] (lit. name)<br>5 <i>nt</i> (gram) nominal stem [nt] (lit. name)", "apadisitvā": "1 <i>abs</i> [abs of apadisati] ‹ apadisati (lit. having pointed away)<br>2 <i>abs</i> [abs of apadisati] (lit. having pointed away)", "ṭhapito": "1 <i>pp</i> placed (in); put down (on) [pp of ṭhapeti] ‹ ठपेति (lit. caused to stand)<br>2 <i>pp</i> left; remained [pp of ṭhapeti] ‹ ठपेति (lit. caused to stand)<br>3 <i>pp</i> set aside; put aside [pp of ṭhapeti] ‹ ठपेति (lit. caused to stand)<br>4 <i>pp</i> set down; written down; put in place [pp of ṭhapeti] ‹ ठपेति (lit. caused to stand)<br>5 <i>pp</i> appointed; designated; established (by) [pp of ṭhapeti] ‹ ठपेति (lit. caused to stand)<br>6 <i>pp</i> cancelled; revoked; suspended [pp of ṭhapeti] ‹ ठपेति (lit. caused to stand)", "dvādasame": "1 <i>ordi</i> twelfth (12th) [ordin of dvādasa,] ‹ द्वादस", "saṃvibhāgānaṃ": "1 <i>masc</i> sharing; donation; distribution; doling out [masc, from saṃvibhajati] ‹ संविभजति", "āmisassa": "1 <i>adj</i> material; physical; worldly [adj, from āma] ‹ आम (lit. fleshly)<br>2 <i>nt</i> worldly gain; profit; material benefit [nt, from āma] ‹ आम (lit. fleshly)<br>3 <i>nt</i> worldly thing; physical item; material stuff [nt, from āma] ‹ आम (lit. fleshly)<br>4 <i>nt</i> meat; bait [nt, from āma] ‹ आम (lit. fleshly)<br>5 <i>nt</i> food [nt, from āma] ‹ आम (lit. fleshly)", "dhammacāgoti": "1 <i>masc</i> generosity with the teaching; Dhamma sharing [masc,]", "sambhogānaṃ": "1 <i>masc</i> partaking together; mutual enjoyment [masc, from sambhuñjati] ‹ सम्भुञ्जति (lit. eating together)<br>2 <i>masc</i> [masc, from sambhuñjati] ‹ सम्भुञ्जति<br>3 <i>masc</i> sexual love; sexual intercourse; (comm) mutual enjoyment [masc, from sambhuñjati] ‹ सम्भुञ्जति (lit. eating together)", "dānānaṃ": "1 <i>nt</i> giving; offering; charity; generosity [nt, act, from dadāti] ‹ ददाति<br>2 <i>nt</i> alms; almsfood [nt, from dadāti] ‹ ददाति (lit. giving)<br>3 <i>nt</i> [nt]<br>4 <i>nt</i> gift; offering; item for a sacrifice [nt, act, from dadāti] ‹ ददाति<br>5 <i>nt</i> putting in charge; assigning responsibility [nt, act, from dadāti] ‹ ददाति (lit. giving)", "dhammasambhogoti": "1 <i>masc</i> partaking of the teaching together; mutual enjoyment of Dhamma [masc,] (lit. eating Dhamma together)", "ādisitvā": "1 <i>abs</i> having pointed out; having indicated [abs of ādisati] ‹ आदिसति", "chaṭṭhe": "1 <i>ordi</i> sixth (6th) [ordin of cha] ‹ cha", "dhammena": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>nt</i> teaching; discourse; doctrine [nt, from dharati, irreg] ‹ dharati<br>13 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>14 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>15 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>16 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu<br>17 <i>ind</i> righteously; ethically; religiously; morally [ind, adv, instr sg of dhamma] ‹ dhamma (lit. with the law)<br>18 <i>ind</i> lawfully; legally [ind, adv, instr sg of dhamma] ‹ dhamma (lit. with the law)", "dve": "1 <i>card</i> two (2) [card, x pl]<br>2 <i>masc</i> couple; pair [masc, irreg]", "dvemāni": "1 <i>sand</i> these two [sandhi, card + pron]", "dvinnaṃ": "1 <i>card</i> two (2) [card, x pl]<br>2 <i>card</i> of two [card, x gen pl of dvi] ‹ dvi<br>3 <i>card</i> when two [card, x gen pl of dvi, loc abs] ‹ dvi", "dutiye": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>fem</i> second woman; another woman; female companion [fem, from dvi] ‹ dvi<br>5 <i>fem</i> [fem]<br>6 <i>ind</i> in the second case; in the second way [ind, adv, loc sg of dutiya] ‹ dutiya<br>7 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "pañcame": "1 <i>ordi</i> fifth (5th) [ordin of pañca] ‹ पञ्च<br>2 <i>masc</i> fifth of the seven primary musical notes [masc, ordin of pañca] ‹ पञ्च (lit. fifth)", "kho": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "anuggahā": "1 <i>adj</i> not grasping; not embracing; not taking up [adj, from na uggaṇhāti] ‹ उग्गण्हाति (lit. not grasping up)<br>2 <i>masc</i> support; help; assistance [masc, from anuggaṇhāti] ‹ अनुग्गण्हाति<br>3 <i>aor</i> helped; supported [aor of anuggaṇhāti] ‹ अनुग्गण्हाति<br>4 <i>masc</i> acknowledgement; approval [masc, from anuggaṇhāti] ‹ अनुग्गण्हाति", "sattame": "1 <i>ordi</i> seventh (7th) [ordin of satta] ‹ satta<br>2 <i>adj</i> best; most excellent; highest [adj, superl of santa] ‹ santa", "āmisānuggaho": "1 <i>masc</i> material support; worldly assistance [masc,]", "catūhi": "1 <i>card</i> four (4) [card, masc fem & nt pl]<br>2 <i>card</i> with four; by four [card, masc fem & nt instr pl of catu] ‹ catu<br>3 <i>card</i> from four [card, masc fem & nt abl pl of catu] ‹ catu", "idhekacco": "1 <i>pron</i> here one; here a certain; in this case some; some people here [pron,]", "paṭhame": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>fem</i> [fem]", "dhammopi": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>13 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>14 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>15 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu", "vā": "1 <i>lett</i> (gram) letter v; 37th letter of the alphabet; dento-labial semi-vowel [letter, masc]<br>2 <i>ind</i> or; either or [ind]<br>3 <i>ind</i> (gram) or; in some cases; not always; alternatively; optionally [ind]<br>4 <i>ind</i> exact; very; precise [ind, emph]<br>5 <i>ind</i> and; as well as [ind, conj]", "dhammapariccāgo": "1 <i>masc</i> generosity with the teaching; Dhamma sharing [masc,]", "dānaṃ": "1 <i>lett</i> (gram) letter d; 26th letter of the alphabet; dental consonant [letter, masc]<br>2 <i>adj</i> giving; offering; bestowing [adj, in s, from dadāti] ‹ ददाति<br>3 <i>root</i> (gram) √dā (give) [root, masc]<br>4 <i>nt</i> giving; offering; charity; generosity [nt, act, from dadāti] ‹ ददाति<br>5 <i>nt</i> alms; almsfood [nt, from dadāti] ‹ ददाति (lit. giving)<br>6 <i>nt</i> [nt]<br>7 <i>nt</i> gift; offering; item for a sacrifice [nt, act, from dadāti] ‹ ददाति<br>8 <i>nt</i> putting in charge; assigning responsibility [nt, act, from dadāti] ‹ ददाति (lit. giving)", "iddhipāṭihāriyenāti": "1 <i>nt</i> miracle of psychic power; wonder of supernormal ability [nt,]", "saṅgahānaṃ": "1 <i>masc</i> support; maintenance (of); looking after [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>2 <i>masc</i> inclusion (in); encompassing; grouping (of) [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>3 <i>masc</i> maintaining relationships; support [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>4 <i>masc</i> [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>5 <i>masc</i> agreement (about the postponement of the invitation ceremony) [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>6 <i>masc</i> collection of scriptures [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)", "navame": "1 <i>ordi</i> ninth (9th) [ordin of nava] ‹ nava", "veditabbo": "1 <i>ptp</i> can be known; should be understood (by) [ptp of vedeti] ‹ vedeti (lit. to be known)<br>2 <i>ptp</i> to be experienced (by) [ptp of vedeti] ‹ vedeti (lit. to be known)", "āmisayāgo": "1 <i>masc</i> material offering; fleshly sacrifice [masc,]", "dhammasaṃvibhāgoti": "1 <i>masc</i> sharing the Dhamma [masc,]", "ime": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> these [pron, masc nom & acc pl of ima] ‹ ima", "imesaṃ": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> for these; for them; for those [pron, masc & nt dat pl of ima] ‹ ima<br>3 <i>pron</i> of these; their [pron, masc & nt gen pl of ima] ‹ ima", "āmisadānanti": "1 <i>nt</i> material gift; worldly charity; (comm) four requisites [nt,]", "sambhogā": "1 <i>masc</i> partaking together; mutual enjoyment [masc, from sambhuñjati] ‹ सम्भुञ्जति (lit. eating together)<br>2 <i>masc</i> [masc, from sambhuñjati] ‹ सम्भुञ्जति<br>3 <i>masc</i> sexual love; sexual intercourse; (comm) mutual enjoyment [masc, from sambhuñjati] ‹ सम्भुञ्जति (lit. eating together)", "āmisasambhogo": "1 <i>masc</i> partaking of worldly things together; mutual enjoyment of material items [masc,] (lit. eating flesh together)", "cetanā": "1 <i>adj</i> having the intention; with the will (to) [adj, in s, from ceteti] ‹ ceteti<br>2 <i>fem</i> intending; willing [fem, abstr, act, from ceteti] ‹ ceteti", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "uttānāneva": "1 <i>adj</i> open; evident [adj, from uttanoti] ‹ uttanoti (lit. spread out)<br>2 <i>adj</i> lying on one's back; supine [adj, from uttanoti] ‹ uttanoti (lit. spread up)<br>3 <i>adj</i> shallow [adj, from uttanoti] ‹ uttanoti (lit. spread out)<br>4 <i>adj</i> [adj, from uttanoti] ‹ uttanoti", "dasame": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "bhogānaṃ": "1 <i>masc</i> wealth; possessions; property; riches [masc, from bhuñjati] ‹ भुञ्जति<br>2 <i>masc</i> use; enjoyment; pleasure [masc, from bhuñjati] ‹ भुञ्जति<br>3 <i>nt</i> wealth; possessions; property; riches [nt, from bhuñjati] ‹ भुञ्जति<br>4 <i>masc</i> use; application; function [masc, from bhuñjati] ‹ भुञ्जति<br>5 <i>masc</i> (of a snake) coil [masc, from bhujati] ‹ bhujati (lit. bend)<br>6 <i>masc</i> (of an elephant) trunk [masc, from bhujati] ‹ bhujati (lit. bend)", "dhammasaṅgahoti": "1 <i>masc</i> support with teaching [masc,]", "saṃvibhāgā": "1 <i>masc</i> sharing; donation; distribution; doling out [masc, from saṃvibhajati] ‹ संविभजति", "dhammasambhogo": "1 <i>masc</i> partaking of the teaching together; mutual enjoyment of Dhamma [masc,] (lit. eating Dhamma together)", "aṭṭhame": "1 <i>ordi</i> eighth (8th) [ordin of aṭṭha] ‹ अट्ठ<br>2 <i>masc</i> name of a privately awakened Buddha [masc, ordin of aṭṭha] ‹ अट्ठ (lit. eighth)", "saṅgaho": "1 <i>masc</i> support; maintenance (of); looking after [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>2 <i>masc</i> inclusion (in); encompassing; grouping (of) [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>3 <i>masc</i> maintaining relationships; support [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>4 <i>masc</i> [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>5 <i>masc</i> agreement (about the postponement of the invitation ceremony) [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>6 <i>masc</i> collection of scriptures [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)", "dhammasaṃvibhāgo": "1 <i>masc</i> sharing the Dhamma [masc,]", "imāni": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> these [pron, nt nom & acc pl of ima] ‹ ima", "dānānīti": "1 <i>nt</i> giving; offering; charity; generosity [nt, act, from dadāti] ‹ ददाति<br>2 <i>nt</i> alms; almsfood [nt, from dadāti] ‹ ददाति (lit. giving)<br>3 <i>nt</i> [nt]<br>4 <i>nt</i> gift; offering; item for a sacrifice [nt, act, from dadāti] ‹ ददाति<br>5 <i>nt</i> putting in charge; assigning responsibility [nt, act, from dadāti] ‹ ददाति (lit. giving)", "dhammadānanti": "1 <i>nt</i> gift of Dhamma; gift of the teaching [nt,]", "yāgā": "1 <i>masc</i> offering; donation [masc, from yajati] ‹ yajati<br>2 <i>masc</i> sacrifice; blood-sacrifice [masc, from yajati] ‹ yajati", "sucināti": "1 <i>adj</i> clean; pure [adj, from sucati] ‹ sucati<br>2 <i>adj</i> (of tastes and smells) good; fine; exquisite [adj, from sucati] ‹ sucati<br>3 <i>nt</i> clean thing; pure thing [nt, from sucati] ‹ sucati<br>4 <i>nt</i> purity; cleanness; goodness [nt, from sucati] ‹ sucati<br>5 <i>masc</i> pure man; moral person [masc, from sucati] ‹ sucati<br>6 <i>nt</i> pure deed; good action; blameless work [nt, from sucati] ‹ sucati (lit. pure)", "sāvajjenāti": "1 <i>adj</i> objectionable; blameworthy; wrong; at fault [adj, from avajja] ‹ avajja<br>2 <i>nt</i> (which is) objectionable; blameworthy; wrong; fault [nt, from avajja] ‹ avajja (lit. (which is) not praiseworthy)", "āmisadānañca": "1 <i>nt</i> material gift; worldly charity; (comm) four requisites [nt,]", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "pariccāgā": "1 <i>masc</i> giving up; sacrifice; self-sacrifice; abandonment; desertion (of) [masc, in s, from pariccajati] ‹ pariccajati (lit. giving up all around)<br>2 <i>masc</i> [masc, from pariccajati] ‹ pariccajati (lit. giving up all around)", "dvemā": "1 <i>sand</i> these two [sandhi, card + pron]", "āmisasaṃvibhāgo": "1 <i>masc</i> sharing material things; distribution of worldly items [masc,]", "dhammasaṅgaho": "1 <i>masc</i> support with teaching [masc,]", "imā": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> these [pron, fem nom pl of ima] ‹ ima", "deti": "1 <i>pr</i> gives; donates; offers; hands (to) [pr]<br>2 <i>pr</i> allows; permits (to); accepts [pr] (lit. gives)<br>3 <i>pr</i> sets on fire; sets alight (to) [pr] (lit. gives)<br>4 <i>pr</i> (of work) assigns; puts in charge of [pr] (lit. gives)", "mejjhena": "1 <i>adj</i> full of sap; juicy [adj, from medha] ‹ medha", "samenāti": "1 <i>adj</i> level; even; balanced [adj]<br>2 <i>adj</i> like; equal (to); same (as); identical (to) [adj]<br>3 <i>nt</i> similarity; equality [nt]<br>4 <i>masc</i> peace; tranquillity; serenity (of) [masc, from sammati] ‹ sammati<br>5 <i>ind</i> impartially; peacefully; calmly [ind, adv, instr sg of sama] ‹ sama<br>6 <i>nt</i> even ground; level terrain [nt, in s] (lit. even)", "dhammānuggaho": "1 <i>masc</i> assistance with the Dhamma; support with the teaching [masc,]", "tatiye": "1 <i>ordi</i> third (3rd) [ordin of ti] ‹ ti<br>2 <i>masc</i> (gram) third consonant of each vagga; g, j, ḍ, d, b [masc, from ti] ‹ ti<br>3 <i>adj</i> [adj, from tatha] ‹ tatha<br>4 <i>fem</i> [fem]<br>5 <i>ind</i> in the third case; in the third way [ind, adv, loc sg of tatiya] ‹ tatiya", "dhammabhogoti": "1 <i>masc</i> value of the teaching; richness of the Dhamma; wealth of the teaching [masc,]", "yāgo": "1 <i>masc</i> offering; donation [masc, from yajati] ‹ yajati<br>2 <i>masc</i> sacrifice; blood-sacrifice [masc, from yajati] ‹ yajati", "imāsaṃ": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> of these [pron, fem gen pl of ima] ‹ ima", "bhuñjanaṃ": "1 <i>nt</i> eating; dining [nt, act, from bhuñjati] ‹ भुञ्जति", "aparisuddhena": "1 <i>pp</i> impure; imperfect; unclean; dirty [pp of na parisujjhati] ‹ parisujjhati", "katamāni": "1 <i>pron</i> what?; which (of the many)? [pron, interr, from ka] ‹ ka", "pariccāgānaṃ": "1 <i>masc</i> giving up; sacrifice; self-sacrifice; abandonment; desertion (of) [masc, in s, from pariccajati] ‹ pariccajati (lit. giving up all around)<br>2 <i>masc</i> [masc, from pariccajati] ‹ pariccajati (lit. giving up all around)", "bhogā": "1 <i>masc</i> wealth; possessions; property; riches [masc, from bhuñjati] ‹ भुञ्जति<br>2 <i>masc</i> use; enjoyment; pleasure [masc, from bhuñjati] ‹ भुञ्जति<br>3 <i>nt</i> wealth; possessions; property; riches [nt, from bhuñjati] ‹ भुञ्जति<br>4 <i>masc</i> use; application; function [masc, from bhuñjati] ‹ भुञ्जति<br>5 <i>masc</i> (of a snake) coil [masc, from bhujati] ‹ bhujati (lit. bend)<br>6 <i>masc</i> (of an elephant) trunk [masc, from bhujati] ‹ bhujati (lit. bend)", "āmisabhogo": "1 <i>masc</i> material riches; worldly wealth [masc,]", "ānetvā": "1 <i>abs</i> having brought home; having fetched [abs of āneti] ‹ आनेति (lit. having led here)<br>2 <i>abs</i> having brought; having led (to) [abs of āneti] ‹ आनेति (lit. having led here)<br>3 <i>abs</i> (gram) having distributed the meaning of a word to other words [abs of āneti] ‹ आनेति (lit. having led here)", "yadidaṃ": "1 <i>sand</i> namely; that is [sandhi, pron + pron] (lit. which this)", "nāma": "1 <i>ind</i> certainly; truly; for sure [ind, emph]<br>2 <i>ind</i> called; means; by the name of; namely [ind, adv] (lit. name)<br>3 <i>nt</i> (gram) noun; substantive (lit. name)<br>4 <i>nt</i> name [nt]<br>5 <i>nt</i> mental objects of consciousness; mentality; mental factors of feeling, perception, intention, contact and attention [nt, abstr] (lit. name)<br>6 <i>adj</i> called; named [adj] (lit. name)<br>7 <i>ind</i> [ind, adv]<br>8 <i>nt</i> (gram) nominal stem [nt] (lit. name)", "visamenāti": "1 <i>adj</i> (of a place) rough; uneven; dangerous; perilous [adj, from sama] ‹ sama<br>2 <i>adj</i> unequal; different [adj, from sama] ‹ sama<br>3 <i>adj</i> (morally) unsuitable; wrong; out of tune [adj, from sama] ‹ sama (lit. unbalanced)<br>4 <i>adj</i> erratic; chaotic [adj, from sama] ‹ sama (lit. unbalanced)<br>5 <i>nt</i> rough road; unsuitable place; (comm) (or) fierce animals [nt, from sama] ‹ sama<br>6 <i>nt</i> uneven ground; rough terrain [nt, in s, from sama] ‹ sama<br>7 <i>adj</i> (of eyes) squint; cross-eyed [adj, from sama] ‹ sama (lit. uneven)", "dveme": "1 <i>sand</i> these two [sandhi, adj + pron]", "cāgā": "1 <i>masc</i> giving up; relinquishing; abandoning [masc, from cajati] ‹ cajati<br>2 <i>masc</i> generosity; sharing; liberality [masc, from cajati] ‹ cajati", "cāgānaṃ": "1 <i>masc</i> giving up; relinquishing; abandoning [masc, from cajati] ‹ cajati<br>2 <i>masc</i> generosity; sharing; liberality [masc, from cajati] ‹ cajati", "katamā": "1 <i>pron</i> what?; which (of the many)? [pron, interr, from ka] ‹ ka", "catutthe": "1 <i>ordi</i> fourth (4th) [ordin of catu] ‹ catu<br>2 <i>masc</i> (gram) fourth consonant of each vagga; gh, jh, ḍh, dh, bh [masc, from catu] ‹ catu (lit. fourth)<br>3 <i>ind</i> in the fourth case; in the fourth way [ind, adv, loc sg of catuttha] ‹ catuttha", "cajanaṃ": "1 <i>nt</i> [nt]", "dhammabhogo": "1 <i>masc</i> value of the teaching; richness of the Dhamma; wealth of the teaching [masc,]", "amejjhena": "1 <i>ptp</i> [ptp] (lit. not fit for sacrifice)<br>2 <i>nt</i> [nt] (lit. not fit for sacrifice)", "āmisapariccāgo": "1 <i>masc</i> material generosity; worldly sharing [masc,]", "āmisānukampā": "1 <i>fem</i> worldly concern; material compassion [fem, abstr,]", "yāgānaṃ": "1 <i>masc</i> offering; donation [masc, from yajati] ‹ yajati<br>2 <i>masc</i> sacrifice; blood-sacrifice [masc, from yajati] ‹ yajati", "dhammacāgo": "1 <i>masc</i> generosity with the teaching; Dhamma sharing [masc,]", "kathetvā": "1 <i>abs</i> having said; having talked [abs of katheti] ‹ katheti<br>2 <i>abs</i> (of a question) having answered [abs of katheti] ‹ katheti", "dhammānuggahoti": "1 <i>masc</i> assistance with the Dhamma; support with the teaching [masc,]", "anukampanaṃ": "1 <i>nt</i> [nt] (lit. trembling alongside)", "yāgoti": "1 <i>masc</i> offering; donation [masc, from yajati] ‹ yajati<br>2 <i>masc</i> sacrifice; blood-sacrifice [masc, from yajati] ‹ yajati", "etadaggaṃ": "1 <i>adj</i> this is the best; this is the highest [adj,]<br>2 <i>sand</i> this is the greatest; this is the best; this is the highest (of) [sandhi, pron + adj]", "dhammassa": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>nt</i> teaching; discourse; doctrine [nt, from dharati, irreg] ‹ dharati<br>13 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>14 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>15 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>16 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu", "sadosena": "1 <i>adj</i> with hatred; with ill-will [adj, from dosa] ‹ dosa<br>2 <i>adj</i> faulty; wrong; defective; corrupt; in error [adj, from dosa] ‹ dosa", "saṅgahā": "1 <i>masc</i> support; maintenance (of); looking after [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>2 <i>masc</i> inclusion (in); encompassing; grouping (of) [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>3 <i>masc</i> maintaining relationships; support [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>4 <i>masc</i> [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>5 <i>masc</i> agreement (about the postponement of the invitation ceremony) [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>6 <i>masc</i> collection of scriptures [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)", "viseso": "1 <i>masc</i> distinction; attainment; superior state; eminence [masc, from viseseti] ‹ viseseti (lit. distinguished apart)<br>2 <i>masc</i> difference; distinction (between) [masc, from viseseti] ‹ viseseti (lit. distinguished apart)", "katame": "1 <i>pron</i> what?; which (of the many)? [pron, interr, from ka] ‹ ka", "pañcamassa": "1 <i>ordi</i> fifth (5th) [ordin of pañca] ‹ पञ्च<br>2 <i>masc</i> fifth of the seven primary musical notes [masc, ordin of pañca] ‹ पञ्च (lit. fifth)", "dhammānukampā": "1 <i>fem</i> concern about teaching; compassion with regard to the teaching [fem, abstr,]", "catunnaṃ": "1 <i>card</i> four (4) [card, masc fem & nt pl]<br>2 <i>card</i> for four; to four [card, masc & nt dat pl of catu] ‹ catu<br>3 <i>card</i> of four [card, masc & nt gen pl of catu] ‹ catu", "dhammadānaṃ": "1 <i>nt</i> gift of Dhamma; gift of the teaching [nt,]", "paccayānaṃ": "1 <i>masc</i> support; requisite; necessity [masc, from pacceti] ‹ pacceti<br>2 <i>masc</i> cause; reason; supporting condition; requirement (for) [masc, from pacceti] ‹ pacceti<br>3 <i>masc</i> (gram) affix; suffix; verbal ending [masc, from pacceti] ‹ pacceti (lit. dependent)<br>4 <i>adj</i> dependent (on); reliant (on); based (on); supported (by); founded (on) [adj, from pacceti, in s] ‹ pacceti<br>5 <i>masc</i> name of an arahant monk [masc, from pacceti] ‹ pacceti (lit. dependent)", "parisuddhena": "1 <i>pp</i> clean; pure; bright; perfect [pp of parisujjhati] ‹ parisujjhati (lit. cleaned all around)<br>2 <i>pp</i> become pure; cleansed; purified; brightened [pp of parisujjhati] ‹ parisujjhati", "saṃvibhajanaṃ": "1 <i>nt</i> [nt, from saṃvibhajati] ‹ संविभजति", "dhammapariccāgoti": "1 <i>masc</i> generosity with the teaching; Dhamma sharing [masc,]", "dānāni": "1 <i>nt</i> giving; offering; charity; generosity [nt, act, from dadāti] ‹ ददाति<br>2 <i>nt</i> alms; almsfood [nt, from dadāti] ‹ ददाति (lit. giving)<br>3 <i>nt</i> [nt]<br>4 <i>nt</i> gift; offering; item for a sacrifice [nt, act, from dadāti] ‹ ददाति<br>5 <i>nt</i> putting in charge; assigning responsibility [nt, act, from dadāti] ‹ ददाति (lit. giving)"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>(१३) ३. दान वर्ग (दान का अध्याय) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00235_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00235_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="142">१४२.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dānāni">दानानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="āmisadānañca">आमिसदानञ्‍च</span> <span class="paliword" data-word="dhammadānañca">धम्मदानञ्‍च।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="dānāni">दानानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="dānānaṃ">दानानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="dhammadānanti">धम्मदान’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00235_hi">
+                १४२.
+‘‘भिक्षुओं, दान दो प्रकार के होते हैं।
+वे दो कौन से हैं? भौतिक वस्तुओं का दान और धर्म का दान।
+हे भिक्षुओं, वास्तव में ये ही दो प्रकार के दान हैं।
+इन दोनों दानों में से यह श्रेष्ठ है, जिसे धर्म-दान कहा जाता है।’’
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00235_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="142">१४२.</span> <span class="paliword" data-word="tatiyassa">ततियस्स</span> <span class="paliword" data-word="paṭhame">पठमे</span> <span class="paliword" data-word="dānānīti">दानानीति</span> <span class="paliword" data-word="diyyanakavasena">दिय्यनकवसेन</span> <span class="paliword" data-word="dānāni">दानानि,</span> <span class="paliword" data-word="deyyadhammassetaṃ">देय्यधम्मस्सेतं</span> <span class="paliword" data-word="nāmaṃ">नामं।</span> <span class="paliword" data-word="savatthukā">सवत्थुका</span> <span class="paliword" data-word="vā">वा</span> <span class="paliword" data-word="cetanā">चेतना</span> <span class="paliword" data-word="dānaṃ">दानं,</span> <span class="paliword" data-word="sampattipariccāgassetaṃ">सम्पत्तिपरिच्‍चागस्सेतं</span> <span class="paliword" data-word="nāmaṃ">नामं।</span> <span class="paliword" data-word="āmisadānanti">आमिसदानन्ति</span> <span class="paliword" data-word="cattāro">चत्तारो</span> <span class="paliword" data-word="paccayā">पच्‍चया</span> <span class="paliword" data-word="diyyanakavasena">दिय्यनकवसेन</span> <span class="paliword" data-word="āmisadānaṃ">आमिसदानं</span> <span class="paliword" data-word="nāma">नाम।</span> <span class="paliword" data-word="dhammadānanti">धम्मदानन्ति</span> <span class="paliword" data-word="idhekacco">इधेकच्‍चो</span> <span class="paliword" data-word="amatapattipaṭipadaṃ">अमतपत्तिपटिपदं</span> <span class="paliword" data-word="kathetvā">कथेत्वा</span> <span class="paliword" data-word="deti">देति,</span> <span class="paliword" data-word="idaṃ">इदं</span> <span class="paliword" data-word="dhammadānaṃ">धम्मदानं</span> <span class="paliword" data-word="nāma">नाम।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00250_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00250_hi">
+                    १४२.
+तृतीय खण्ड के प्रथम भाग में, 'दान' का अर्थ देने की क्रिया के आधार पर उपहार है, जो वास्तव में दान योग्य वस्तुओं का ही एक नाम है।
+अथवा, भौतिक वस्तुओं के साथ जुड़ी हुई चेतना ही दान है; यह अपनी संपत्ति के त्याग का एक नाम है।
+'आमिष-दान' का अर्थ है देने की क्रिया के माध्यम से चार प्रकार के प्रत्ययों (अनिवार्य वस्तुओं) का दान करना।
+'धम्म-दान' (धर्म-दान) उसे कहते हैं जहाँ कोई अमृत-पद (मोक्ष) की प्राप्ति के मार्ग का उपदेश देकर उसे प्रदान करता है; इसे ही धर्म-दान कहा जाता है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00236_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00236_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="143">१४३.</span> <span class="paliword" data-word="dveme">‘‘द्वेमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="yāgā">यागा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="āmisayāgo">आमिसयागो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dhammayāgo">धम्मयागो</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="yāgā">यागा।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="yāgānaṃ">यागानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="dhammayāgoti">धम्मयागो’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00236_hi">
+                १४३. “भिक्षुओं, दान दो प्रकार के होते हैं।
+वे दो कौन से हैं? भौतिक वस्तुओं का दान और धर्म का दान।
+भिक्षुओं, यही दो प्रकार के दान हैं।
+हे भिक्षुओं, इन दोनों दानों में से यह श्रेष्ठ है, अर्थात्‌—धर्म का दान।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00236_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="143">१४३.</span> <span class="paliword" data-word="dutiye">दुतिये</span> <span class="paliword" data-word="cattāro">चत्तारो</span> <span class="paliword" data-word="paccayā">पच्‍चया</span> <span class="paliword" data-word="yajanakavasena">यजनकवसेन</span> <span class="paliword" data-word="yāgo">यागो</span> <span class="paliword" data-word="nāma">नाम</span> <span class="paliword" data-word="dhammopi">धम्मोपि</span> <span class="paliword" data-word="yajanakavasena">यजनकवसेन</span> <span class="paliword" data-word="yāgoti">यागोति</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00251_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00251_hi">
+                    १४३.
+दूसरे [विषय] में, दान देने के अर्थ में चार प्रत्ययों को 'याग' कहा जाता है और उसी प्रकार अर्पण करने के भाव से धर्म को भी 'याग' समझना चाहिए।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00237_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00237_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="144">१४४.</span> <span class="paliword" data-word="dveme">‘‘द्वेमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="cāgā">चागा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="āmisacāgo">आमिसचागो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dhammacāgo">धम्मचागो</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="cāgā">चागा।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="cāgānaṃ">चागानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="dhammacāgoti">धम्मचागो’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00237_hi">
+                १४४.
+“भिक्षुओं, ये दो प्रकार के त्याग (दान) हैं।
+वे दो कौन से हैं? भौतिक वस्तुओं का त्याग और धर्म का दान।
+भिक्षुओं, यही वे दो प्रकार के त्याग हैं।
+भिक्षुओं, इन दो प्रकार के त्यागों में यह सर्वश्रेष्ठ है, अर्थात्—धर्म का दान।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00237_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="144">१४४.</span> <span class="paliword" data-word="tatiye">ततिये</span> <span class="paliword" data-word="āmisassa">आमिसस्स</span> <span class="paliword" data-word="cajanaṃ">चजनं</span> <span class="paliword" data-word="āmisacāgo">आमिसचागो,</span> <span class="paliword" data-word="dhammassa">धम्मस्स</span> <span class="paliword" data-word="cajanaṃ">चजनं</span> <span class="paliword" data-word="dhammacāgo">धम्मचागो।</span> <span class="paliword" data-word="catutthe">चतुत्थे</span> <span class="paliword" data-word="upasaggamattaṃ">उपसग्गमत्तं</span> <span class="paliword" data-word="viseso">विसेसो।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00252_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00252_hi">
+                    १४४.
+तीसरे में, भौतिक वस्तुओं का त्याग 'आमिष-त्याग' (āmisatyāga) है, और धर्म का त्याग 'धर्म-त्याग' (dharmatyāga) है।
+चौथे में, केवल उपसर्ग का ही अंतर है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00238_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00238_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="145">१४५.</span> <span class="paliword" data-word="dveme">‘‘द्वेमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pariccāgā">परिच्‍चागा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="āmisapariccāgo">आमिसपरिच्‍चागो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dhammapariccāgo">धम्मपरिच्‍चागो</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="pariccāgā">परिच्‍चागा।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="pariccāgānaṃ">परिच्‍चागानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="dhammapariccāgoti">धम्मपरिच्‍चागो’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00238_hi">
+                १४५.
+‘‘भिक्षुओं, ये दो प्रकार के त्याग हैं।
+वे दो कौन से हैं? भौतिक वस्तुओं का त्याग और धर्म का त्याग।
+भिक्षुओं, ये ही वे दो प्रकार के त्याग हैं।
+भिक्षुओं, इन दो प्रकार के त्यागों में यह श्रेष्ठ है: अर्थात धर्म का त्याग।’’
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00238_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="145">१४५.</span> <span class="paliword" data-word="dvādasame">द्वादसमे</span> <span class="paliword" data-word="iddhipāṭihāriyenāti">इद्धिपाटिहारियेनाति</span> <span class="paliword" data-word="ijjhanakapāṭihāriyena">इज्झनकपाटिहारियेन।</span> <span class="paliword" data-word="ādesanāpāṭihāriyenāti">आदेसनापाटिहारियेनाति</span> <span class="paliword" data-word="ādisitvā">आदिसित्वा</span> <span class="paliword" data-word="apadisitvā">अपदिसित्वा</span> <span class="paliword" data-word="kathanaanukathanakathāpāṭihāriyena">कथनअनुकथनकथापाटिहारियेन।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00934_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00934_hi">
+                    १४५.
+बारहवें में, ऋद्धि-प्रातिहार्य (iddhipāṭihāriya) का अर्थ है—सिद्धि के चमत्कार के द्वारा।
+आदेशना-प्रातिहार्य (ādesanāpāṭihāriya) का अर्थ है—दूसरों के विचारों को जानकर, निर्देश कर और संकेत देकर उनके अनुरूप उपदेश देने के चमत्कार के द्वारा।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="13">१३.</span> <span class="paliword" data-word="tatiyamoranivāpasuttavaṇṇanā">ततियमोरनिवापसुत्तवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00935_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00935_hi">
+                    १३. तृतीय मयूर निवाप सूत्र की व्याख्या (ततियमोरनिवापसुत्तवण्णना)
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00239_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00239_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="146">१४६.</span> <span class="paliword" data-word="dveme">‘‘द्वेमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhogā">भोगा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="āmisabhogo">आमिसभोगो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dhammabhogo">धम्मभोगो</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="bhogā">भोगा।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="bhogānaṃ">भोगानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="dhammabhogoti">धम्मभोगो’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00239_hi">
+                १४६.
+“भिक्षुओं, ये दो प्रकार के भोग हैं।
+कौन से दो? सांसारिक वस्तुओं का भोग और धर्म का भोग।
+भिक्षुओं, यही दो भोग हैं।
+भिक्षुओं, इन दोनों प्रकार के भोगों में धर्म का भोग ही सर्वश्रेष्ठ है।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00239_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="146">१४६.</span> <span class="paliword" data-word="pañcame">पञ्‍चमे</span> <span class="paliword" data-word="catunnaṃ">चतुन्‍नं</span> <span class="paliword" data-word="paccayānaṃ">पच्‍चयानं</span> <span class="paliword" data-word="bhuñjanaṃ">भुञ्‍जनं</span> <span class="paliword" data-word="āmisabhogo">आमिसभोगो,</span> <span class="paliword" data-word="dhammassa">धम्मस्स</span> <span class="paliword" data-word="bhuñjanaṃ">भुञ्‍जनं</span> <span class="paliword" data-word="dhammabhogo">धम्मभोगो।</span> <span class="paliword" data-word="chaṭṭhe">छट्ठे</span> <span class="paliword" data-word="upasaggamattaṃ">उपसग्गमत्तं</span> <span class="paliword" data-word="viseso">विसेसो।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00253_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00253_hi">
+                    १४६.
+पाँचवें में, चार प्रत्ययों (आवश्यकताओं) का उपभोग करना 'आमिषभोग' (भौतिक उपभोग) है, और धर्म का उपभोग करना 'धम्मभोग' (धार्मिक उपभोग) है।
+छठे में, केवल उपसर्ग का ही अंतर है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00240_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00240_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="147">१४७.</span> <span class="paliword" data-word="dveme">‘‘द्वेमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sambhogā">सम्भोगा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="āmisasambhogo">आमिससम्भोगो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dhammasambhogo">धम्मसम्भोगो</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sambhogā">सम्भोगा।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sambhogānaṃ">सम्भोगानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="dhammasambhogoti">धम्मसम्भोगो’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00240_hi">
+                १४७.
+“हे भिक्षुओं, ये दो प्रकार के सम्भोग (सहवास) हैं।
+वे दो कौन से हैं? आमिष-सम्भोग (भौतिक सहवास) और धर्म-सम्भोग (धार्मिक सहवास)।
+भिक्षुओं, यही दो प्रकार के सम्भोग हैं।
+हे भिक्षुओं, इन दोनों सम्भोगों में यह श्रेष्ठ है—अर्थात धर्म-सम्भोग।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00240_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="147-155">१४७-१५५.</span> <span class="paliword" data-word="pañcamassa">पञ्‍चमस्स</span> <span class="paliword" data-word="paṭhame">पठमे</span> <span class="paliword" data-word="yathābhataṃ">यथाभतं</span> <span class="paliword" data-word="nikkhittoti">निक्खित्तोति</span> <span class="paliword" data-word="yathā">यथा</span> <span class="paliword" data-word="ānetvā">आनेत्वा</span> <span class="paliword" data-word="ṭhapito">ठपितो।</span> <span class="paliword" data-word="dutiye">दुतिये</span> <span class="paliword" data-word="sāvajjenāti">सावज्‍जेनाति</span> <span class="paliword" data-word="sadosena">सदोसेन।</span> <span class="paliword" data-word="tatiye">ततिये</span> <span class="paliword" data-word="visamenāti">विसमेनाति</span> <span class="paliword" data-word="sapakkhalanena">सपक्खलनेन।</span> <span class="paliword" data-word="samenāti">समेनाति</span> <span class="paliword" data-word="apakkhalanena">अपक्खलनेन।</span> <span class="paliword" data-word="catutthe">चतुत्थे</span> <span class="paliword" data-word="asucināti">असुचिनाति</span> <span class="paliword" data-word="gūthasadisena">गूथसदिसेन</span> <span class="paliword" data-word="aparisuddhena">अपरिसुद्धेन</span> <span class="paliword" data-word="amejjhena">अमेज्झेन।</span> <span class="paliword" data-word="sucināti">सुचिनाति</span> <span class="paliword" data-word="parisuddhena">परिसुद्धेन</span> <span class="paliword" data-word="mejjhena">मेज्झेन।</span> <span class="paliword" data-word="pañcamādīni">पञ्‍चमादीनि</span> <span class="paliword" data-word="uttānāneva">उत्तानानेव।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00939_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00939_hi">
+                    १४७-१५५.
+पंचम वर्ग के प्रथम सुत्त में, "यथाभृतं निक्षिप्तो" (yathābhataṃ nikkhitto) का अर्थ है: जैसे लाकर रखा गया हो।
+द्वितीय सुत्त में, "सावद्येन" (sāvajjenā) का अर्थ है: दोष सहित।
+तृतीय सुत्त में, "विषमेण" (visamenā) का अर्थ है: फिसलन या बाधा के साथ।
+"समेन" (samenā) का अर्थ है: बिना फिसलन या बाधा के।
+चतुर्थ सुत्त में, "अशुचिना" (asucinā) का अर्थ है: विष्ठा के समान, अशुद्ध और अपवित्र।
+"शुचिना" (sucinā) का अर्थ है: पूर्णतः शुद्ध और पवित्र।
+पंचम आदि सुत्त स्पष्ट अर्थ वाले ही हैं।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="10">१०.</span> <span class="paliword" data-word="pubbaṇhasuttavaṇṇanā">पुब्बण्हसुत्तवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00940_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00940_hi">
+                    १०. पूर्वाह्णसूत्रवर्णना (पुब्बण्हसुत्तवण्णना)
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00241_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00241_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="148">१४८.</span> <span class="paliword" data-word="dveme">‘‘द्वेमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="saṃvibhāgā">संविभागा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="āmisasaṃvibhāgo">आमिससंविभागो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dhammasaṃvibhāgo">धम्मसंविभागो</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="saṃvibhāgā">संविभागा।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="saṃvibhāgānaṃ">संविभागानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="dhammasaṃvibhāgoti">धम्मसंविभागो’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00241_hi">
+                १४८.
+“भिक्षुओ, ये दो प्रकार के वितरण (साझा करना) हैं।
+वे दो कौन से हैं? भौतिक वस्तुओं का वितरण और धर्म का वितरण।
+भिक्षुओ, ये ही वे दो प्रकार के वितरण हैं।
+हे भिक्षुओ, इन दोनों प्रकार के वितरणों में यह सर्वश्रेष्ठ है: अर्थात् धर्म का वितरण।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00241_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="148">१४८.</span> <span class="paliword" data-word="sattame">सत्तमे</span> <span class="paliword" data-word="catunnaṃ">चतुन्‍नं</span> <span class="paliword" data-word="paccayānaṃ">पच्‍चयानं</span> <span class="paliword" data-word="saṃvibhajanaṃ">संविभजनं</span> <span class="paliword" data-word="āmisasaṃvibhāgo">आमिससंविभागो,</span> <span class="paliword" data-word="dhammassa">धम्मस्स</span> <span class="paliword" data-word="saṃvibhajanaṃ">संविभजनं</span> <span class="paliword" data-word="dhammasaṃvibhāgo">धम्मसंविभागो।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00254_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00254_hi">
+                    १४८. सातवें (अध्याय) में चार प्रत्ययों का वितरण करना भौतिक वस्तुओं का संविभाग है, और धर्म का वितरण करना धर्म-संविभाग है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00242_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00242_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="149">१४९.</span> <span class="paliword" data-word="dveme">‘‘द्वेमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="saṅgahā">सङ्गहा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="āmisasaṅgaho">आमिससङ्गहो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dhammasaṅgaho">धम्मसङ्गहो</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="saṅgahā">सङ्गहा।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="saṅgahānaṃ">सङ्गहानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="dhammasaṅgahoti">धम्मसङ्गहो’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00242_hi">
+                १४९.
+“हे भिक्षुओं, ये दो प्रकार के संग्रह (सहायता) हैं।
+वे दो कौन से हैं? भौतिक वस्तुओं का संग्रह और धर्म का संग्रह।
+भिक्षुओं, ये ही वे दो संग्रह हैं।
+हे भिक्षुओं, इन दो प्रकार के संग्रहों में यह सर्वश्रेष्ठ है, अर्थात्—धर्म का संग्रह।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00242_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="149">१४९.</span> <span class="paliword" data-word="aṭṭhame">अट्ठमे</span> <span class="paliword" data-word="catūhi">चतूहि</span> <span class="paliword" data-word="paccayehi">पच्‍चयेहि</span> <span class="paliword" data-word="saṅgaho">सङ्गहो</span> <span class="paliword" data-word="āmisasaṅgaho">आमिससङ्गहो,</span> <span class="paliword" data-word="dhammena">धम्मेन</span> <span class="paliword" data-word="saṅgaho">सङ्गहो</span> <span class="paliword" data-word="dhammasaṅgaho">धम्मसङ्गहो।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00255_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00255_hi">
+                    १४९.
+आठवें (बिंदु) में, चार प्रत्ययों के माध्यम से किया गया अनुग्रह 'आमिष-संग्रह' (भौतिक सहायता) है, और धर्म के माध्यम से किया गया अनुग्रह 'धम्म-संग्रह' (आध्यात्मिक सहायता) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00243_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00243_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="150">१५०.</span> <span class="paliword" data-word="dveme">‘‘द्वेमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="anuggahā">अनुग्गहा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="āmisānuggaho">आमिसानुग्गहो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dhammānuggaho">धम्मानुग्गहो</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="anuggahā">अनुग्गहा।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="anuggahānaṃ">अनुग्गहानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="dhammānuggahoti">धम्मानुग्गहो’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00243_hi">
+                १५०.
+"हे भिक्षुओं, ये दो प्रकार की सहायता (अनुग्रह) हैं।
+वे दो कौन सी हैं? भौतिक वस्तुओं की सहायता और धर्म की सहायता।
+भिक्षुओं, ये ही दो प्रकार की सहायता हैं।
+हे भिक्षुओं, इन दोनों प्रकार की सहायताओं में से यह श्रेष्ठ है—अर्थात धर्म की सहायता।"
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00243_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="150">१५०.</span> <span class="paliword" data-word="navame">नवमे</span> <span class="paliword" data-word="catūhi">चतूहि</span> <span class="paliword" data-word="paccayehi">पच्‍चयेहि</span> <span class="paliword" data-word="anuggaṇhanaṃ">अनुग्गण्हनं</span> <span class="paliword" data-word="āmisānuggaho">आमिसानुग्गहो,</span> <span class="paliword" data-word="dhammena">धम्मेन</span> <span class="paliword" data-word="anuggaṇhanaṃ">अनुग्गण्हनं</span> <span class="paliword" data-word="dhammānuggaho">धम्मानुग्गहो।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00256_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00256_hi">
+                    १५०.
+नौवें में, चार प्रकार के प्रत्ययों (अनुकूल परिस्थितियों या वस्तुओं) द्वारा अनुग्रहित करना 'आमिष-अनुग्रह' (भौतिक सहायता) है, और धर्म के द्वारा अनुग्रहित करना 'धम्म-अनुग्रह' (धर्म-सहायता) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00244_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00244_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="151">१५१.</span> <span class="paliword" data-word="dvemā">‘‘द्वेमा,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="anukampā">अनुकम्पा।</span> <span class="paliword" data-word="katamā">कतमा</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="āmisānukampā">आमिसानुकम्पा</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="dhammānukampā">धम्मानुकम्पा</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="imā">इमा</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="anukampā">अनुकम्पा।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imāsaṃ">इमासं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="anukampānaṃ">अनुकम्पानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="dhammānukampāti">धम्मानुकम्पा’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00244_hi">
+                १५१.
+“हे भिक्षुओं, ये दो प्रकार की अनुकम्पाएँ हैं।
+वे दो कौन सी हैं? भौतिक वस्तुओं के प्रति अनुकम्पा और धर्म के प्रति अनुकम्पा।
+हे भिक्षुओं, यही दो अनुकम्पाएँ हैं।
+हे भिक्षुओं, इन दोनों अनुकम्पाओं में यह श्रेष्ठ है—अर्थात् धर्म के प्रति अनुकम्पा।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00244_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="151">१५१.</span> <span class="paliword" data-word="dasame">दसमे</span> <span class="paliword" data-word="catūhi">चतूहि</span> <span class="paliword" data-word="paccayehi">पच्‍चयेहि</span> <span class="paliword" data-word="anukampanaṃ">अनुकम्पनं</span> <span class="paliword" data-word="āmisānukampā">आमिसानुकम्पा,</span> <span class="paliword" data-word="dhammena">धम्मेन</span> <span class="paliword" data-word="anukampanaṃ">अनुकम्पनं</span> <span class="paliword" data-word="dhammānukampāti">धम्मानुकम्पाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00257_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00257_hi">
+                    १५१. दसवें भाग में, चार प्रत्ययों के माध्यम से अनुकम्पा करना भौतिक अनुकम्पा है, और धर्म के माध्यम से अनुकम्पा करना धर्म-अनुकम्पा है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="14">(१४)</span> <span class="paliword" data-word="4">४.</span> <span class="paliword" data-word="santhāravaggavaṇṇanā">सन्थारवग्गवण्णना</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0402a.att_00258_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0402a.att_00258_hi">
+                    (१४) ४. संस्तार वर्ग की व्याख्या
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

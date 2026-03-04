@@ -1,0 +1,1197 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"bhāvitāti": "1 <i>pp</i> cultivated; developed [pp of bhāveti] ‹ भावेति (lit. caused to be)<br>2 <i>nt</i> (comm) Jain doctrinal term for the pleasure of the five senses [nt, pp of bhāveti] ‹ भावेति (lit. caused to be)<br>3 <i>nt</i> (comm) object of desire; object of sensual pleasure [nt, pp of bhāveti] ‹ भावेति (lit. caused to be)", "ādito": "1 <i>adj</i> first; initial; starting with [adj]<br>2 <i>masc</i> beginning; start; starting point (of) [masc, irreg]<br>3 <i>nt</i> etc.; and so on; and so forth [nt, in s] (lit. beginning with)<br>4 <i>masc</i> etc.; and so on [masc, in s] (lit. beginning with)<br>5 <i>adj</i> fundamental; essential (to) [adj, in s] (lit. beginning with)<br>6 <i>ind</i> from the beginning; from the start [ind, adv, abl sg of ādi] ‹ आदि<br>7 <i>nt</i> after etc. [nt, dat sg of ādi] ‹ आदि<br>8 <i>adj</i> eating; feeding on [adj, in s, from adati] ‹ adati<br>9 <i>masc</i> principle; fundamentals (of) [masc, in s]", "abhāvitā": "1 <i>pp</i> not cultivated; undeveloped [pp of na bhāveti] ‹ भावेति (lit. not caused to be)", "asacchikatanti": "1 <i>pp</i> not experienced for oneself; not personally realised [pp of na sacchikaroti,] ‹ sacchikaroti (lit. not personally done)<br>2 <i>nt</i> unexperienced; unrealised; unattained [nt, , pp of na sacchikaroti] ‹ sacchikaroti (lit. not personally done)", "uttānatthamevāti": "1 <i>sand</i> the meaning is clear just as it is [sandhi, adj + masc + ind + ind]", "bhāvitaṃ": "1 <i>pp</i> cultivated; developed [pp of bhāveti] ‹ भावेति (lit. caused to be)<br>2 <i>nt</i> (comm) Jain doctrinal term for the pleasure of the five senses [nt, pp of bhāveti] ‹ भावेति (lit. caused to be)<br>3 <i>nt</i> (comm) object of desire; object of sensual pleasure [nt, pp of bhāveti] ‹ भावेति (lit. caused to be)", "bhāvitanti": "1 <i>pp</i> cultivated; developed [pp of bhāveti] ‹ भावेति (lit. caused to be)<br>2 <i>nt</i> (comm) Jain doctrinal term for the pleasure of the five senses [nt, pp of bhāveti] ‹ भावेति (lit. caused to be)<br>3 <i>nt</i> (comm) object of desire; object of sensual pleasure [nt, pp of bhāveti] ‹ भावेति (lit. caused to be)", "ye": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>pr</i> goes; goes to; goes forward; proceeds; travels<br>6 <i>pr</i> (of an army) marches against; pursues; routs [pr]<br>7 <i>pron</i> whoever; whatever; whichever; those who [pron, masc & nt nom pl of ya] ‹ ya<br>8 <i>pron</i> whoever; whatever; whichever; those who (object) [pron, masc & nt acc pl of ya] ‹ ya", "apariññātanti": "1 <i>pp</i> not completely comprehended; not fully understood (by) [pp of na parijānāti] ‹ परिजानाति (lit. not known all around)", "anabhiññātā": "1 <i>pp</i> not known; not understood; not experienced [pp of na abhijānāti] ‹ अभिजानाति (lit. not completely known)", "abhiññātāti": "1 <i>pp</i> well-know; famous; recognized; distinguished [pp of abhijānāti] ‹ अभिजानाति (lit. completely known)<br>2 <i>pp</i> known; understood; experienced [pp of abhijānāti] ‹ अभिजानाति (lit. completely known)", "paripuṇṇaṃ": "1 <i>pp</i> accomplished; fulfilled; completed; perfected [pp of paripūrati] ‹ परिपूरति<br>2 <i>pp</i> completely full; finished; satisfied [pp of paripūrati] ‹ परिपूरति (lit. completely filled)<br>3 <i>pp</i> complete; perfect; consummate [pp of paripūrati] ‹ परिपूरति (lit. completely filled)<br>4 <i>pp</i> of a certain age or older; completed so many years [pp of paripūrati] ‹ परिपूरति (lit. completely filled)", "bahulīkataṃ": "1 <i>pp</i> practised often; repeated a lot; done again and again [pp of bahulīkaroti,  vb] ‹ बहुलीकरोति (lit. made a lot)", "aparibhuttaṃ": "1 <i>pp</i> not used; not tasted; not enjoyed; not experienced [pp of na paribhuñjati] ‹ परिभुञ्जति (lit. not used all around)", "parihīnaṃ": "1 <i>pp</i> destroyed; defeated; refuted [pp of parihāyati] ‹ परिहायति (lit. fallen down)<br>2 <i>pp</i> deficient; lacking [pp of parihāyati, in s] ‹ परिहायति (lit. fallen away)<br>3 <i>pp</i> fallen down; fallen away (from) [pp of parihāyati] ‹ परिहायति<br>4 <i>pp</i> declined; decreased; dwindled [pp of parihāyati] ‹ परिहायति<br>5 <i>pp</i> lost; wasted; deprived (of) [pp of parihāyati] ‹ परिहायति<br>6 <i>pp</i> [pp of parihāyati] ‹ परिहायति", "lokuttaraṃ": "1 <i>adj</i> supra-mundane; transcendental [adj,] (lit. beyond the world)", "samattaṃ": "1 <i>pp</i> completed; finished [pp of saṃ √ap] ‹ सं √अप्<br>2 <i>pp</i> perfect; consummate; faultless [pp of saṃ √ap] ‹ सं √अप् (lit. attained)<br>3 <i>nt</i> conclusion; outcome [nt, pp of saṃ √ap] ‹ सं √अप् (lit. reached)<br>4 <i>pp</i> adopted; accepted; taken upon oneself; (comm) fulfilled [pp of samādiyati, irreg] ‹ समादियति (lit. taken together)<br>5 <i>nt</i> [nt, from sama] ‹ sama", "pāṭho": "1 <i>masc</i> variant reading; textual variant; alternative text [masc, from paṭhati] ‹ पठति<br>2 <i>masc</i> (gram) passage; text; section for recitation [masc, from paṭhati] ‹ पठति", "satiṃ": "1 <i>fem</i> memory; remembering; recollection; keeping in mind [fem, abstr, from sarati] ‹ sarati<br>2 <i>fem</i> mindfulness; presence; recollection; awareness [fem, abstr, from sarati] ‹ sarati<br>3 <i>fem</i> [fem]<br>4 <i>adj</i> with mindfulness; having presence; with awareness [adj, in s, from sati] ‹ sati<br>5 <i>prp</i> existing; being; there is [prp of atthi] ‹ atthi<br>6 <i>prp</i> being present; attending [prp of atthi] ‹ atthi", "suttasahassaṃ": "1 <i>nt</i> [nt,]", "viraddhaṃ": "1 <i>pp</i> failed; neglected; lost [pp of virajjhati] ‹ virajjhati<br>2 <i>pp</i> (of a shot) missed [pp of virajjhati] ‹ virajjhati (lit. failed)", "natthi": "1 <i>pr</i> is not; it is not; there is not; there is no; there is nothing [pr, from na atthi] ‹ atthi<br>2 <i>pr</i> does not exist; no longer exists [pr, from na atthi] ‹ atthi", "vissaritaṃ": "1 <i>pp</i> [pp of vissari] ‹ vissari", "kathaṃ": "1 <i>adj</i> with words; having talk; asking [adj, in s, from kathā] ‹ कथा<br>2 <i>ind</i> how? [ind, adv, interr, from ka] ‹ ka<br>3 <i>ind</i> what's the reason? [ind, adv, interr, from ka] ‹ ka<br>4 <i>ind</i> what? like what? [ind, adv, interr, from ka] ‹ ka<br>5 <i>fem</i> talk; speech; conversation; discussion [fem, from katheti] ‹ katheti<br>6 <i>fem</i> argument; debate [fem, from katheti] ‹ katheti (lit. talk)<br>7 <i>fem</i> discourse about; lecture on; sermon on [fem, in s, from katheti] ‹ katheti (lit. talk on)<br>8 <i>fem</i> commentary; detailed discussion; analysis [fem, in s, from katheti] ‹ katheti (lit. talk on)<br>9 <i>ind</i> why? [ind, adv, interr, from ka] ‹ ka", "asacchikataṃ": "1 <i>pp</i> not experienced for oneself; not personally realised [pp of na sacchikaroti,] ‹ sacchikaroti (lit. not personally done)<br>2 <i>nt</i> unexperienced; unrealised; unattained [nt, , pp of na sacchikaroti] ‹ sacchikaroti (lit. not personally done)", "viraddhanti": "1 <i>pp</i> failed; neglected; lost [pp of virajjhati] ‹ virajjhati<br>2 <i>pp</i> (of a shot) missed [pp of virajjhati] ‹ virajjhati (lit. failed)", "asacchikatā": "1 <i>pp</i> not experienced for oneself; not personally realised [pp of na sacchikaroti,] ‹ sacchikaroti (lit. not personally done)<br>2 <i>nt</i> unexperienced; unrealised; unattained [nt, , pp of na sacchikaroti] ‹ sacchikaroti (lit. not personally done)", "bhāvetvā": "1 <i>abs</i> having cultivated; having developed [abs of bhāveti] ‹ भावेति (lit. having caused to become)", "paribhuttāti": "1 <i>pp</i> experienced; enjoyed [pp of paribhuñjati] ‹ परिभुञ्जति (lit. used all around)<br>2 <i>pp</i> used; made use of (by) [pp of paribhuñjati] ‹ परिभुञ्जति (lit. used all around)<br>3 <i>pp</i> eaten; consumed [pp of paribhuñjati] ‹ परिभुञ्जति (lit. used all around)", "bahulīkatanti": "1 <i>pp</i> practised often; repeated a lot; done again and again [pp of bahulīkaroti,  vb] ‹ बहुलीकरोति (lit. made a lot)", "abahulīkataṃ": "1 <i>pp</i> not practised often; not repeated a lot; not done again and again [pp of na bahulīkaroti,] ‹ बहुलीकरोति (lit. not made a lot)", "attho": "1 <i>masc</i> meaning; sense; significance [masc] ‹ √ar<br>2 <i>masc</i> benefit; profit; good; welfare [masc] ‹ √ar<br>3 <i>masc</i> purpose; use; function; goal [masc] ‹ √ar<br>4 <i>masc</i> matter; affair; legal case; lawsuit [masc] ‹ √ar<br>5 <i>adj</i> for the purpose; for the sake; for the benefit (of) [adj, in s] ‹ √ar<br>6 <i>masc</i> need; want (for) [masc]<br>7 <i>adj</i> needing; wanting; seeking [adj, in s, from atthayati] ‹ atthayati<br>8 <i>masc</i> home; rest; shelter [masc]<br>9 <i>masc</i> death; end; annihilation; destruction [masc]<br>10 <i>masc</i> western mountain (behind which the sun sets) [masc]", "anāsevitā": "1 <i>pp</i> not practised persistently [pp of na āsevati] ‹ आसेवति (lit. not associated with often)", "nādhigacchati": "1 <i>pr</i> does not get to; does not attain; does not find; does not acquire; does not obtain [pr, from na adhigacchati] ‹ adhigacchati (lit. does not arrived at)", "aparihīnaṃ": "1 <i>pp</i> not deficient; not lacking; not deprived of [pp of na parihāyati, in s] ‹ परिहायति (lit. not fallen away)<br>2 <i>pp</i> not fallen away (from); not declined (in); not lost [pp of na parihāyati] ‹ परिहायति<br>3 <i>nt</i> [nt, pp of na parihāyati] ‹ परिहायति (lit. not fallen away)<br>4 <i>pp</i> [pp]", "āraddhāti": "1 <i>pp</i> aroused; applied; undertaken [pp of ārabhati] ‹ आरभति<br>2 <i>pp</i> won; accomplished; succeeded [pp of ārādheti] ‹ आराधेति<br>3 <i>pp</i> pleased; satisfied; contented (with) [pp of ārādheti] ‹ आराधेति<br>4 <i>abs</i> [abs of ārabhati] ‹ आरभति<br>5 <i>pp</i> commenced; begun; started (to) [pp of ārabhati] ‹ आरभति", "punappunaṃ": "1 <i>ind</i> repeatedly; again and again [ind, adv, , acc sg of punappuna] ‹ punappuna", "viraddhā": "1 <i>pp</i> failed; neglected; lost [pp of virajjhati] ‹ virajjhati<br>2 <i>pp</i> (of a shot) missed [pp of virajjhati] ‹ virajjhati (lit. failed)", "nibbānaṃ": "1 <i>nt</i> (of fire) extinguishing; quenching; going out [nt, act, from nibbāti] ‹ निब्बाति (lit. blowing away)<br>2 <i>nt</i> (of mental defilement) complete quenching; total emancipation; complete cooling [nt, act, from nibbāti] ‹ निब्बाति (lit. blowing away)<br>3 <i>nt</i> eaves; edge of a roof [nt]", "pariññātaṃ": "1 <i>pp</i> completely comprehended; fully understood [pp of parijānāti] ‹ परिजानाति", "paribhuñjanti": "1 <i>pr</i> uses; makes use of [pr] (lit. uses all around)<br>2 <i>pr</i> eats; consumes [pr] (lit. uses all around)", "aparihīnāti": "1 <i>pp</i> not deficient; not lacking; not deprived of [pp of na parihāyati, in s] ‹ परिहायति (lit. not fallen away)<br>2 <i>pp</i> not fallen away (from); not declined (in); not lost [pp of na parihāyati] ‹ परिहायति<br>3 <i>nt</i> [nt, pp of na parihāyati] ‹ परिहायति (lit. not fallen away)<br>4 <i>pp</i> [pp]", "vā": "1 <i>lett</i> (gram) letter v; 37th letter of the alphabet; dento-labial semi-vowel [letter, masc]<br>2 <i>ind</i> or; either or [ind]<br>3 <i>ind</i> (gram) or; in some cases; not always; alternatively; optionally [ind]<br>4 <i>ind</i> exact; very; precise [ind, emph]<br>5 <i>ind</i> and; as well as [ind, conj]", "vaḍḍhitaṃ": "1 <i>pp</i> filled up; increased [pp of vaḍḍhati] ‹ वड्ढति<br>2 <i>pp</i> cultivated; developed [pp of vaḍḍheti] ‹ वड्ढेति (lit. caused to increase)<br>3 <i>pp</i> [pp of vaḍḍhati] ‹ वड्ढति<br>4 <i>pp</i> grown up; raised; reared; brought up (in) [pp of vaḍḍhati] ‹ वड्ढति<br>5 <i>pp</i> [pp of vaḍḍheti] ‹ वड्ढेति", "sabbattha": "1 <i>ind</i> everywhere; every place [ind, adv, from sabba] ‹ sabba<br>2 <i>ind</i> in every way; in every respect; entirely [ind, adv, from sabba] ‹ sabba<br>3 <i>ind</i> (gram) in all cases; in all instances [ind, adv, from sabba] ‹ sabba<br>4 <i>masc</i> all cases; all matters; all things [masc pl,]", "āsevitaṃ": "1 <i>pp</i> practised persistently [pp of āsevati] ‹ आसेवति (lit. associated)<br>2 <i>pp</i> associated (with) [pp of āsevati] ‹ आसेवति", "api": "1 <i>ind</i> just; only [ind]<br>2 <i>ind</i> even; even then [ind]<br>3 <i>ind</i> if; even if [ind]<br>4 <i>ind</i> have?; did?; was?; perhaps? [ind, interr]<br>5 <i>ind</i> but; however; yet [ind]<br>6 <i>ind</i> yes; surely; indeed [ind, emph]<br>7 <i>ind</i> too; also; as well [ind]<br>8 <i>pref</i> on; onto [prefix]", "manorathapūraṇiyā": "1 <i>fem</i> commentary on the Aṅguttara Nikāya compiled by Buddhaghosa [fem,] (lit. fulfiller of the heart's desire)", "bhagavato": "1 <i>masc</i> to the Buddha; for the Buddha [masc, dat sg of bhagavant] ‹ bhagavant<br>2 <i>masc</i> of the Buddha [masc, gen sg of bhagavant] ‹ bhagavant<br>3 <i>masc</i> from the Buddha [masc, abl sg of bhagavant] ‹ bhagavant<br>4 <i>masc</i> Sublime One; Blessed One; Fortunate One; Auspicious One; epithet of the Buddha [masc, from bhaga] ‹ bhaga (lit. having good fortune quality)<br>5 <i>adj</i> [adj, from bhaga] ‹ bhaga (lit. having good fortune quality)", "appamuṭṭhaṃ": "1 <i>pp</i> not forgotten; remembered [pp of na pamussati] ‹ pamussati", "naṭṭhaṃ": "1 <i>pp</i> lost; perished; destroyed [pp of nassati] ‹ nassati (lit. disappeared)", "veditabbo": "1 <i>ptp</i> can be known; should be understood (by) [ptp of vedeti] ‹ vedeti (lit. to be known)<br>2 <i>ptp</i> to be experienced (by) [ptp of vedeti] ‹ vedeti (lit. to be known)", "paribhuñjantā": "1 <i>prp</i> eating; consuming [prp of paribhuñjati] ‹ परिभुञ्जति (lit. using all around)<br>2 <i>prp</i> partaking (of); enjoying [prp of paribhuñjati] ‹ परिभुञ्जति (lit. using all around)<br>3 <i>prp</i> [prp of paribhuñjati] ‹ परिभुञ्जति (lit. using all around)", "pariññātāti": "1 <i>pp</i> completely comprehended; fully understood [pp of parijānāti] ‹ परिजानाति", "virādhitaṃ": "1 <i>pp</i> failed; let down; betrayed (by) [pp of virādheti] ‹ विराधेति (lit. caused to fail)<br>2 <i>pp</i> missed [pp of virādheti] ‹ विराधेति<br>3 <i>pp</i> [pp of virādheti] ‹ विराधेति (lit. caused to fail)", "tasmā": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> from that [pron, masc & nt abl sg of ta] ‹ ta<br>4 <i>ind</i> therefore; that is why [ind, adv, abl sg of ta] ‹ ta (lit. from that)", "adhigantabbato": "1 <i>ptp</i> can be obtained; can be experienced (by) [ptp of adhigacchati] ‹ adhigacchati (lit. to be arrived at)", "yesaṃ": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>pron</i> for whoever; to whom; for which; for such and such [pron, masc & nt dat pl of ya] ‹ ya<br>3 <i>pron</i> of whoever; of whom; of which; of such and such; of them [pron, masc & nt gen pl of ya] ‹ ya", "anāsevitaṃ": "1 <i>pp</i> not practised persistently [pp of na āsevati] ‹ आसेवति (lit. not associated with often)", "kāyagatañhi": "1 <i>adj</i> related to the body; immersed in the body; focused within [adj,] (lit. gone to the body)<br>2 <i>masc</i> in reference to MN119 Kāyagatāsatisutta [masc,] (lit. gone to the body)", "bahulīkatāti": "1 <i>pp</i> practised often; repeated a lot; done again and again [pp of bahulīkaroti,  vb] ‹ बहुलीकरोति (lit. made a lot)", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "nanu": "1 <i>ind</i> surely?; but wouldn't?; is it true?; wasn't? [ind, interr, from na nu] ‹ nu", "anabhiññātanti": "1 <i>pp</i> not known; not understood; not experienced [pp of na abhijānāti] ‹ अभिजानाति (lit. not completely known)", "etthantare": "1 <i>sand</i> in between these [sandhi, adv + adv] (lit. in-between here)", "bhāvento": "1 <i>prp</i> cultivating; developing [prp of bhāveti] ‹ भावेति", "sacchikataṃ": "1 <i>pp</i> personally experienced; individually realised [pp of sacchikaroti,  vb] ‹ sacchikaroti (lit. personally done)", "paribhuñjantīti": "1 <i>pr</i> uses; makes use of [pr] (lit. uses all around)<br>2 <i>pr</i> eats; consumes [pr] (lit. uses all around)<br>3 <i>prp</i> eating; consuming [prp of paribhuñjati] ‹ परिभुञ्जति (lit. using all around)<br>4 <i>prp</i> partaking (of); enjoying [prp of paribhuñjati] ‹ परिभुञ्जति (lit. using all around)<br>5 <i>prp</i> [prp of paribhuñjati] ‹ परिभुञ्जति (lit. using all around)", "lokiyā": "1 <i>adj</i> worldly; mundane; commonplace [adj, from loka] ‹ loka", "abhāvitaṃ": "1 <i>pp</i> not cultivated; undeveloped [pp of na bhāveti] ‹ भावेति (lit. not caused to be)", "sacchikatāti": "1 <i>pp</i> personally experienced; individually realised [pp of sacchikaroti,  vb] ‹ sacchikaroti (lit. personally done)", "appamuṭṭhāti": "1 <i>pp</i> not forgotten; remembered [pp of na pamussati] ‹ pamussati", "parihīnā": "1 <i>pp</i> destroyed; defeated; refuted [pp of parihāyati] ‹ परिहायति (lit. fallen down)<br>2 <i>pp</i> deficient; lacking [pp of parihāyati, in s] ‹ परिहायति (lit. fallen away)<br>3 <i>pp</i> fallen down; fallen away (from) [pp of parihāyati] ‹ परिहायति<br>4 <i>pp</i> declined; decreased; dwindled [pp of parihāyati] ‹ परिहायति<br>5 <i>pp</i> lost; wasted; deprived (of) [pp of parihāyati] ‹ परिहायति<br>6 <i>pp</i> [pp of parihāyati] ‹ परिहायति", "pamajjanti": "1 <i>pr</i> is careless (about); is negligent (with); wastes one's time (in) [pr]<br>2 <i>pr</i> is intoxicated [pr]", "āsevitāti": "1 <i>pp</i> practised persistently [pp of āsevati] ‹ आसेवति (lit. associated)<br>2 <i>pp</i> associated (with) [pp of āsevati] ‹ आसेवति", "āraddhanti": "1 <i>pp</i> aroused; applied; undertaken [pp of ārabhati] ‹ आरभति<br>2 <i>pp</i> won; accomplished; succeeded [pp of ārādheti] ‹ आराधेति<br>3 <i>pp</i> pleased; satisfied; contented (with) [pp of ārādheti] ‹ आराधेति<br>4 <i>pp</i> commenced; begun; started (to) [pp of ārabhati] ‹ आरभति", "aparibhuttā": "1 <i>pp</i> not used; not tasted; not enjoyed; not experienced [pp of na paribhuñjati] ‹ परिभुञ्जति (lit. not used all around)", "abahulīkatā": "1 <i>pp</i> not practised often; not repeated a lot; not done again and again [pp of na bahulīkaroti,] ‹ बहुलीकरोति (lit. not made a lot)", "kāyagatāsatiṃ": "1 <i>fem</i> awareness immersed in the body; dwelling in the body [fem,] (lit. mindfulness gone to the body)", "vuttaṃ": "1 <i>pp</i> sown; scattered; planted [pp of vapati] ‹ vapati<br>2 <i>pp</i> shaven [pp of vapati] ‹ vapati<br>3 <i>pp</i> said; told; spoken; mentioned [pp of vacati] ‹ vacati<br>4 <i>pp</i> called; named; said (to be) [pp of vacati] ‹ vacati<br>5 <i>pp</i> spoken to [pp of vacati] ‹ vacati<br>6 <i>nt</i> [nt]<br>7 <i>pp</i> [pp]<br>8 <i>nt</i> poem; verse; stanza [nt, pp of vacati] ‹ vacati (lit. spoken)<br>9 <i>adj</i> with a livelihood (of); living off; as means of living [adj, from vutti] ‹ vutti<br>10 <i>nt</i> (gram) meter; prosody [nt, pp of vacati] ‹ vacati (lit. spoken)", "sevitaṃ": "1 <i>pp</i> served; followed (by) [pp of sevati] ‹ sevati (lit. associated)<br>2 <i>pp</i> used; frequented; made use of (by) [pp of sevati] ‹ sevati (lit. associated)<br>3 <i>pp</i> lived in (by) [pp of sevati] ‹ sevati (lit. associated)<br>4 <i>pp</i> associated with (by); within the domain (of); in the realm (of) [pp of sevati] ‹ sevati (lit. associated)<br>5 <i>pp</i> [pp of sevati] ‹ sevati (lit. associated)", "apariññātā": "1 <i>pp</i> not completely comprehended; not fully understood (by) [pp of na parijānāti] ‹ परिजानाति (lit. not known all around)", "ekakanipātassa": "1 <i>masc</i> [masc,]", "sammuṭṭhaṃ": "1 <i>pp</i> muddled; confused; forgotten [pp of sammussati, in s] ‹ sammussati", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "amataṃ": "1 <i>nt</i> deathless state; immortality; freedom from death; epithet of Nibbāna [nt, pp of na marati] ‹ marati (lit. not dead)<br>2 <i>pp</i> deathless; immortal; undying [pp of na marati] ‹ marati (lit. not dead)<br>3 <i>fem</i> [fem, abstr]<br>4 <i>nt</i> ambrosia; drink of immortality; devine nectar [nt, pp of na marati] ‹ marati (lit. not dead)<br>5 <i>pp</i> [pp]<br>6 <i>fem</i> [fem,]<br>7 <i>pp</i> alive; living [pp of na marati] ‹ marati (lit. not dead)", "taṃ": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> it; that [pron, nt nom sg of ta] ‹ ta<br>4 <i>pron</i> him; her; one; that person; that thing [pron, masc fem & nt acc sg of ta] ‹ ta<br>5 <i>pron</i> you (object) [pron, 2nd acc sg of tvaṃ] ‹ त्वं<br>6 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>7 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha", "cettha": "1 <i>sand</i> and there; but there [sandhi, ind + adv]<br>2 <i>sand</i> and here; and in this case [sandhi, ind + adv]", "pamādiṃsu": "1 <i>aor</i> was careless (about); neglected; was negligent (with); was heedless (about) [aor of pamādeti] ‹ पमादेति", "abhinandunti": "1 <i>aor</i> delighted (in); was pleased (with); approved (of); was happy (with); relished [aor of abhinandati] ‹ abhinandati", "potthakesu": "1 <i>masc</i> modelled figurine; clay figure [masc, dimin of pottha] ‹ pottha<br>2 <i>masc</i> book; manuscript; text [masc, dimin of pottha] ‹ pottha<br>3 <i>masc</i> bark cloth; rough cloth [masc, dimin of pottha] ‹ pottha<br>4 <i>masc</i> [masc, dimin of pottha] ‹ pottha", "bhāsitaṃ": "1 <i>nt</i> saying; speech; statement; utterance; talk; words [nt, pp of bhāsati] ‹ भासति (lit. what was said)<br>2 <i>pp</i> said; spoken; recited (by) [pp of bhāsati] ‹ भासति<br>3 <i>nt</i> (gram) ?? word [nt, from bhāsati] ‹ भासति<br>4 <i>nt</i> speaking; talking; saying [nt, pp of bhāsati] ‹ भासति (lit. spoken)", "pamuṭṭhā": "1 <i>pp</i> forgotten; not remembered; lost [pp of pamussati] ‹ pamussati", "abhiññātaṃ": "1 <i>pp</i> well-know; famous; recognized; distinguished [pp of abhijānāti] ‹ अभिजानाति (lit. completely known)<br>2 <i>pp</i> known; understood; experienced [pp of abhijānāti] ‹ अभिजानाति (lit. completely known)", "āraddhaṃ": "1 <i>pp</i> aroused; applied; undertaken [pp of ārabhati] ‹ आरभति<br>2 <i>pp</i> won; accomplished; succeeded [pp of ārādheti] ‹ आराधेति<br>3 <i>pp</i> pleased; satisfied; contented (with) [pp of ārādheti] ‹ आराधेति<br>4 <i>pp</i> commenced; begun; started (to) [pp of ārabhati] ‹ आरभति", "pamādiṃsūti": "1 <i>aor</i> was careless (about); neglected; was negligent (with); was heedless (about) [aor of pamādeti] ‹ पमादेति", "te": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>card</i> three (3) [card, masc fem & nt pl]<br>4 <i>ve</i> (gram) ti; verbal ending of the present tense 3rd person singular [ve, masc]<br>5 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>6 <i>pron</i> they; those [pron, masc nom pl of ta] ‹ ta<br>7 <i>pron</i> them; those [pron, masc acc pl of ta] ‹ ta<br>8 <i>pron</i> you; to you (object) [pron, 2nd acc sg of tvaṃ] ‹ त्वं<br>9 <i>pron</i> by you [pron, 2nd instr sg of tvaṃ] ‹ त्वं<br>10 <i>pron</i> for you; to you [pron, 2nd dat sg of tvaṃ] ‹ त्वं<br>11 <i>pron</i> your; of you [pron, 2nd gen sg of tvaṃ] ‹ त्वं<br>12 <i>pron</i> when you [pron, 2nd gen sg of tvaṃ, gen abs] ‹ त्वं<br>13 <i>card</i> three (3) [card, in s, from ti] ‹ ti<br>14 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha", "na": "1 <i>ind</i> no; not; neither; nor [ind]<br>2 <i>ind</i> (adds a question mark) surely?; does one not? [ind, interr]<br>3 <i>pref</i> not [prefix, in s]<br>4 <i>masc</i> (gram) negative prefix na [masc, prefix]", "attamanā": "1 <i>adj</i> pleased; happy; delighted; elated [adj,] (lit. own mind)", "āsevitanti": "1 <i>pp</i> practised persistently [pp of āsevati] ‹ आसेवति (lit. associated)<br>2 <i>pp</i> associated (with) [pp of āsevati] ‹ आसेवति", "bhagavā": "1 <i>masc</i> Sublime One; Blessed One; Fortunate One; Auspicious One; epithet of the Buddha [masc, from bhaga] ‹ bhaga (lit. having good fortune quality)<br>2 <i>adj</i> [adj, from bhaga] ‹ bhaga (lit. having good fortune quality)<br>3 <i>masc</i> Sublime One; Blessed One; Fortunate One; epithet of the Buddha [masc, nom sg of bhagavant] ‹ bhagavant", "apariññātaṃ": "1 <i>pp</i> not completely comprehended; not fully understood (by) [pp of na parijānāti] ‹ परिजानाति (lit. not known all around)", "anabhiññātaṃ": "1 <i>pp</i> not known; not understood; not experienced [pp of na abhijānāti] ‹ अभिजानाति (lit. not completely known)", "kāyagatāsati": "1 <i>fem</i> awareness immersed in the body; dwelling in the body [fem,] (lit. mindfulness gone to the body)", "pamuṭṭhaṃ": "1 <i>pp</i> forgotten; not remembered; lost [pp of pamussati] ‹ pamussati", "evaṃ": "1 <i>ind</i> thus; this; like this; similarly; in the same manner; just as; such [ind, adv]<br>2 <i>ind</i> yes!; that is right!; correct! [ind, excl]", "bhikkhū": "1 <i>aor</i> begged; begged for alms [aor of bhikkhati] ‹ bhikkhati<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "paribhuttaṃ": "1 <i>pp</i> experienced; enjoyed [pp of paribhuñjati] ‹ परिभुञ्जति (lit. used all around)<br>2 <i>pp</i> used; made use of (by) [pp of paribhuñjati] ‹ परिभुञ्जति (lit. used all around)<br>3 <i>pp</i> eaten; consumed [pp of paribhuñjati] ‹ परिभुञ्जति (lit. used all around)", "idamavoca": "1 <i>sand</i> one said this (to) [sandhi, pron + aor]", "tesaṃ": "1 <i>pron</i> that [pron, base]<br>2 <i>pron</i> for them; to them; to those [pron, masc & nt dat pl of ta] ‹ ta<br>3 <i>pron</i> their; of these; of them; of those [pron, masc & nt gen pl of ta] ‹ ta<br>4 <i>pron</i> when they; when these [pron, masc & nt gen pl of ta, gen abs] ‹ ta", "kataṃ": "1 <i>pp</i> done; did; completed [pp of karoti] ‹ karoti<br>2 <i>nt</i> something done; performed action [nt, pp of karoti] ‹ karoti (lit. done)<br>3 <i>pp</i> made; built (of) [pp of karoti] ‹ karoti<br>4 <i>pp</i> (of gold) formed; shaped; wrought; forged [pp of karoti] ‹ karoti (lit. made)<br>5 <i>masc</i> [masc]", "aviraddhaṃ": "1 <i>adj</i> [adj]", "pamuṭṭhanti": "1 <i>pp</i> forgotten; not remembered; lost [pp of pamussati] ‹ pamussati", "etenupāyena": "1 <i>sand</i> by this means; through this method [sandhi, pron + masc]", "sesaṃ": "1 <i>pron</i> own; one's own; one's own possession [pron, base, reflx]<br>2 <i>adj</i> remaining; left; left over [adj, from sissati] ‹ sissati<br>3 <i>masc</i> leftovers; remains; remainder; remnant [masc, from sissati] ‹ sissati<br>4 <i>nt</i> rest; remainder [nt, from sissati] ‹ sissati"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>२०. अमृत-वर्ग (अमरता का अध्याय) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00367_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00367_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="600">६००.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjanti">परिभुञ्‍जन्ति</span> <span class="paliword" data-word="ye">ये</span> <span class="paliword" data-word="kāyagatāsatiṃ">कायगतासतिं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjanti">परिभुञ्‍जन्ति।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="paribhuñjanti">परिभुञ्‍जन्ति</span> <span class="paliword" data-word="ye">ये</span> <span class="paliword" data-word="kāyagatāsatiṃ">कायगतासतिं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्ती’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00367_hi">
+                ६००.
+"हे भिक्षुओं, वे अमृत का उपभोग नहीं करते, जो कायागत स्मृति (कायगतासति) का उपभोग नहीं करते। 
+हे भिक्षुओं, वे अमृत का उपभोग करते हैं, जो कायागत स्मृति का उपभोग करते हैं।"
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00367_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00368_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00368_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="601">६०१.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="aparibhuttaṃ">अपरिभुत्तं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="aparibhuttā">अपरिभुत्ता।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="paribhuttaṃ">परिभुत्तं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="paribhuttāti">परिभुत्ता’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00368_hi">
+                ६०१.
+"हे भिक्षुओं, जिन्होंने कायानुपश्यना (शरीर से जुड़ी स्मृति) का उपभोग नहीं किया है, उन्होंने अमृत का भी रसास्वादन नहीं किया है।
+हे भिक्षुओं, जिन्होंने कायानुपश्यना का उपभोग किया है, उन्होंने अमृत का भी रसास्वादन किया है।"
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00368_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00369_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00369_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="602">६०२.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="parihīnaṃ">परिहीनं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="parihīnā">परिहीना।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="aparihīnaṃ">अपरिहीनं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="aparihīnāti">अपरिहीना’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00369_hi">
+                ६०२.
+"हे भिक्षुओं, जिन्होंने कायानुगत स्मृति (kāyagatāsati) का त्याग कर दिया है, उन्होंने अमृत (amata) को भी खो दिया है।
+हे भिक्षुओं, जिन्होंने कायानुगत स्मृति का परित्याग नहीं किया है, उन्होंने अमृत को भी नहीं खोया है।"
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00369_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00370_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00370_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="603">६०३.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="viraddhaṃ">विरद्धं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="viraddhā">विरद्धा।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="āraddhaṃ">आरद्धं</span> <span class="paliword" data-word="aviraddhaṃ">अविरद्धं</span> <span class="paliword" data-word="ka॰">(क॰)</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="āraddhāti">आरद्धा’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00370_hi">
+                ६०३.
+“हे भिक्षुओं, जिन्होंने कायानुगत स्मृति (कायगतासति) का त्याग कर दिया है, उन्होंने अमृत को खो दिया है।
+हे भिक्षुओं, जिन्होंने कायानुगत स्मृति का आरम्भ कर लिया है, उन्होंने अमृत को प्राप्त कर लिया है।”
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00370_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00371_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00371_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="604">६०४.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pamādiṃsu">पमादिंसु</span> <span class="paliword" data-word="ye">ये</span> <span class="paliword" data-word="kāyagatāsatiṃ">कायगतासतिं</span> <span class="paliword" data-word="pamādiṃsu">पमादिंसु।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="pamādiṃsu">पमादिंसु</span> <span class="paliword" data-word="ye">ये</span> <span class="paliword" data-word="kāyagatāsatiṃ">कायगतासतिं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="pamādiṃsu">पमादिंसु’’।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00371_hi">
+                ६०४.
+‘‘हे भिक्षुओं, जिन्होंने कायानुस्मृति (कायगतासति) में प्रमाद किया, उन्होंने अमृत (अमत) का भी त्याग कर दिया।
+हे भिक्षुओं, जिन्होंने कायानुस्मृति में प्रमाद नहीं किया, उन्होंने अमृत का भी परित्याग नहीं किया।’’
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00371_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00372_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00372_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="605">६०५.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pamuṭṭhaṃ">पमुट्ठं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="pamuṭṭhā">पमुट्ठा।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="appamuṭṭhaṃ">अप्पमुट्ठं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="appamuṭṭhāti">अप्पमुट्ठा’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00372_hi">
+                ६०५. "हे भिक्षुओं, जिन्होंने शरीर से जुड़ी हुई स्मृति (कायगतासति) को भुला दिया है, उन्होंने अमृत (अमत) को खो दिया है। हे भिक्षुओं, जिन्होंने शरीर के प्रति सजगता को नहीं भुलाया है, उन्होंने अमृत को प्राप्त कर लिया है।"
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00372_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00373_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00373_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="606">६०६.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="anāsevitaṃ">अनासेवितं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="anāsevitā">अनासेविता।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="āsevitaṃ">आसेवितं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="āsevitāti">आसेविता’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00373_hi">
+                ६०६.
+“हे भिक्षुओं, जिन्होंने कायानुगत स्मृति (kāyagatāsati) का अभ्यास नहीं किया है, उन्होंने अमृत का रसास्वादन नहीं किया है।
+हे भिक्षुओं, जिन्होंने कायानुगत स्मृति का अभ्यास किया है, उन्होंने अमृत का रसास्वादन किया है।”
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00373_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00374_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00374_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="607">६०७.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="abhāvitaṃ">अभावितं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="abhāvitā">अभाविता।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bhāvitaṃ">भावितं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="bhāvitāti">भाविता’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00374_hi">
+                ६०७.
+"हे भिक्षुओं, जिन्होंने कायानुगत स्मृति (कायगतासति) का अभ्यास नहीं किया है, उन्होंने अमृत का अनुभव नहीं किया है।
+हे भिक्षुओं, जिन्होंने कायानुगत स्मृति का अभ्यास किया है, उन्होंने अमृत का अनुभव किया है।"
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00374_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00375_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00375_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="608">६०८.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="abahulīkataṃ">अबहुलीकतं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="abahulīkatā">अबहुलीकता।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="bahulīkataṃ">बहुलीकतं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="bahulīkatāti">बहुलीकता’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00375_hi">
+                ६०८.
+“हे भिक्षुओं, जिन्होंने कायानुगत स्मृति (kāyagatāsati) का अभ्यास नहीं किया है, उन्होंने अमृत (amata) का अनुभव नहीं किया है।
+हे भिक्षुओं, जिन्होंने कायानुगत स्मृति का प्रचुर अभ्यास किया है, उन्होंने अमृत को प्राप्त कर लिया है।”
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00375_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00376_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00376_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="609">६०९.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="anabhiññātaṃ">अनभिञ्‍ञातं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="anabhiññātā">अनभिञ्‍ञाता।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="abhiññātaṃ">अभिञ्‍ञातं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="abhiññātāti">अभिञ्‍ञाता’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00376_hi">
+                ६०९.
+"हे भिक्षुओं, जिन्होंने कायागतस्मृति (शरीर पर केंद्रित जागरूकता) को नहीं जाना है, उन्होंने अमृत को नहीं जाना है।
+हे भिक्षुओं, जिन्होंने कायागतस्मृति को जान लिया है, उन्होंने अमृत को जान लिया है।"
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00376_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00377_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00377_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="610">६१०.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="apariññātā">अपरिञ्‍ञाता।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pariññātaṃ">परिञ्‍ञातं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="pariññātāti">परिञ्‍ञाता’’ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00377_hi">
+                ६१०.
+“हे भिक्षुओं, जिन्होंने कायागतस्मृति (शरीर से संबद्ध जागरूकता) को पूर्णतः नहीं समझा है, उन्होंने अमृत (मोक्ष) को भी नहीं समझा है।
+हे भिक्षुओं, जिन्होंने कायागतस्मृति को पूर्णतः जान लिया है, उन्होंने अमृत को भी जान लिया है।”
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00377_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00378_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0401m.mul_00378_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="611">६११.</span> <span class="paliword" data-word="amataṃ">‘‘अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="asacchikataṃ">असच्छिकतं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="asacchikatā">असच्छिकता।</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="tesaṃ">तेसं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sacchikataṃ">सच्छिकतं</span> <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="sacchikatāti">सच्छिकता’’ति।</span> <span class="paliword" data-word="">(….)</span> <span class="paliword" data-word="ekakanipātassa">(एककनिपातस्स</span> <span class="paliword" data-word="suttasahassaṃ">सुत्तसहस्सं</span> <span class="paliword" data-word="samattaṃ">समत्तं।)</span> <span class="paliword" data-word="sī॰">(सी॰</span> <span class="paliword" data-word="syā॰">स्या॰</span> <span class="paliword" data-word="kaṃ॰">कं॰</span> <span class="paliword" data-word="pī॰">पी॰)</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00378_hi">
+                ६११. "हे भिक्षुओं, जिन्होंने कायानुस्मृति (kāyagatāsati) का साक्षात्कार नहीं किया है, उन्होंने अमृत (amata) का साक्षात्कार नहीं किया है।
+हे भिक्षुओं, जिन्होंने कायानुस्मृति का साक्षात्कार कर लिया है, उन्होंने अमृत का साक्षात्कार कर लिया है।"
+(एककनिपात का सूत्र-सहस्र समाप्त।)
+            </div>
+            
+
+            <div class="commentary" id="s0401m.mul_00378_comm" style="display:none;">
+            
+
+                <div class="pali">
+                    <span class="paliword" data-word="600-611">६००-६११.</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="te">ते,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="maraṇavirahitaṃ">मरणविरहितं</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति</span> <span class="paliword" data-word="attho">अत्थो।</span> <span class="paliword" data-word="nanu">ननु</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="nibbānaṃ">निब्बानं</span> <span class="paliword" data-word="lokuttaraṃ">लोकुत्तरं,</span> <span class="paliword" data-word="kāyagatāsati">कायगतासति</span> <span class="paliword" data-word="lokiyā">लोकिया,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="paribhuñjantā">परिभुञ्‍जन्ता</span> <span class="paliword" data-word="amataṃ">अमतं</span> <span class="paliword" data-word="paribhuñjantīti">परिभुञ्‍जन्तीति?</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="bhāvetvā">भावेत्वा</span> <span class="paliword" data-word="adhigantabbato">अधिगन्तब्बतो।</span> <span class="paliword" data-word="kāyagatañhi">कायगतञ्हि</span> <span class="paliword" data-word="satiṃ">सतिं</span> <span class="paliword" data-word="bhāvento">भावेन्तो</span> <span class="paliword" data-word="amatamadhigacchati">अमतमधिगच्छति,</span> <span class="paliword" data-word="abhāvento">अभावेन्तो</span> <span class="paliword" data-word="nādhigacchati">नाधिगच्छति।</span> <span class="paliword" data-word="tasmā">तस्मा</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="vuttaṃ">वुत्तं।</span> <span class="paliword" data-word="etenupāyena">एतेनुपायेन</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span> <span class="paliword" data-word="api">अपि</span> <span class="paliword" data-word="cettha">चेत्थ</span> <span class="paliword" data-word="viraddhanti">विरद्धन्ति</span> <span class="paliword" data-word="virādhitaṃ">विराधितं</span> <span class="paliword" data-word="nādhigataṃ">नाधिगतं।</span> <span class="paliword" data-word="āraddhanti">आरद्धन्ति</span> <span class="paliword" data-word="paripuṇṇaṃ">परिपुण्णं।</span> <span class="paliword" data-word="pamādiṃsūti">पमादिंसूति</span> <span class="paliword" data-word="pamajjanti">पमज्‍जन्ति।</span> <span class="paliword" data-word="pamuṭṭhanti">पमुट्ठन्ति</span> <span class="paliword" data-word="sammuṭṭhaṃ">सम्मुट्ठं</span> <span class="paliword" data-word="vissaritaṃ">विस्सरितं</span> <span class="paliword" data-word="naṭṭhaṃ">नट्ठं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="āsevitanti">आसेवितन्ति</span> <span class="paliword" data-word="ādito">आदितो</span> <span class="paliword" data-word="sevitaṃ">सेवितं।</span> <span class="paliword" data-word="bhāvitanti">भावितन्ति</span> <span class="paliword" data-word="vaḍḍhitaṃ">वड्ढितं।</span> <span class="paliword" data-word="bahulīkatanti">बहुलीकतन्ति</span> <span class="paliword" data-word="punappunaṃ">पुनप्पुनं</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="anabhiññātanti">अनभिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātaabhiññāya">ञातअभिञ्‍ञाय</span> <span class="paliword" data-word="ajānitaṃ">अजानितं।</span> <span class="paliword" data-word="apariññātanti">अपरिञ्‍ञातन्ति</span> <span class="paliword" data-word="ñātapariññāvaseneva">ञातपरिञ्‍ञावसेनेव</span> <span class="paliword" data-word="apariññātaṃ">अपरिञ्‍ञातं।</span> <span class="paliword" data-word="asacchikatanti">असच्छिकतन्ति</span> <span class="paliword" data-word="apaccakkhakataṃ">अपच्‍चक्खकतं।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01602_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01602_hi">
+                    ६००-६११.
+'हे भिक्षुओं, वे अमृत का उपभोग नहीं करते' इसका अर्थ है कि वे मरण से रहित निर्वाण का अनुभव नहीं करते।
+परंतु क्या निर्वाण लोकोत्तर (लोकातीत) नहीं है और कायानुस्मृति (शरीर से संबद्ध स्मृति) लौकिक? फिर उसका अभ्यास करने वाले अमृत का उपभोग कैसे करते हैं? क्योंकि उसका (कायानुस्मृति का) विकास करने से ही उसे (निर्वाण को) प्राप्त किया जा सकता है।
+निश्चित ही, जो शरीर की स्मृति का अभ्यास करता है, वह अमृत को प्राप्त करता है; जो अभ्यास नहीं करता, वह उसे प्राप्त नहीं करता।
+इसीलिए ऐसा कहा गया है।
+इस पद्धति से सभी स्थानों पर अर्थ समझना चाहिए।
+साथ ही, यहाँ 'विरद्ध' (विराद्ध) का अर्थ है—चूक जाना या प्राप्त न करना।
+'आरद्ध' का अर्थ है—परिपूर्ण।
+'पमादिंसु' का अर्थ है—प्रमाद करना (लापरवाही करना)।
+'पमुट्ठ' का अर्थ है—भूल जाना, विस्मृत होना या खो जाना।
+'आसेवित' का अर्थ है—आरम्भ से ही सेवन करना (अभ्यास करना)।
+'भावित' का अर्थ है—विकसित करना या बढ़ाना।
+'बहुलीकत' का अर्थ है—बार-बार किया गया।
+'अनभिज्ञात' का अर्थ है—अभिज्ञा (विशिष्ट ज्ञान) के माध्यम से न जानना।
+'अपरिज्ञात' का अर्थ है—पूर्ण ज्ञान (परिज्ञा) के अभाव के कारण ठीक से न जानना।
+'असाक्षात्कृत' का अर्थ है—प्रत्यक्ष न करना।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                </div>
+                            
+
+                <div class="pali">
+                    <span class="paliword" data-word="manorathapūraṇiyā">मनोरथपूरणिया</span> <span class="paliword" data-word="aṅguttaranikāya-aṭṭhakathāya">अङ्गुत्तरनिकाय-अट्ठकथाय</span> <span class="paliword" data-word="sahassasuttantaparimāṇassa">सहस्ससुत्तन्तपरिमाणस्स</span>
+                    <span style="float:right; cursor:pointer" 
+                          onclick="toggleHindi('s0401a.att_01603_hi', event)">📖</span>
+                </div>
+                        
+
+                <div class="hindi" id="s0401a.att_01603_hi">
+                    सहस्र सूत्रान्तों के परिमाण वाली अङ्गुत्तरनिकाय की अट्ठकथा, जो मनोरथपूरणी (मनोरथों को पूर्ण करने वाली) है।
+                </div>
+                            
+</div>
+</div>
+</div>
+</div>
+<div class='para'>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0401m.mul_00379_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="idamavoca">(इदमवोच</span> <span class="paliword" data-word="bhagavā">भगवा।</span> <span class="paliword" data-word="attamanā">अत्तमना</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="bhikkhū">भिक्खू</span> <span class="paliword" data-word="bhagavato">भगवतो</span> <span class="paliword" data-word="bhāsitaṃ">भासितं</span> <span class="paliword" data-word="abhinandunti">अभिनन्दुन्ति।)</span> <span class="paliword" data-word="">(</span> <span class="paliword" data-word="">)</span> <span class="paliword" data-word="etthantare">एत्थन्तरे</span> <span class="paliword" data-word="pāṭho">पाठो</span> <span class="paliword" data-word="sī॰">सी॰</span> <span class="paliword" data-word="syā॰">स्या॰</span> <span class="paliword" data-word="kaṃ॰">कं॰</span> <span class="paliword" data-word="pī॰">पी॰</span> <span class="paliword" data-word="potthakesu">पोत्थकेसु</span> <span class="paliword" data-word="natthi">नत्थि</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0401m.mul_00379_hi">
+                भगवान ने यह कहा।
+वे भिक्षु हर्षित हुए और उन्होंने भगवान के वचनों का अभिनंदन किया।
+इस बीच का पाठ सिंहल, स्याम, कंबोज और पीटक (रोमन) संस्करणों की प्रतियों में विद्यमान नहीं है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>
