@@ -655,6 +655,47 @@ document.addEventListener("DOMContentLoaded", function() {{
             }}
         }}
     }});
+    
+        // Keyboard shortcut: Ctrl+H
+document.addEventListener('keydown', function(e) {{
+    if (e.ctrlKey && e.key === 'h') {{
+        e.preventDefault(); // Prevent browser's find bar
+        
+        // Move commentary icons outside .pali
+        document.querySelectorAll('.pali span[onclick*="toggleCommentary"]').forEach(icon => {{
+            let paliDiv = icon.closest('.pali');
+            if (paliDiv) {{
+                let clone = icon.cloneNode(true);
+                paliDiv.parentNode.insertBefore(clone, paliDiv.nextSibling);
+                icon.remove();
+            }}
+        }});
+        
+        // Click all main text Hindi icons
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+        
+        // Hide Pali text but keep container
+        document.querySelectorAll('.pali').forEach(el => {{
+            Array.from(el.childNodes).forEach(node => {{
+                if (node.nodeType === Node.TEXT_NODE) {{
+                    node.textContent = '';
+                }} else if (node.nodeType === Node.ELEMENT_NODE && 
+                           !node.classList.contains('hindi') && 
+                           !node.tagName.match(/span/i)) {{
+                    node.style.display = 'none';
+                }}
+            }});
+        }});
+        
+        // Also check the toggle checkbox
+        const toggle = document.getElementById('hindiOnlyToggle');
+        if (toggle) {{
+            toggle.checked = true;
+            localStorage.setItem('hindiOnlyMode', 'true');
+        }}
+    }}
+}});
+
 }});
 
 function normalizePali(word){{
@@ -754,6 +795,74 @@ border-radius:6px;">
 </html>
 """
 
+def merge_gatha_parts(entries):
+    """Merge sequences of gatha1, gatha2, ... gathalast into single gatha entries"""
+    merged = []
+    i = 0
+    while i < len(entries):
+        entry = entries[i]
+        rend = entry.get("rend", "")
+        
+        # Check if this is the start of a gatha sequence
+        if rend and rend.startswith("gatha") and rend not in ["gatha", "gathalast"] and rend[5:].isdigit():
+            # Start collecting gatha parts
+            gatha_parts = []
+            gatha_hindi_parts = []
+            first_id = entry.get("id", "")
+            
+            # Collect all consecutive gatha1, gatha2, ... gathalast
+            while i < len(entries):
+                current = entries[i]
+                current_rend = current.get("rend", "")
+                
+                # Stop if we hit something that's not part of the gatha sequence
+                if not (current_rend and (current_rend.startswith("gatha") or current_rend == "gathalast")):
+                    break
+                
+                # Add text parts
+                if current.get("text"):
+                    gatha_parts.append(current.get("text", ""))
+                if current.get("hi"):
+                    gatha_hindi_parts.append(current.get("hi", ""))
+                
+                i += 1
+                
+                # Stop at gathalast
+                if current_rend == "gathalast":
+                    break
+            
+            # Create merged gatha entry
+            if gatha_parts:
+                merged_entry = {
+                    "id": first_id.split('_')[0] + "_gatha",
+                    "tag": "p",
+                    "n": entry.get("n"),
+                    "rend": "gatha",
+                    "text": "\\n".join(gatha_parts),  # Join with literal \n
+                    "hi": " ".join(gatha_hindi_parts) if gatha_hindi_parts else ""
+                }
+                merged.append(merged_entry)
+        else:
+            # Keep non-gatha-sequence entries as is
+            merged.append(entry)
+            i += 1
+    
+    return merged
+
+def format_gatha_text(text):
+    """Convert literal \n to line breaks and format for HTML"""
+    if not text:
+        return text
+    
+    # Replace literal '\n' with HTML line breaks
+    lines = text.split('\\n')
+    wrapped_lines = []
+    
+    for line in lines:
+        if line.strip():
+            wrapped_lines.append(wrap_pali_words(line))
+    
+    return '<br>'.join(wrapped_lines)
 # --------------------------------------------------
 # Render Sutta Page
 # --------------------------------------------------
@@ -802,20 +911,24 @@ def render_sutta_page(prefix, block, att_index, att):
             rend = e.get("rend", "")
             
               # Add a class based on rend type
+            # Add a class based on rend type
             extra_class = ""
             if rend == "gatha":
                 extra_class = " gatha"
             elif rend == "subhead":
                 extra_class = " subhead"
-
-
-            for w in pali_raw.split():
+            
+            # Extract words for dictionary - handle literal \n properly
+            text_for_words = pali_raw.replace('\\n', ' ')
+            for w in text_for_words.split():
                 used_words.add(normalize_word(w))
-
-            pali_text = wrap_pali_words(pali_raw)
+            
+            # Format display text based on rend type
+            if "gatha" in rend:
+                pali_text = format_gatha_text(pali_raw)
+            else:
+                pali_text = wrap_pali_words(pali_raw)
             hindi_text = e.get("hi","")
-
-            html.append("<div class='para'>")
             # Add the extra_class to the pali div
             # ~ html.append(f"""
             # ~ <div class="pali{extra_class}">
@@ -861,7 +974,7 @@ def render_sutta_page(prefix, block, att_index, att):
             
             html.append(f"""
                 {pali_text}
-            </div>
+            </div>  <!-- close pali div -->
             """)
             
             # Hindi translation for Mula (hidden by default)
@@ -872,11 +985,7 @@ def render_sutta_page(prefix, block, att_index, att):
             </div>
             """)
             
-            
-
             # Commentary section (completely hidden by default)
-            # FIX 1: Use commentary_entries directly instead of trying to find start_idx
-                        # Commentary section (completely hidden by default)
             if has_commentary and commentary_entries:
                 # Find the start index in the ordered commentary list
                 start_idx = -1
@@ -953,8 +1062,10 @@ def render_sutta_page(prefix, block, att_index, att):
                             """)
                 
                 html.append("</div>")  # Close commentary div
+            
+            html.append("</div>")  # Close the inner pali div
+            html.append("</div>")  # Close the outer pali{extra_class} div
             html.append("</div>")  # Close para div
-
 
     # Build local dictionary subset - COMPACT, INFO# Build local dictionary subset - COMPACT, NO REDUNDANT HEADWORD
     local_dict = {}
@@ -1557,8 +1668,6 @@ def main():
                 mul_data.extend(json.load(open(mul_file, encoding="utf8")))
         else:
             mul_data = json.load(open(files["mul"], encoding="utf8"))
-        # Use mul_data instead of mul for all subsequent operations
-        mul = mul_data
         
         # Handle multiple att files
         att_data = []
@@ -1568,6 +1677,11 @@ def main():
         else:
             att_data = json.load(open(files["att"], encoding="utf8"))
         
+        # Merge gatha parts in both mula and commentary
+        mul_data = merge_gatha_parts(mul_data)
+        att_data = merge_gatha_parts(att_data)
+        
+        mul = mul_data
         att = att_data
 
         att_index = index_para(att)
