@@ -173,7 +173,7 @@ body {
 </style>
 
 <script>
-const LOCAL_DICT = {"arahato": "1 <i>adj</i> worthy (of); entitled (to); deserving (of) [adj, from arahati] ‹ arahati<br>2 <i>masc</i> value; price; worth [masc, from arahati] ‹ arahati<br>3 <i>masc</i> awakened being; fourth stage of the path [masc, irreg, from arahati] ‹ arahati (lit. worthy one)", "tassa": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> to him; for him; to that; for that [pron, masc & nt dat sg of ta] ‹ ta<br>4 <i>pron</i> of that; his; its [pron, masc & nt gen sg of ta] ‹ ta<br>5 <i>pron</i> when he; when it [pron, masc & nt gen sg of ta, gen abs] ‹ ta (lit. of that)<br>6 <i>ind</i> therefore; thus; so; because of that; regarding that [ind, adv, masc & nt gen sg of ta] ‹ ta (lit. of that)", "maggasaṃyuttaṃ": "1 <i>nt</i> [nt,] (lit. connected with the path)", "saṃyuttanikāye": "1 <i>masc</i> Book 3 of the Sutta Piṭaka; Connected Discourses [masc,]", "bhagavato": "1 <i>masc</i> to the Buddha; for the Buddha [masc, dat sg of bhagavant] ‹ bhagavant<br>2 <i>masc</i> of the Buddha [masc, gen sg of bhagavant] ‹ bhagavant<br>3 <i>masc</i> from the Buddha [masc, abl sg of bhagavant] ‹ bhagavant<br>4 <i>masc</i> Sublime One; Blessed One; Fortunate One; Auspicious One; epithet of the Buddha [masc, from bhaga] ‹ bhaga (lit. having good fortune quality)<br>5 <i>adj</i> [adj, from bhaga] ‹ bhaga (lit. having good fortune quality)", "namo": "1 <i>masc</i> reverence; veneration; homage (to) [masc, mano group, from namati] ‹ namati (lit. bend)<br>2 <i>aor</i> bent; inclined (towards) [aor of namati] ‹ namati<br>3 <i>aor</i> [aor of namati] ‹ namati (lit. bent)<br>4 <i>ind</i> reverence; veneration; homage (to) [ind, excl, nom sg of namas] ‹ namas (lit. bend)", "avijjāvaggo": "1 <i>masc</i> [masc,]"};
+const LOCAL_DICT = {"saṃyuttanikāye": "1 <i>masc</i> Book 3 of the Sutta Piṭaka; Connected Discourses [masc,]", "bhagavato": "1 <i>masc</i> to the Buddha; for the Buddha [masc, dat sg of bhagavant] ‹ bhagavant<br>2 <i>masc</i> of the Buddha [masc, gen sg of bhagavant] ‹ bhagavant<br>3 <i>masc</i> from the Buddha [masc, abl sg of bhagavant] ‹ bhagavant<br>4 <i>masc</i> Sublime One; Blessed One; Fortunate One; Auspicious One; epithet of the Buddha [masc, from bhaga] ‹ bhaga (lit. having good fortune quality)<br>5 <i>adj</i> [adj, from bhaga] ‹ bhaga (lit. having good fortune quality)", "namo": "1 <i>masc</i> reverence; veneration; homage (to) [masc, mano group, from namati] ‹ namati (lit. bend)<br>2 <i>aor</i> bent; inclined (towards) [aor of namati] ‹ namati<br>3 <i>aor</i> [aor of namati] ‹ namati (lit. bent)<br>4 <i>ind</i> reverence; veneration; homage (to) [ind, excl, nom sg of namas] ‹ namas (lit. bend)", "arahato": "1 <i>adj</i> worthy (of); entitled (to); deserving (of) [adj, from arahati] ‹ arahati<br>2 <i>masc</i> value; price; worth [masc, from arahati] ‹ arahati<br>3 <i>masc</i> awakened being; fourth stage of the path [masc, irreg, from arahati] ‹ arahati (lit. worthy one)", "maggasaṃyuttaṃ": "1 <i>nt</i> [nt,] (lit. connected with the path)", "tassa": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> to him; for him; to that; for that [pron, masc & nt dat sg of ta] ‹ ta<br>4 <i>pron</i> of that; his; its [pron, masc & nt gen sg of ta] ‹ ta<br>5 <i>pron</i> when he; when it [pron, masc & nt gen sg of ta, gen abs] ‹ ta (lit. of that)<br>6 <i>ind</i> therefore; thus; so; because of that; regarding that [ind, adv, masc & nt gen sg of ta] ‹ ta (lit. of that)", "avijjāvaggo": "1 <i>masc</i> [masc,]"};
 
 // Highlight words that have dictionary entries
 // Mark words that DON'T have dictionary entries
@@ -302,6 +302,55 @@ document.addEventListener("click", function(e){
         if(popup) popup.style.display = "none";
     }
 });
+
+
+// NEW: Middle click on pali text toggles Hindi translation
+document.addEventListener('auxclick', function(e) {
+    // Check for middle button (button === 1)
+    if (e.button === 1) {
+        // Find the closest pali div
+        const paliDiv = e.target.closest('.pali');
+        if (paliDiv) {
+            e.preventDefault(); // Prevent default middle-click behavior
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) {
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+});
+
+// Prevent default middle-click scrolling
+document.addEventListener('mousedown', function(e) {
+    if (e.button === 1) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+
+// Double finger tap on Android/tablets toggles Hindi translation
+let touchTimer = null;
+let touchCount = 0;
+
+document.addEventListener('touchstart', function(e) {
+    // Check for two-finger touch
+    if (e.touches.length === 2) {
+        e.preventDefault(); // Prevent zoom/context menu
+        
+        // Find the pali div under either touch point
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const paliDiv = element?.closest('.pali');
+        
+        if (paliDiv) {
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) {
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+}, { passive: false });
 </script>
 
 </head>

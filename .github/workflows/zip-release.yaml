@@ -1,0 +1,51 @@
+name: Create ZIP Release
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'output/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Get date and commit info
+        id: info
+        run: |
+          echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+          echo "time=$(date +'%H%M')" >> $GITHUB_OUTPUT
+          echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "commit_msg=$(git log -1 --pretty=%s)" >> $GITHUB_OUTPUT
+      
+      - name: Create ZIP archive
+        run: |
+          cd output
+          zip -r ../tipitaka_hindi_${{ steps.info.outputs.date }}_${{ steps.info.outputs.time }}_${{ steps.info.outputs.short_sha }}.zip .
+          cd ..
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build-${{ steps.info.outputs.date }}-${{ steps.info.outputs.short_sha }}
+          name: Build ${{ steps.info.outputs.date }} (${{ steps.info.outputs.short_sha }})
+          body: |
+            📦 Offline HTML package for tipitaka_hindi
+            
+            **Build Date:** ${{ steps.info.outputs.date }}
+            **Build Time:** ${{ steps.info.outputs.time }}
+            **Commit:** ${{ steps.info.outputs.commit_msg }}
+            **SHA:** ${{ steps.info.outputs.short_sha }}
+            
+            Download and extract to use offline.
+          files: tipitaka_hindi_*.zip
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
