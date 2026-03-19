@@ -1,0 +1,425 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"saṅgaho": "1 <i>masc</i> support; maintenance (of); looking after [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>2 <i>masc</i> inclusion (in); encompassing; grouping (of) [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>3 <i>masc</i> maintaining relationships; support [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>4 <i>masc</i> [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>5 <i>masc</i> agreement (about the postponement of the invitation ceremony) [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)<br>6 <i>masc</i> collection of scriptures [masc, from saṅgaṇhāti] ‹ सङ्गण्हाति (lit. holding together)", "ayaṃ": "1 <i>masc</i> good luck; good fortune [masc, from eti] ‹ eti<br>2 <i>adj</i> coming; going [adj, in s, from eti] ‹ eti<br>3 <i>masc</i> [masc]<br>4 <i>nt</i> iron [nt, in s]<br>5 <i>masc</i> iron [masc, mano group]<br>6 <i>pron</i> this; this person; this thing [pron, masc & fem nom sg of ima] ‹ ima<br>7 <i>pron</i> this [pron, base]", "suppatiṭṭhito": "1 <i>adj</i> well established; firmly grounded; firmly planted; fully centred [adj, from patiṭṭhita] ‹ पतिट्ठित (lit. well stood back)", "vinayapiṭake": "1 <i>nt</i> Basket of Discipline; five books of the Vinaya [nt,]", "musāvādavaggo": "1 <i>masc</i> Section 1 of the monk's offences requiring confession [masc,] (lit. section on lying)", "vaggehi": "1 <i>adj</i> disunited; divisive; factious; dissentious; incomplete [adj]<br>2 <i>masc</i> chapter; section [masc]<br>3 <i>masc</i> group; party; faction [masc]<br>4 <i>masc</i> (gram) (of consonants) set; group; class; series [masc]<br>5 <i>masc</i> dissociation; separation [masc]", "tassa": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> to him; for him; to that; for that [pron, masc & nt dat sg of ta] ‹ ta<br>4 <i>pron</i> of that; his; its [pron, masc & nt gen sg of ta] ‹ ta<br>5 <i>pron</i> when he; when it [pron, masc & nt gen sg of ta, gen abs] ‹ ta (lit. of that)<br>6 <i>ind</i> therefore; thus; so; because of that; regarding that [ind, adv, masc & nt gen sg of ta] ‹ ta (lit. of that)", "dāni": "1 <i>adj</i> giving; offering; bestowing [adj, in s, from dadāti] ‹ ददाति<br>2 <i>ind</i> now; immediately [ind, adv, from ima] ‹ ima", "bhagavato": "1 <i>masc</i> to the Buddha; for the Buddha [masc, dat sg of bhagavant] ‹ bhagavant<br>2 <i>masc</i> of the Buddha [masc, gen sg of bhagavant] ‹ bhagavant<br>3 <i>masc</i> from the Buddha [masc, abl sg of bhagavant] ‹ bhagavant<br>4 <i>masc</i> Sublime One; Blessed One; Fortunate One; Auspicious One; epithet of the Buddha [masc, from bhaga] ‹ bhaga (lit. having good fortune quality)<br>5 <i>adj</i> [adj, from bhaga] ‹ bhaga (lit. having good fortune quality)", "arahato": "1 <i>adj</i> worthy (of); entitled (to); deserving (of) [adj, from arahati] ‹ arahati<br>2 <i>masc</i> value; price; worth [masc, from arahati] ‹ arahati<br>3 <i>masc</i> awakened being; fourth stage of the path [masc, irreg, from arahati] ‹ arahati (lit. worthy one)", "khuddakānaṃ": "1 <i>adj</i> small; minute; tiny [adj, from khudda] ‹ khudda<br>2 <i>nt</i> [nt]", "yesaṃ": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>pron</i> for whoever; to whom; for which; for such and such [pron, masc & nt dat pl of ya] ‹ ya<br>3 <i>pron</i> of whoever; of whom; of which; of such and such; of them [pron, masc & nt gen pl of ya] ‹ ya", "tesaṃ": "1 <i>pron</i> that [pron, base]<br>2 <i>pron</i> for them; to them; to those [pron, masc & nt dat pl of ta] ‹ ta<br>3 <i>pron</i> their; of these; of them; of those [pron, masc & nt gen pl of ta] ‹ ta<br>4 <i>pron</i> when they; when these [pron, masc & nt gen pl of ta, gen abs] ‹ ta", "pācittiyakaṇḍaṃ": "1 <i>nt</i> section on offences requiring confession [nt,]", "navahi": "1 <i>card</i> nine (9) [card, x pl]", "bhavati": "1 <i>pr</i> is; is being; becomes [pr]<br>2 <i>pr</i> exists (for) [pr]<br>3 <i>masc</i> master; sir; respected man [masc, from bhavati, irreg] ‹ bhavati (lit. being present)"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+    
+        // Keyboard shortcut: Ctrl+H
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'h') {
+        e.preventDefault(); // Prevent browser's find bar
+        
+        // Move commentary icons outside .pali
+        document.querySelectorAll('.pali span[onclick*="toggleCommentary"]').forEach(icon => {
+            let paliDiv = icon.closest('.pali');
+            if (paliDiv) {
+                let clone = icon.cloneNode(true);
+                paliDiv.parentNode.insertBefore(clone, paliDiv.nextSibling);
+                icon.remove();
+            }
+        });
+        
+        // Click all main text Hindi icons
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+        
+        // Hide Pali text but keep container
+        document.querySelectorAll('.pali').forEach(el => {
+            Array.from(el.childNodes).forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    node.textContent = '';
+                } else if (node.nodeType === Node.ELEMENT_NODE && 
+                           !node.classList.contains('hindi') && 
+                           !node.tagName.match(/span/i)) {
+                    node.style.display = 'none';
+                }
+            });
+        });
+        
+        // Also check the toggle checkbox
+        const toggle = document.getElementById('hindiOnlyToggle');
+        if (toggle) {
+            toggle.checked = true;
+            localStorage.setItem('hindiOnlyMode', 'true');
+        }
+    }
+});
+
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>विनयपिटक में - परिचय (Introduction) <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+
+<div class="para">
+    <div class="pali">
+        <span class="paliword" data-word="||namo">॥नमो</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="bhagavato">भगवतो</span> <span class="paliword" data-word="arahato">अरहतो</span> <span class="paliword" data-word="sammāsambuddhassa||">सम्मासम्बुद्धस्स॥</span>
+        <span style="float:right; cursor:pointer" 
+              onclick="toggleHindi('vin02a1.att_00001_hi', event)">📖</span>
+    </div>
+
+
+    <div class="hindi" id="vin02a1.att_00001_hi">
+        उन भगवान्, अर्हत् और सम्यक् सम्बुद्ध को नमस्कार है।
+    </div>
+
+</div>
+
+<div class="para">
+    <div class="pali">
+        <span class="paliword" data-word="vinayapiṭake">विनयपिटके</span>
+        <span style="float:right; cursor:pointer" 
+              onclick="toggleHindi('vin02a1.att_00002_hi', event)">📖</span>
+    </div>
+
+
+    <div class="hindi" id="vin02a1.att_00002_hi">
+        विनयपिटक में
+    </div>
+
+</div>
+
+<div class="para">
+    <div class="pali">
+        <span class="paliword" data-word="pācittiya-aṭṭhakathā">पाचित्तिय-अट्ठकथा</span>
+        <span style="float:right; cursor:pointer" 
+              onclick="toggleHindi('vin02a1.att_00003_hi', event)">📖</span>
+    </div>
+
+
+    <div class="hindi" id="vin02a1.att_00003_hi">
+        पाचित्तिय-अट्ठकथा (प्रायश्चित्त-अट्ठकथा)
+    </div>
+
+</div>
+
+<div class="para">
+    <div class="pali">
+        <span class="paliword" data-word="5">५.</span> <span class="paliword" data-word="pācittiyakaṇḍaṃ">पाचित्तियकण्डं</span>
+        <span style="float:right; cursor:pointer" 
+              onclick="toggleHindi('vin02a1.att_00004_hi', event)">📖</span>
+    </div>
+
+
+    <div class="hindi" id="vin02a1.att_00004_hi">
+        ५. पाचित्तिय काण्ड (प्रायश्चित्त संबंधी अनुभाग)
+    </div>
+
+</div>
+
+<div class="para">
+    <div class="pali">
+        <span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="musāvādavaggo">मुसावादवग्गो</span>
+        <span style="float:right; cursor:pointer" 
+              onclick="toggleHindi('vin02a1.att_00005_hi', event)">📖</span>
+    </div>
+
+
+    <div class="hindi" id="vin02a1.att_00005_hi">
+        १. मृषावाद वर्ग
+    </div>
+
+</div>
+
+<div class="para">
+    <div class="pali">
+        <span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="musāvādasikkhāpadavaṇṇanā">मुसावादसिक्खापदवण्णना</span>
+        <span style="float:right; cursor:pointer" 
+              onclick="toggleHindi('vin02a1.att_00006_hi', event)">📖</span>
+    </div>
+
+
+    <div class="hindi" id="vin02a1.att_00006_hi">
+        १. मुसावादसिक्खापदवण्णना
+    </div>
+
+</div>
+
+<div class="para">
+    <div class="pali">
+        <span class="paliword" data-word="yesaṃ">येसं</span> <span class="paliword" data-word="navahi">नवहि</span> <span class="paliword" data-word="vaggehi">वग्गेहि,</span> <span class="paliword" data-word="saṅgaho">सङ्गहो</span> <span class="paliword" data-word="suppatiṭṭhito">सुप्पतिट्ठितो।</span> <span class="paliword" data-word="khuddakānaṃ">खुद्दकानं</span> <span class="paliword" data-word="ayaṃ">अयं</span> <span class="paliword" data-word="dāni">दानि,</span> <span class="paliword" data-word="tesaṃ">तेसं</span> <span class="paliword" data-word="bhavati">भवति</span> <span class="paliword" data-word="vaṇṇanā||">वण्णना॥</span>
+        <span style="float:right; cursor:pointer" 
+              onclick="toggleHindi('vin02a1.att_00007_hi', event)">📖</span>
+    </div>
+
+
+    <div class="hindi" id="vin02a1.att_00007_hi">
+        जिन नौ वर्गों के माध्यम से यह संग्रह सुप्रतिष्ठित है, अब उन्हीं क्षुद्रक पाठों का वर्णन यहाँ प्रस्तुत किया जा रहा है।
+    </div>
+
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

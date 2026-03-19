@@ -1,0 +1,803 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 20px;
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;  /* Pali uses TiroDevaSanskrit */
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+</style>
+
+<script>
+const LOCAL_DICT = {"cuditako": "1 <i>masc</i> [masc]<br>2 <i>adj</i> [adj]", "codanā": "1 <i>fem</i> prompting; urging; encouraging; impelling [fem, abstr, act, from codeti] ‹ codeti<br>2 <i>fem</i> reprimanding; criticizing; blaming; accusing [fem, abstr, act, from codeti] ‹ codeti<br>3 <i>fem</i> (of an offence) accusing; charging [fem, abstr, act, from codeti] ‹ codeti<br>4 <i>nt</i> (of an offence) accusing; charging [nt, act, from codeti] ‹ codeti", "kimatthāya": "1 <i>ind</i> [ind, interr, dat sg of kimattha,] ‹ add kimattha", "janayi": "1 <i>aor</i> produced; generated; created [aor of janayati] ‹ janayati (lit. caused to be born)<br>2 <i>aor</i> gave birth (to) [aor of janayati] ‹ janayati", "pana": "1 <i>ind</i> moreover; and so; but; or; however [ind]", "anuvijjako": "1 <i>masc</i> [masc] (lit. who knows along)", "āpannoti": "1 <i>pp</i> fallen into; entered into; met with [pp of āpajjati] ‹ आपज्जति<br>2 <i>pp</i> possessed of; filled with; having [pp of āpajjati] ‹ आपज्जति (lit. entered)<br>3 <i>pp</i> (of an offence) committed; fallen into [pp of āpajjati] ‹ आपज्जति<br>4 <i>pp</i> (of a monk) who has committed; who has fallen into (an offence) [pp of āpajjati] ‹ आपज्जति<br>5 <i>pp</i> caused; effected [pp of āpajjati] ‹ आपज्जति", "buddhimatā": "1 <i>adj</i> [adj, from buddhi] ‹ buddhi (lit. having intelligence quality)", "kho": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "caṇḍikato": "1 <i>adj</i> [adj,] (lit. made angry)", "dhammacodako": "1 <i>adj</i> [adj]", "bhāseyya": "1 <i>pr</i> speaks; talks (about); says [pr]<br>2 <i>pr</i> speaks (for); talks (on behalf of); (comm) speaks (with) [pr]<br>3 <i>pr</i> shines; radiates [pr]<br>4 <i>pr</i> illuminates; lights up [pr]<br>5 <i>opt</i> should speak; should say [opt of bhāsati] ‹ भासति<br>6 <i>pr</i> (of verse) recites; utters [pr] (lit. speaks)", "anusandhivacanapathassa": "1 <i>masc</i> [masc,] (lit. path of speaking connection)", "samparāyikaṃ": "1 <i>adj</i> in the next world; related to the next life; of relevance to the hereafter [adj, from samparāya] ‹ सम्पराय", "agatigamanaṃ": "1 <i>nt</i> evil motive; wrong course of action; something which takes one to a bad destination [nt, act,] (lit. going to a non-destination)", "vijjati": "1 <i>pr</i> exists; is found; is present (in) [pr, pass of vindati] ‹ vindati<br>2 <i>pr</i> is possible; is plausible [pr, pass of vindati] ‹ vindati (lit. exists)", "bhaṇi": "1 <i>aor</i> spoke; said [aor of bhaṇati] ‹ भणति", "abhūtena": "1 <i>pp</i> not become; not happened [pp of na bhavati] ‹ bhavati<br>2 <i>pp</i> false; not true [pp of na bhavati] ‹ bhavati (lit. not become)<br>3 <i>nt</i> lie; untruth; falsehood [nt, pp of na bhavati] ‹ bhavati (lit. not become)<br>4 <i>ind</i> falsely; untruthfully [ind, adv, instr sg of na bhūta] ‹ भूत (lit. with something nonexistent)", "alajjīsu": "1 <i>adj</i> shameless; without conscience [adj, from na lajjati] ‹ lajjati", "vinaye": "1 <i>masc</i> discipline; training [masc, from vineti] ‹ vineti (lit. leading out)<br>2 <i>masc</i> monastic law; code of monastic disciplinary rules [masc, from vineti] ‹ vineti (lit. leading out)<br>3 <i>masc</i> removal; dispelling (of) [masc, from vineti] ‹ vineti (lit. leading out)<br>4 <i>masc</i> settlement; judgement; verdict [masc, from vineti] ‹ vineti (lit. leading out)<br>5 <i>pr</i> removes; dispels [pr] (lit. leads away)<br>6 <i>nt</i> vinaya rule; precept [nt, from vineti] ‹ vineti (lit. leading out)", "pubbāparassa": "1 <i>nt</i> sequence; order [nt,] (lit. (what comes) before and after)<br>2 <i>adj</i> before and after; former and latter [adj,]", "jānāmi": "1 <i>pr</i> knows; understands [pr]<br>2 <i>pr</i> knows (as) [pr]<br>3 <i>pr</i> finds out; learns; gets to know (if) [pr]<br>4 <i>pr</i> I know; understand; am aware [pr 1st sg of jānāti] ‹ जानाति<br>5 <i>pr</i> (rightly or wrongly) believes; assumes; considers (someone to be) [pr]", "kāraye": "1 <i>pr</i> makes one do [pr, caus of karoti] ‹ karoti<br>2 <i>pr</i> causes to make [pr, caus of karoti] ‹ karoti", "āha": "1 <i>perf</i> said [perf of √ah] ‹ √ah", "atthasaṃhitena": "1 <i>adj</i> profitable; meaningful; beneficial [adj,] (lit. connected with benefit)", "kusalena": "1 <i>adj</i> healthy; beneficial; useful; good; wholesome; karmically profitable [adj]<br>2 <i>adj</i> skilled; clever; competent; expert; adept (in) [adj]<br>3 <i>masc</i> master (of); expert (in); adept (in) familiar (with); person skilled (in) [masc]<br>4 <i>nt</i> good; benefit; merit; good deed; doing good [nt]<br>5 <i>nt</i> health; how are you? [nt]", "paññatte": "1 <i>pp</i> prepared; readied; arranged; laid out [pp of paññāpeti] ‹ पञ्ञापेति (lit. caused to know)<br>2 <i>pp</i> (of a rule) formulated; prescribed; decreed; declared [pp of paññāpeti] ‹ पञ्ञापेति (lit. caused to know)<br>3 <i>pp</i> stated; declared; made known [pp of paññāpeti] ‹ पञ्ञापेति (lit. caused to know)<br>4 <i>pp</i> designated; assigned [pp of paññāpeti] ‹ पञ्ञापेति (lit. caused to know)", "pubbāparaṃ": "1 <i>nt</i> sequence; order [nt,] (lit. (what comes) before and after)<br>2 <i>adj</i> before and after; former and latter [adj,]", "pucchāmi": "1 <i>pr</i> asks; enquires; questions (somebody about) [pr]", "etañca": "1 <i>pron</i> this [pron, base]<br>2 <i>sand</i> and this [sandhi, pron + ind]<br>3 <i>pron</i> this; this thing (subject) [pron, nt nom sg of eta] ‹ eta<br>4 <i>pron</i> this; this man; this thing (object) [pron, masc fem & nt acc sg of eta] ‹ eta<br>5 <i>pr</i> comes (to) [pr]<br>6 <i>pr</i> goes (to) [pr]<br>7 <i>prp</i> [prp of eti] ‹ eti<br>8 <i>pr</i> becomes [pr]", "na": "1 <i>ind</i> no; not; neither; nor [ind]<br>2 <i>ind</i> (adds a question mark) surely?; does one not? [ind, interr]<br>3 <i>pref</i> not [prefix, in s]<br>4 <i>masc</i> (gram) negative prefix na [masc, prefix]", "nisāmaya": "1 <i>aor</i> heeded; listened attentively; paid close attention [aor of nisāmayati] ‹ निसामयति (lit. caused to calm down)<br>2 <i>pr</i> [pr, caus of ni √sam]", "bahumpi": "1 <i>adj</i> many; much; lots; a lot (of); great; large [adj] ‹ √bah", "mā": "1 <i>ve</i> (gram) ma; verbal ending of the present tense 1st person plural [ve, masc]<br>2 <i>lett</i> (gram) letter m; 31st letter of the alphabet; nasal consonant [letter, masc]<br>3 <i>ind</i> do not; may one not; don't let [ind]<br>4 <i>ind</i> enough (of)!; stop (with)! [ind, excl]<br>5 <i>fem</i> moon [fem, in s]<br>6 <i>root</i> (gram) √mā (measure) [root, masc]", "viggāhikaṃ": "1 <i>adj</i> quarrelsome; argumentative [adj, from viggaha] ‹ viggaha", "tāhaṃ": "1 <i>sand</i> I that; I him; I you [sandhi, pron + pron]<br>2 <i>sand</i> I to you; I for you [sandhi, pron + pron]", "jānāti": "1 <i>adj</i> born (from); produced (by); made (of); caused (by) [adj, in s, from jāyati] ‹ जायति<br>2 <i>adj</i> living; growing (in) [adj, in s, from jāyati] ‹ जायति<br>3 <i>lett</i> (gram) letter j; 16th letter of the alphabet; palatal consonant [letter, masc]<br>4 <i>adj</i> knowing; being aware (of); understanding [adj, in s, from jānāti] ‹ जानाति<br>5 <i>prp</i> knowing; being aware (of) [prp of jānāti] ‹ जानाति<br>6 <i>prp</i> knowing; understanding; being aware of [prp, masc & nt nom sg of jānanta] ‹ जानन्त<br>7 <i>ind</i> knowingly; wittingly; with full knowledge [ind, adv, acc sg of jāna] ‹ जान<br>8 <i>pr</i> knows; understands [pr]<br>9 <i>pr</i> knows (as) [pr]<br>10 <i>pr</i> finds out; learns; gets to know (if) [pr]<br>11 <i>aor</i> knew; understood; realised [aor of jānāti] ‹ जानाति<br>12 <i>pr</i> (rightly or wrongly) believes; assumes; considers (someone to be) [pr]", "nāpajjati": "1 <i>pr</i> does not exhibit; does not experience [pr, from na āpajjati] ‹ आपज्जति<br>2 <i>pr</i> [pr, from na āpajjati] ‹ आपज्जति<br>3 <i>pr</i> does not experience; does not get (pleasure); does not suffer (pain) [pr, from na āpajjati] ‹ आपज्जति", "ediso": "1 <i>adj</i> such; with such qualities [adj,]", "abhaṇi": "1 <i>aor</i> spoke; recited [aor of bhaṇati] ‹ भणति", "pharusena": "1 <i>adj</i> (of speech) harsh; rough; rude; unkind [adj]<br>2 <i>adj</i> (of feeling) violent; severe; sharp [adj]<br>3 <i>ind</i> harshly; roughly; unkindly; violently [ind, adv, instr sg of pharusa] ‹ pharusa", "sāraṇā": "1 <i>nt</i> dispersing; spreading [nt, act, from sāreti] ‹ सारेति (lit. causing to flow)", "paṭighaṃ": "1 <i>masc</i> aversion; repulsion; resistance; irritation; conflict [masc] ‹ पति √घट् (lit. striking against)<br>2 <i>nt</i> (sense) impression; impingement; impact; (comm) existence in the realm of sense desire ‹ पति √घट् (lit. striking against)", "kathaṃ": "1 <i>adj</i> with words; having talk; asking [adj, in s, from kathā] ‹ कथा<br>2 <i>ind</i> how? [ind, adv, interr, from ka] ‹ ka<br>3 <i>ind</i> what's the reason? [ind, adv, interr, from ka] ‹ ka<br>4 <i>ind</i> what? like what? [ind, adv, interr, from ka] ‹ ka<br>5 <i>fem</i> talk; speech; conversation; discussion [fem, from katheti] ‹ katheti<br>6 <i>fem</i> argument; debate [fem, from katheti] ‹ katheti (lit. talk)<br>7 <i>fem</i> discourse about; lecture on; sermon on [fem, in s, from katheti] ‹ katheti (lit. talk on)<br>8 <i>fem</i> commentary; detailed discussion; analysis [fem, in s, from katheti] ‹ katheti (lit. talk on)<br>9 <i>ind</i> why? [ind, adv, interr, from ka] ‹ ka", "ubho": "1 <i>pron</i> both [pron, base]<br>2 <i>pron</i> both [pron, nom & acc pl of ubha] ‹ ubha", "parigūhati": "1 <i>pr</i> hides; conceals; keeps secret [pr] (lit. hides all around)", "gacchati": "1 <i>pr</i> goes; walks; moves; wanders around; travels [pr]<br>2 <i>pr</i> becomes [pr] (lit. goes)", "evañca": "1 <i>sand</i> and thus; if like this; but like this [sandhi, adv + ind]<br>2 <i>ind</i> thus; this; like this; similarly; in the same manner; just as; such [ind, adv]<br>3 <i>ind</i> yes!; that is right!; correct! [ind, excl]", "vuccati": "1 <i>pr</i> is said to be; is called [pr, pass of vacati] ‹ vacati", "codeti": "1 <i>pr</i> accuses; charges; blames [pr]<br>2 <i>pr</i> (of a debt) pressures to repay; demands payement (lit. impels)<br>3 <i>pr</i> [pr]", "anuyuñjassu": "1 <i>pr</i> practices; engages (in); commits (to); does (lit. yokes alongside)<br>2 <i>pr</i> indulges (in); is addicted (to) [pr] (lit. yokes alongside)<br>3 <i>pr</i> [pr] (lit. yokes alongside)", "kīdiso": "1 <i>adj</i> of what kind?; how is it?; what is it like? [adj, interr,]", "anulome": "1 <i>adj</i> in conformity (with); conforming (to); in accordance (with) [adj, from loma] ‹ loma (lit. following the hair)<br>2 <i>masc</i> [masc, from loma] ‹ loma (lit. following the hair)<br>3 <i>adj</i> [adj, from loma] ‹ loma (lit. following the hair)<br>4 <i>pr</i> conforms (to); accords (with); agrees (with) [pr, deno of anuloma] ‹ anuloma (lit. follows the hair)<br>5 <i>pr</i> regulates; settles; balances [pr, deno of anuloma] ‹ anuloma (lit. follows the hair)<br>6 <i>adj</i> suitable; appropriate [adj, from loma] ‹ loma (lit. following the hair)", "āpattiṃ": "1 <i>fem</i> entering; going into [fem, from āpajjati] ‹ आपज्जति<br>2 <i>fem</i> (vinaya) offence; wrongdoing; transgression [fem, abstr, from āpajjati] ‹ आपज्जति<br>3 <i>fem</i> [fem]", "dosantaro": "1 <i>adj</i> bearing anger; with aversion [adj,] (lit. anger inside)", "āpajjati": "1 <i>pr</i> comes to; experiences; gets (pleasure); suffers (pain); meets (with) [pr]<br>2 <i>pr</i> arouses; exhibits; produces; brings into being<br>3 <i>pr</i> engages in [pr]<br>4 <i>pr</i> (of an offence) commits; falls into [pr]<br>5 <i>pr</i> causes; effects [pr]<br>6 <i>pr</i> enters into a state or condition; becomes [pr]<br>7 <i>pr</i> [pr]<br>8 <i>pr</i> achieves; reaches; attains [pr]", "kinti": "1 <i>pron</i> who?; what?; which? [pron, interr, base]<br>2 <i>pron</i> where? [pron]<br>3 <i>sand</i> how then?; what then?; in what way? [sandhi, ind + ind, interr]<br>4 <i>pron</i> who?; what?; which? [pron, nt nom and acc sg of ka] ‹ ka<br>5 <i>ind</i> how?; what? [ind, interr, from ka] ‹ ka<br>6 <i>ind</i> not to mention; much less; what about? [ind, interr, from ka] ‹ ka<br>7 <i>masc</i> name of the reigning king at the time of Kassapa Buddha [masc]<br>8 <i>root</i> (gram) √kī (buy) [root, masc]<br>9 <i>nt</i> in reference to MN103 Kintisuttaṃ [nt,] (lit. how then?)", "atho": "1 <i>ind</i> and then; or; after that; because of [ind, from atha] ‹ atha", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "nāsento": "1 <i>prp</i> [prp of nāmeti] ‹ नामेति (lit. causing to disappear)", "tena": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> with him; by him; with that; by that [pron, masc & nt instr sg of ta] ‹ ta<br>4 <i>ind</i> thereby; because of that; on that account [ind, adv, instr sg of ta] ‹ ta (lit. by that; with that)<br>5 <i>ind</i> there [ind, adv, instr sg of ta] ‹ ta", "vohāraṃ": "1 <i>masc</i> verbal expression; naming [masc, from voharati] ‹ voharati<br>2 <i>masc</i> moniker; cognomen; nickname [masc, from voharati] ‹ voharati<br>3 <i>masc</i> business activity; trading; commerce; business dealing [masc, from voharati] ‹ voharati<br>4 <i>masc</i> way of talking; mode of communication; verbal dealings [masc, from voharati] ‹ voharati<br>5 <i>masc</i> (gram) usage; use of a word [masc, from voharati] ‹ voharati<br>6 <i>masc</i> [masc, from voharati] ‹ voharati", "turito": "1 <i>fem</i> (comm) doe; young deer [fem] (lit. quick)<br>2 <i>pp</i> quick; fast-paced; in haste; in a hurry [pp of turati] ‹ turati (lit. hurried)", "rūhati": "1 <i>pr</i> grows; ascends; increases [pr]<br>2 <i>pr</i> (of a speech) is accepted; stands (in court) [pr] (lit. ascends)<br>3 <i>pr</i> [pr] (lit. ascends)", "sañcicca": "1 <i>ind</i> intentionally; purposefully; wilfully; deliberately [ind, adv, ger of sañceteti] ‹ सञ्चेतेति (lit. together with mind)", "no": "1 <i>pron</i> I [pron]<br>2 <i>masc</i> (gram) negative prefix na [masc, prefix]<br>3 <i>ind</i> no; not [ind]<br>4 <i>ind</i> (adds a question mark) surely?; didn't?; isn't it?; definitely [ind, interr]<br>5 <i>ind</i> then; now; indeed [ind, emph]<br>6 <i>pron</i> us (object) [pron, 1st acc pl of ahaṃ] ‹ अहं<br>7 <i>pron</i> by us; with us [pron, 1st instr pl of ahaṃ] ‹ अहं<br>8 <i>pron</i> for us; to us [pron, 1st dat pl of ahaṃ] ‹ अहं<br>9 <i>pron</i> our [pron, 1st gen pl of ahaṃ] ‹ अहं", "anukkhipanto": "1 <i>adj</i> [adj] ‹ ukkhipati", "anusandhivacanapathaṃ": "1 <i>masc</i> [masc,] (lit. path of speaking connection)", "gatiṃ": "1 <i>fem</i> going; passing on [fem, abstr, from gacchati] ‹ gacchati<br>2 <i>fem</i> path; course; destination; destiny [fem, abstr, from gacchati] ‹ gacchati<br>3 <i>fem</i> range; course; extent; reach [fem, abstr, from gacchati] ‹ gacchati<br>4 <i>fem</i> future destination; future existence [fem, abstr, from gacchati] ‹ gacchati<br>5 <i>fem</i> way of going; gait; mode of movement [fem, abstr, from gacchati] ‹ gacchati<br>6 <i>fem</i> (of memory) retention [fem, abstr, from gacchati] ‹ gacchati<br>7 <i>adj</i> going; proceeding; with movement [adj, from gacchati] ‹ gacchati", "yassa": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>pron</i> to whom; for whom; for whoever; for whatever; for whichever [pron, masc & nt dat sg of ya] ‹ ya<br>6 <i>pron</i> of whoever; of whichever; whose [pron, masc & nt gen sg of ya] ‹ ya<br>7 <i>sand</i> whoever to him [sandhi, pron + pron]", "bhūtena": "1 <i>pp</i> existing; born; living [pp of bhavati] ‹ bhavati (lit. become)<br>2 <i>pp</i> true; correct; genuine; accurate [pp of bhavati] ‹ bhavati (lit. become)<br>3 <i>nt</i> being; living being; entity [nt, pp of bhavati] ‹ bhavati (lit. become)<br>4 <i>pp</i> become; born [pp of bhavati] ‹ bhavati<br>5 <i>nt</i> state; elemental state; element [nt, pp of bhavati, in s] ‹ bhavati (lit. become)<br>6 <i>masc</i> plant [masc, pp of bhavati, in s] ‹ bhavati (lit. grown)<br>7 <i>masc</i> born being; animal; creature [masc, pp of bhavati] ‹ bhavati (lit. become)<br>8 <i>pp</i> like; as; similar to [pp of bhavati] ‹ bhavati (lit. become)<br>9 <i>ind</i> truthfully [ind, adv, instr sg of bhūta] ‹ भूत (lit. with what is)<br>10 <i>masc</i> name of an arahant monk [masc, pp of bhavati] ‹ bhavati (lit. become)<br>11 <i>pp</i> being; fact of being [pp of bhavati, in s] ‹ bhavati (lit. become)", "sutte": "1 <i>pp</i> sleeping; asleep [pp of supati] ‹ supati (lit. slept)<br>2 <i>pp</i> lying down; sleeping [pp of supati] ‹ supati (lit. slept)<br>3 <i>nt</i> lying down; sleeping [nt, pp of supati] ‹ supati (lit. slept)<br>4 <i>nt</i> scripture; discourse; sacred text [nt] ‹ √siv (lit. thread)<br>5 <i>nt</i> (vinaya) rule; regulation; precept [nt] ‹ √siv<br>6 <i>nt</i> thread; string [nt] ‹ √siv<br>7 <i>nt</i> (gram) grammatical rule [nt] ‹ √siv", "pubbāparampi": "1 <i>nt</i> sequence; order [nt,] (lit. (what comes) before and after)<br>2 <i>adj</i> before and after; former and latter [adj,]", "saṇhena": "1 <i>adj</i> (of speech) smooth; soft; gentle; mild; polite [adj]<br>2 <i>ind</i> smoothly; softly; gently; mildly [ind, adv, instr sg of saṇha] ‹ सण्ह<br>3 <i>adj</i> fine; delicate [adj]<br>4 <i>adj</i> smooth; polished; burnished [adj]<br>5 <i>adj</i> (of cloth) smooth; soft; gentle [adj]<br>6 <i>masc</i> type of bowstring made from bamboo [masc] (lit. smooth)<br>7 <i>adj</i> (of a person) polite; speaking politely; well-mannered [adj] (lit. smooth)", "kālena": "1 <i>masc</i> time; occasion (for) [masc] ‹ √kal<br>2 <i>masc</i> suitable time; appropriate occasion; right time [masc] ‹ √kal (lit. time)<br>3 <i>masc</i> (gram) tense; mood [masc] ‹ √kal (lit. time)<br>4 <i>masc</i> (gram) rest; pause; space [masc] ‹ √kal (lit. time)<br>5 <i>masc</i> time of death; death moment [masc] ‹ √kal (lit. time)<br>6 <i>masc</i> daybreak; early morning [masc] (lit. time)<br>7 <i>masc</i> necklace plant; Sophora tomentosa [masc]<br>8 <i>ind</i> timely; at the right time; at an appropriate moment [ind, adv, instr sg of kāla] ‹ काल", "cuditassa": "1 <i>pp</i> accused; rebuked; charged [pp of codeti] ‹ codeti", "anatthasaṃhitaṃ": "1 <i>adj</i> unprofitable; meaningless; unbeneficial; useless [adj,] (lit. connected with non-benefit)", "sace": "1 <i>ind</i> if [ind,]", "kataṃ": "1 <i>pp</i> done; did; completed [pp of karoti] ‹ karoti<br>2 <i>nt</i> something done; performed action [nt, pp of karoti] ‹ karoti (lit. done)<br>3 <i>pp</i> made; built (of) [pp of karoti] ‹ karoti<br>4 <i>pp</i> (of gold) formed; shaped; wrought; forged [pp of karoti] ‹ karoti (lit. made)<br>5 <i>masc</i> [masc]", "akāle": "1 <i>masc</i> inappropriate time; unsuitable time; not the time (for) [masc] ‹ √kal<br>2 <i>masc</i> wrong season; not the season (for) [masc] ‹ √kal<br>3 <i>adj</i> out of season; unseasonal [adj, in s, from na kāla] ‹ काल (lit. not in time)<br>4 <i>ind</i> at the wrong time; at an unsuitable occasion [ind, adv, loc sg of na kāla] ‹ काल", "ahampi": "1 <i>nt</i> day [nt, in s]<br>2 <i>masc</i> day [masc, in s]<br>3 <i>sand</i> I too [sandhi, pron + ind]<br>4 <i>pron</i> I [pron]", "ājīvenapi": "1 <i>masc</i> livelihood; mode of living; way of life; way of earning a living [masc, from ājīvati] ‹ आजीवति", "codako": "1 <i>masc</i> plaintiff; accuser; complainant; rebuker [masc, agent, from codeti] ‹ codeti<br>2 <i>masc</i> advisor; admonisher; encourager [masc, agent, from codeti] ‹ codeti", "katā": "1 <i>pp</i> done; did; completed [pp of karoti] ‹ karoti<br>2 <i>nt</i> something done; performed action [nt, pp of karoti] ‹ karoti (lit. done)<br>3 <i>pp</i> made; built (of) [pp of karoti] ‹ karoti<br>4 <i>pp</i> (of gold) formed; shaped; wrought; forged [pp of karoti] ‹ karoti (lit. made)<br>5 <i>masc</i> [masc]", "kissa": "1 <i>pron</i> who?; what?; which? [pron, interr, base]<br>2 <i>pron</i> where? [pron]<br>3 <i>pron</i> for who?; for what reason?; why? [pron, interr, masc & nt dat sg of ka] ‹ ka<br>4 <i>pron</i> of who?; of what?; of which? [pron, interr, masc & nt gen sg of ka] ‹ ka<br>5 <i>masc</i> name of the reigning king at the time of Kassapa Buddha [masc]<br>6 <i>root</i> (gram) √kī (buy) [root, masc]", "akovido": "1 <i>adj</i> unskilled (in); not expert (in); not proficient (in); not a master (of) [adj, from na kovida] ‹ kovida", "paṭiññā": "1 <i>adj</i> pretending to be; claiming to be [adj, from paṭijānāti] ‹ पटिजानाति<br>2 <i>adj</i> acknowledging; admitting; asserting; confirming [adj, from paṭijānāti] ‹ पटिजानाति<br>3 <i>fem</i> claim; assertion [fem, abstr, from paṭijānāti] ‹ पटिजानाति<br>4 <i>fem</i> (vinaya) admission; acknowledgement [fem, abstr, from paṭijānāti] ‹ पटिजानाति<br>5 <i>fem</i> promise; vow [fem, abstr, from paṭijānāti] ‹ पटिजानाति<br>6 <i>fem</i> [fem, abstr, from paṭijānāti] ‹ पटिजानाति", "kovido": "1 <i>adj</i> skilled (in); expert (in); proficient (in); master (of) [adj] ‹ √vid", "evaṃ": "1 <i>ind</i> thus; this; like this; similarly; in the same manner; just as; such [ind, adv]<br>2 <i>ind</i> yes!; that is right!; correct! [ind, excl]", "codakassa": "1 <i>masc</i> plaintiff; accuser; complainant; rebuker [masc, agent, from codeti] ‹ codeti<br>2 <i>masc</i> advisor; admonisher; encourager [masc, agent, from codeti] ‹ codeti", "adhammacodako": "1 <i>masc</i> unlawful accuser; who charges falsely; who impeaches illegally [masc,]", "saṅgho": "1 <i>masc</i> community; fellowship; monastic order [masc, from saṅghaṭeti] ‹ सङ्घटेति<br>2 <i>masc</i> group; crowd; mass; multitude; collection; entourage [masc, from saṅghaṭeti] ‹ सङ्घटेति<br>3 <i>masc</i> name of a privately awakened Buddha [masc] (lit. group)", "saccaṃ": "1 <i>nt</i> related to memory; regarding mindfulness [nt, abstr, in s, from sati] ‹ sati (lit. memory state)<br>2 <i>adj</i> true; correct; accurate; honest; reliable [adj, from sat] ‹ sat<br>3 <i>nt</i> truth; epithet of Nibbāna [nt, abstr, from sat] ‹ sat<br>4 <i>ind</i> truly; really [ind, adv, acc sg of sacca] ‹ sacca<br>5 <i>nt</i> in reference to MN141 Saccavibhaṅgasutta [nt, from sat] ‹ sat (lit. truth)", "hitesī": "1 <i>adj</i> benevolent (towards); who wishes well (for); who wants the best (for) [adj,] (lit. seeking benefit)<br>2 <i>masc</i> well-wisher; friend; benefactor [masc,] (lit. seeking benefit)", "anatthasaṃhitena": "1 <i>adj</i> unprofitable; meaningless; unbeneficial; useless [adj,] (lit. connected with non-benefit)", "agatigamanañca": "1 <i>nt</i> evil motive; wrong course of action; something which takes one to a bad destination [nt, act,] (lit. going to a non-destination)", "kāraṇā": "1 <i>nt</i> task; labour [nt, act, from kāreti] ‹ कारेति (lit. causing to do)<br>2 <i>nt</i> reason; cause [nt, act, from kāreti] ‹ कारेति (lit. causing to do)<br>3 <i>nt</i> (in debate) argument [nt, act, from kāreti] ‹ कारेति (lit. causing to do)<br>4 <i>nt</i> causing to do; forcing to do [nt, act, from kāreti] ‹ कारेति<br>5 <i>nt</i> [nt, from kāreti] ‹ कारेति (lit. causing to do)<br>6 <i>nt</i> legal action; disciplinary case [nt, from kāreti] ‹ कारेति (lit. causing to do)<br>7 <i>ind</i> because; for the sake (of) [ind, adv, abl sg of kāraṇa] ‹ कारण (lit. from cause)<br>8 <i>fem</i> [fem]", "padhāresi": "1 <i>aor</i> [aor of padhāreti] ‹ पधारेति (lit. carried forward)", "sahasā": "1 <i>masc</i> power; might; force [masc, mano group, from sahati] ‹ sahati<br>2 <i>ind</i> forcibly; quickly; suddenly; all of a sudden [ind, adv, instr sg of sahasa] ‹ sahasa (lit. with violence)<br>3 <i>ind</i> rashly; in haste [ind, adv, instr sg of sahasa] ‹ sahasa (lit. with violence)", "sīlavipattiyā": "1 <i>fem</i> failure in morality; going wrong ethically [fem,]", "lajjīsu": "1 <i>adj</i> who has conscience; sensitive [adj, from lajjati] ‹ lajjati (lit. who is ashamed)", "alajjī": "1 <i>adj</i> shameless; without conscience [adj, from na lajjati] ‹ lajjati", "anuyogavattaṃ": "1 <i>adj</i> [adj] ‹ anuyoga", "aññañca": "1 <i>pron</i> another; other; different; someone else; not oneself [pron]<br>2 <i>pron</i> something more; something further; something else [pron]<br>3 <i>fem</i> gnosis; spiritual insight; awakening; final knowledge [fem, abstr, from ājānāti] ‹ आजानाति<br>4 <i>adj</i> ignorant; foolish; stupid [adj, from na jānāti] ‹ जानाति (lit. who does not know)<br>5 <i>pron</i> other (than); apart (from) [pron]", "hoti": "1 <i>pr</i> is; becomes [pr]<br>2 <i>pr</i> exists (for) [pr]<br>3 <i>pr</i> stays; remains; continues to be [pr] (lit. is)"};
+
+// Highlight words that have dictionary entries
+// Mark words that DON'T have dictionary entries
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+    
+        // Keyboard shortcut: Ctrl+H
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'h') {
+        e.preventDefault(); // Prevent browser's find bar
+        
+        // Move commentary icons outside .pali
+        document.querySelectorAll('.pali span[onclick*="toggleCommentary"]').forEach(icon => {
+            let paliDiv = icon.closest('.pali');
+            if (paliDiv) {
+                let clone = icon.cloneNode(true);
+                paliDiv.parentNode.insertBefore(clone, paliDiv.nextSibling);
+                icon.remove();
+            }
+        });
+        
+        // Click all main text Hindi icons
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+        
+        // Hide Pali text but keep container
+        document.querySelectorAll('.pali').forEach(el => {
+            Array.from(el.childNodes).forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    node.textContent = '';
+                } else if (node.nodeType === Node.ELEMENT_NODE && 
+                           !node.classList.contains('hindi') && 
+                           !node.tagName.match(/span/i)) {
+                    node.style.display = 'none';
+                }
+            });
+        });
+        
+        // Also check the toggle checkbox
+        const toggle = document.getElementById('hindiOnlyToggle');
+        if (toggle) {
+            toggle.checked = true;
+            localStorage.setItem('hindiOnlyMode', 'true');
+        }
+    }
+});
+
+});
+
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 
+        el.style.display === "block" ? "none" : "block";
+}
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display =
+        el.style.display === "block" ? "none" : "block";
+}
+
+// ========== NEW FULLSCREEN FUNCTION ==========
+function goFullScreen() {
+    var doc = window.document;
+    var docEl = doc.documentElement; // Fullscreen the whole page
+
+    var requestFullScreen = docEl.requestFullscreen ||
+                            docEl.mozRequestFullScreen ||    // Firefox
+                            docEl.webkitRequestFullScreen || // Chrome, Safari, Opera
+                            docEl.msRequestFullscreen;       // IE/Edge
+
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    } else {
+        alert("Sorry, your browser doesn't support fullscreen mode.");
+    }
+}
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+
+</head>
+<body>
+
+<h1>गाथाओं का अन्य संकलन <span class="fullscreen-btn" onclick="goFullScreen()" title="Go Fullscreen">⛶</span></h1>
+
+<h3 id='vin02m4.mul_02000'><span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="codanādipucchāvissajjanā">चोदनादिपुच्छाविस्सज्‍जना</span></h3>
+<div class='hindi' id='vin02m4.mul_02000_hi'>१. चोदनादिपुच्छाविस्सज्‍जना</div>
+
+            <div class="verse-number">३५९.</div>
+            
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02002_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="codanā">चोदना</span> <span class="paliword" data-word="kimatthāya">किमत्थाय,</span> <span class="paliword" data-word="sāraṇā">सारणा</span> <span class="paliword" data-word="kissa">किस्स</span> <span class="paliword" data-word="kāraṇā">कारणा।</span> <span class="paliword" data-word="saṅgho">सङ्घो</span> <span class="paliword" data-word="kimatthāya">किमत्थाय,</span> <span class="paliword" data-word="matikammaṃ">मतिकम्मं</span> <span class="paliword" data-word="pana">पन</span> <span class="paliword" data-word="kissa">किस्स</span> <span class="paliword" data-word="kāraṇā||">कारणा॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02002_hi">
+                आक्षेप किस उद्देश्य से है, और स्मरण कराना किस कारण से है?
+संघ किस प्रयोजन के लिए है, और परामर्श लेना किस हेतु से है?
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02003_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="codanā">चोदना</span> <span class="paliword" data-word="sāraṇatthāya">सारणत्थाय,</span> <span class="paliword" data-word="niggahatthāya">निग्गहत्थाय</span> <span class="paliword" data-word="sāraṇā">सारणा।</span> <span class="paliword" data-word="saṅgho">सङ्घो</span> <span class="paliword" data-word="pariggahatthāya">परिग्गहत्थाय,</span> <span class="paliword" data-word="matikammaṃ">मतिकम्मं</span> <span class="paliword" data-word="pana">पन</span> <span class="paliword" data-word="pāṭiyekkaṃ||">पाटियेक्‍कं॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02003_hi">
+                अभियोग का उद्देश्य स्मरण कराना है, और स्मरण कराने का प्रयोजन संयम है; संघ का कार्य निरीक्षण करना है, किंतु परामर्श स्वीकार करना व्यक्तिगत उत्तरदायित्व है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02004_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="mā">मा</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="turito">तुरितो</span> <span class="paliword" data-word="abhaṇi">अभणि,</span> <span class="paliword" data-word="mā">मा</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="caṇḍikato">चण्डिकतो</span> <span class="paliword" data-word="bhaṇi">भणि।</span> <span class="paliword" data-word="mā">मा</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="paṭighaṃ">पटिघं</span> <span class="paliword" data-word="janayi">जनयि,</span> <span class="paliword" data-word="sace">सचे</span> <span class="paliword" data-word="anuvijjako">अनुविज्‍जको</span> <span class="paliword" data-word="tuvaṃ||">तुवं॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02004_hi">
+                शीघ्रता में न बोलें, और उग्र होकर बात न करें; यदि आप एक अन्वेषक हैं, तो अपने भीतर द्वेष उत्पन्न न होने दें।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02005_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="mā">मा</span> <span class="paliword" data-word="kho">खो</span> <span class="paliword" data-word="sahasā">सहसा</span> <span class="paliword" data-word="abhaṇi">अभणि,</span> <span class="paliword" data-word="kathaṃ">कथं</span> <span class="paliword" data-word="viggāhikaṃ">विग्गाहिकं</span> <span class="paliword" data-word="anatthasaṃhitaṃ">अनत्थसंहितं।</span> <span class="paliword" data-word="sutte">सुत्ते</span> <span class="paliword" data-word="vinaye">विनये</span> <span class="paliword" data-word="anulome">अनुलोमे,</span> <span class="paliword" data-word="paññatte">पञ्‍ञत्ते</span> <span class="paliword" data-word="anulomike||">अनुलोमिके॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02005_hi">
+                बिना सोचे-समझे शीघ्रता में कोई ऐसी विवादपूर्ण बात न कहें जो कल्याणकारी न हो। इसके विपरीत, वह कहें जो सूत्रों (sūtra), विनय (vinaya) और उनके अनुकूल नियमों (anulomika) के अनुसार उचित और व्यवस्थित हो।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02006_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="anuyogavattaṃ">अनुयोगवत्तं</span> <span class="paliword" data-word="nisāmaya">निसामय,</span> <span class="paliword" data-word="kusalena">कुसलेन</span> <span class="paliword" data-word="buddhimatā">बुद्धिमता</span> <span class="paliword" data-word="kataṃ">कतं।</span> <span class="paliword" data-word="suvuttaṃ">सुवुत्तं</span> <span class="paliword" data-word="sikkhāpadānulomikaṃ">सिक्खापदानुलोमिकं,</span> <span class="paliword" data-word="gatiṃ">गतिं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="nāsento">नासेन्तो</span> <span class="paliword" data-word="samparāyikaṃ">सम्परायिकं।</span> <span class="paliword" data-word="hitesī">हितेसी</span> <span class="paliword" data-word="anuyuñjassu">अनुयुञ्‍जस्सु,</span> <span class="paliword" data-word="kālenatthūpasaṃhitaṃ||">कालेनत्थूपसंहितं॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02006_hi">
+                कुशल और बुद्धिमान द्वारा निर्मित इस अनुयोग की पद्धति को ध्यानपूर्वक सुनें; यह भली-भांति कही गई है और शिक्षा के नियमों के अनुरूप है—अपने भविष्य की सद्गति को नष्ट न करें। हित चाहने वाले बनकर, समय के अनुसार अर्थपूर्ण कार्यों में स्वयं को संलग्न करें।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02007_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="cuditassa">चुदितस्स</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="codakassa">चोदकस्स</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="sahasā">सहसा</span> <span class="paliword" data-word="vohāraṃ">वोहारं</span> <span class="paliword" data-word="mā">मा</span> <span class="paliword" data-word="padhāresi">पधारेसि।</span> <span class="paliword" data-word="codako">चोदको</span> <span class="paliword" data-word="āha">आह</span> <span class="paliword" data-word="āpannoti">आपन्‍नोति।</span> <span class="paliword" data-word="cuditako">चुदितको</span> <span class="paliword" data-word="āha">आह</span> <span class="paliword" data-word="anāpannoti||">अनापन्‍नोति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02007_hi">
+                अभियुक्त और अभियोक्ता के बीच।
+बिना विचारे निर्णय घोषित न करें।
+अभियोक्ता कहता है: "वह दोषी है।"
+अभियुक्त कहता है: "मैं निर्दोष हूँ।"
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02008_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="ubho">उभो</span> <span class="paliword" data-word="anukkhipanto">अनुक्खिपन्तो,</span> <span class="paliword" data-word="paṭiññānusandhitena">पटिञ्‍ञानुसन्धितेन</span> <span class="paliword" data-word="kāraye">कारये।</span> <span class="paliword" data-word="paṭiññā">पटिञ्‍ञा</span> <span class="paliword" data-word="lajjīsu">लज्‍जीसु</span> <span class="paliword" data-word="katā">कता,</span> <span class="paliword" data-word="alajjīsu">अलज्‍जीसु</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vijjati">विज्‍जति।</span> <span class="paliword" data-word="bahumpi">बहुम्पि</span> <span class="paliword" data-word="alajjī">अलज्‍जी</span> <span class="paliword" data-word="bhāseyya">भासेय्य,</span> <span class="paliword" data-word="vattānusandhitena">वत्तानुसन्धितेन</span> <span class="paliword" data-word="vuttānusandhitena">वुत्तानुसन्धितेन</span> <span class="paliword" data-word="sī॰">(सी॰</span> <span class="paliword" data-word="syā॰">स्या॰</span> <span class="paliword" data-word="ka॰">क॰)</span> <span class="paliword" data-word="kāraye||">कारये॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02008_hi">
+                दोनों का पक्ष लेते हुए, उन्हें उनकी स्वीकृति के अनुसार ही निर्देशित करना चाहिए। लज्जावान व्यक्ति अपनी भूल स्वीकार कर लेते हैं, किंतु निर्लज्ज व्यक्तियों में ऐसा गुण नहीं पाया जाता। भले ही निर्लज्ज व्यक्ति बहुत कुछ कहे, उसे उसके आचरण के अनुसार ही अनुशासित किया जाना चाहिए।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02009_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="alajjī">अलज्‍जी</span> <span class="paliword" data-word="kīdiso">कीदिसो</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="paṭiññā">पटिञ्‍ञा</span> <span class="paliword" data-word="yassa">यस्स</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="rūhati">रूहति।</span> <span class="paliword" data-word="etañca">एतञ्‍च</span> <span class="paliword" data-word="evañca">एवञ्‍च</span> <span class="paliword" data-word="ka॰">(क॰)</span> <span class="paliword" data-word="tāhaṃ">ताहं</span> <span class="paliword" data-word="pucchāmi">पुच्छामि,</span> <span class="paliword" data-word="kīdiso">कीदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="alajjī">अलज्‍जी</span> <span class="paliword" data-word="puggalo||">पुग्गलो॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02009_hi">
+                निर्लज्ज व्यक्ति कैसा होता है, जिसकी प्रतिज्ञा (वचन) सफल नहीं होती? मैं आपसे यही पूछता हूँ, वह व्यक्ति कैसा होता है जिसे निर्लज्ज कहा जाता है?
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02010_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="sañcicca">सञ्‍चिच्‍च</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="parigūhati">परिगूहति।</span> <span class="paliword" data-word="agatigamanañca">अगतिगमनञ्‍च</span> <span class="paliword" data-word="gacchati">गच्छति,</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="alajjīpuggalo||">अलज्‍जीपुग्गलो॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02010_hi">
+                जो जानबूझकर कोई दोष या अपराध करता है और उस अपराध को छिपाता है, तथा जो पक्षपातपूर्ण या अनुचित मार्ग पर चलता है, ऐसे व्यक्ति को 'अलज्जी पुद्गल' (निर्लज्ज व्यक्ति) कहा जाता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02011_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="saccaṃ">सच्‍चं</span> <span class="paliword" data-word="ahampi">अहम्पि</span> <span class="paliword" data-word="jānāmi">जानामि,</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="alajjīpuggalo">अलज्‍जीपुग्गलो।</span> <span class="paliword" data-word="aññañca">अञ्‍ञञ्‍च</span> <span class="paliword" data-word="tāhaṃ">ताहं</span> <span class="paliword" data-word="pucchāmi">पुच्छामि,</span> <span class="paliword" data-word="kīdiso">कीदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="lajjīpuggalo||">लज्‍जीपुग्गलो॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02011_hi">
+                सत्य है, यह मैं भी जानता हूँ कि ऐसे व्यक्ति को निर्लज्ज कहा जाता है; और मैं आपसे एक और बात पूछता हूँ, कि लज्जाशील (विवेकशील) व्यक्ति किसे कहा जाता है?
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02012_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="sañcicca">सञ्‍चिच्‍च</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="nāpajjati">नापज्‍जति,</span> <span class="paliword" data-word="āpattiṃ">आपत्तिं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="parigūhati">परिगूहति।</span> <span class="paliword" data-word="agatigamanaṃ">अगतिगमनं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="gacchati">गच्छति,</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="lajjīpuggalo||">लज्‍जीपुग्गलो॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02012_hi">
+                जो व्यक्ति जानबूझकर कोई अपराध नहीं करता, अपने दोषों को नहीं छिपाता, और अधर्म के मार्ग पर नहीं चलता; ऐसे व्यक्ति को ही लज्जावान्‌ (सदाचारी) कहा जाता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02013_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="saccaṃ">सच्‍चं</span> <span class="paliword" data-word="ahampi">अहम्पि</span> <span class="paliword" data-word="jānāmi">जानामि,</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="lajjīpuggalo">लज्‍जीपुग्गलो।</span> <span class="paliword" data-word="aññañca">अञ्‍ञञ्‍च</span> <span class="paliword" data-word="tāhaṃ">ताहं</span> <span class="paliword" data-word="pucchāmi">पुच्छामि,</span> <span class="paliword" data-word="kīdiso">कीदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="adhammacodako||">अधम्मचोदको॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02013_hi">
+                सत्य तो मैं भी जानता हूँ, ऐसे व्यक्ति को लज्जावान् (lajjī-puggala) कहा जाता है। अब मैं आपसे कुछ और पूछता हूँ: अधार्मिक रूप से आरोप लगाने वाला (adhamma-codaka) कैसा होता है?
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02014_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="akāle">अकाले</span> <span class="paliword" data-word="codeti">चोदेति</span> <span class="paliword" data-word="abhūtena">अभूतेन।</span> <span class="paliword" data-word="pharusena">फरुसेन</span> <span class="paliword" data-word="anatthasaṃhitena">अनत्थसंहितेन।</span> <span class="paliword" data-word="dosantaro">दोसन्तरो</span> <span class="paliword" data-word="codeti">चोदेति</span> <span class="paliword" data-word="no">नो</span> <span class="paliword" data-word="mettācitto">मेत्ताचित्तो।</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="adhammacodako||">अधम्मचोदको॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02014_hi">
+                वह अनुचित समय पर और असत्य के साथ दोषारोपण करता है।
+कठोरता से और अनर्थकारी वचनों के साथ।
+वह द्वेषपूर्ण हृदय से आरोपित करता है, न कि मैत्रीपूर्ण चित्त से।
+ऐसे व्यक्ति को अधर्मपूर्वक दोषारोपण करने वाला कहा जाता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02015_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="saccaṃ">सच्‍चं</span> <span class="paliword" data-word="ahampi">अहम्पि</span> <span class="paliword" data-word="jānāmi">जानामि,</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="adhammacodako">अधम्मचोदको।</span> <span class="paliword" data-word="aññañca">अञ्‍ञञ्‍च</span> <span class="paliword" data-word="tāhaṃ">ताहं</span> <span class="paliword" data-word="pucchāmi">पुच्छामि,</span> <span class="paliword" data-word="kīdiso">कीदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="dhammacodako||">धम्मचोदको॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02015_hi">
+                सत्य है, मैं भी यह जानता हूँ कि ऐसे व्यक्ति को अधर्मपूर्वक दोषारोपण करने वाला कहा जाता है। अब मैं आपसे एक और बात पूछता हूँ: धर्मपूर्वक दोषारोपण करने वाला किसे कहा जाता है?
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02016_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="kālena">कालेन</span> <span class="paliword" data-word="codeti">चोदेति</span> <span class="paliword" data-word="bhūtena">भूतेन,</span> <span class="paliword" data-word="saṇhena">सण्हेन</span> <span class="paliword" data-word="atthasaṃhitena">अत्थसंहितेन।</span> <span class="paliword" data-word="mettācitto">मेत्ताचित्तो</span> <span class="paliword" data-word="codeti">चोदेति</span> <span class="paliword" data-word="no">नो</span> <span class="paliword" data-word="dosantaro">दोसन्तरो।</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="dhammacodako||">धम्मचोदको॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02016_hi">
+                समय पर और सच्चाई के साथ, कोमलता से और हितकारी वचन कहें।
+मैत्रीपूर्ण हृदय से प्रेरित करें, न कि द्वेष की भावना से।
+ऐसे व्यक्ति को ही धर्म के अनुसार सुधार करने वाला कहा जाता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02017_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="saccaṃ">सच्‍चं</span> <span class="paliword" data-word="ahampi">अहम्पि</span> <span class="paliword" data-word="jānāmi">जानामि,</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="dhammacodako">धम्मचोदको।</span> <span class="paliword" data-word="aññañca">अञ्‍ञञ्‍च</span> <span class="paliword" data-word="tāhaṃ">ताहं</span> <span class="paliword" data-word="pucchāmi">पुच्छामि,</span> <span class="paliword" data-word="kīdiso">कीदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="bālacodako||">बालचोदको॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02017_hi">
+                सच तो यह है कि मैं भी इस बात से अवगत हूँ, ऐसे व्यक्ति को धर्मपूर्ण ढंग से आरोप लगाने वाला कहा जाता है। अब मैं आपसे एक और प्रश्न पूछता हूँ: वह किस प्रकार का व्यक्ति है जिसे अज्ञानी आरोपक कहा जाता है?
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02018_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="pubbāparaṃ">पुब्बापरं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="jānāti">जानाति,</span> <span class="paliword" data-word="pubbāparassa">पुब्बापरस्स</span> <span class="paliword" data-word="akovido">अकोविदो।</span> <span class="paliword" data-word="anusandhivacanapathaṃ">अनुसन्धिवचनपथं</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="jānāti">जानाति।</span> <span class="paliword" data-word="anusandhivacanapathassa">अनुसन्धिवचनपथस्स</span> <span class="paliword" data-word="akovido">अकोविदो।</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="bālacodako||">बालचोदको॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02018_hi">
+                वह पहले और बाद के क्रम को नहीं जानता, वह पूर्व और उत्तर के संबंध में अकुशल है; वह कथनों के तर्कसंगत अनुक्रम को नहीं समझता, वह शब्दों के पूर्वापर संबंध को जानने में असमर्थ है; ऐसे व्यक्ति को मूर्खतापूर्ण आरोप लगाने वाला कहा जाता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02019_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="saccaṃ">सच्‍चं</span> <span class="paliword" data-word="ahampi">अहम्पि</span> <span class="paliword" data-word="jānāmi">जानामि,</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="bālacodako">बालचोदको।</span> <span class="paliword" data-word="aññañca">अञ्‍ञञ्‍च</span> <span class="paliword" data-word="tāhaṃ">ताहं</span> <span class="paliword" data-word="pucchāmi">पुच्छामि,</span> <span class="paliword" data-word="kīdiso">कीदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="paṇḍitacodako||">पण्डितचोदको॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02019_hi">
+                सत्य तो मैं भी जानता हूँ, ऐसे व्यक्ति को अज्ञानी अभियोक्ता कहा जाता है। अब मैं आपसे एक और बात पूछता हूँ, विद्वान अभियोक्ता किसे कहा जाता है?
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02020_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="pubbāparampi">पुब्बापरम्पि</span> <span class="paliword" data-word="jānāti">जानाति,</span> <span class="paliword" data-word="pubbāparassa">पुब्बापरस्स</span> <span class="paliword" data-word="kovido">कोविदो।</span> <span class="paliword" data-word="anusandhivacanapathaṃ">अनुसन्धिवचनपथं</span> <span class="paliword" data-word="jānāti">जानाति,</span> <span class="paliword" data-word="anusandhivacanapathassa">अनुसन्धिवचनपथस्स</span> <span class="paliword" data-word="kovido">कोविदो।</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="paṇḍitacodako||">पण्डितचोदको॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02020_hi">
+                वह पूर्वापर (क्रम) को जानता है और उसमें कुशल है; वह कथनों के आपसी संबंध और उनके तर्क-क्रम को जानता है और उनमें निपुण है। ऐसा व्यक्ति 'विद्वान प्रबोधक' (पण्डित-चोदक) कहलाता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02021_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="saccaṃ">सच्‍चं</span> <span class="paliword" data-word="ahampi">अहम्पि</span> <span class="paliword" data-word="jānāmi">जानामि,</span> <span class="paliword" data-word="ediso">एदिसो</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="paṇḍitacodako">पण्डितचोदको।</span> <span class="paliword" data-word="aññañca">अञ्‍ञञ्‍च</span> <span class="paliword" data-word="tāhaṃ">ताहं</span> <span class="paliword" data-word="pucchāmi">पुच्छामि,</span> <span class="paliword" data-word="codanā">चोदना</span> <span class="paliword" data-word="kinti">किन्ति</span> <span class="paliword" data-word="vuccati||">वुच्‍चति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02021_hi">
+                सत्य है, यह मैं भी जानता हूँ—ऐसे व्यक्ति को विद्वान अभियोक्ता कहा जाता है। और मैं आपसे एक और बात पूछता हूँ: वास्तव में अभियोग किसे कहते हैं?
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02022_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="sīlavipattiyā">सीलविपत्तिया</span> <span class="paliword" data-word="codeti">चोदेति,</span> <span class="paliword" data-word="atho">अथो</span> <span class="paliword" data-word="ācāradiṭṭhiyā">आचारदिट्ठिया।</span> <span class="paliword" data-word="ājīvenapi">आजीवेनपि</span> <span class="paliword" data-word="codeti">चोदेति,</span> <span class="paliword" data-word="codanā">चोदना</span> <span class="paliword" data-word="tena">तेन</span> <span class="paliword" data-word="vuccatīti||">वुच्‍चतीति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02022_hi">
+                वह शील की विफलता के आधार पर दोषारोपण करता है, और फिर आचार तथा दृष्टि की त्रुटियों के कारण भी। वह आजीविका के विषय में भी आक्षेप करता है, इसी कारण इसे 'चोदना' (अभियोग) कहा जाता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>
