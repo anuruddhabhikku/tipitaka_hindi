@@ -375,10 +375,11 @@ def get_sutta_files(prefix=None):
     files = []
     for f in os.listdir(INPUT_DIR):
         if prefix:
-            if f.startswith(prefix) and (f.endswith(".mul.json") or f.endswith("m.nrf.json") or f.endswith(".att.json")):
+            if f.startswith(prefix) and (f.endswith(".mul.json") or f.endswith("m.nrf.json") or f.endswith(".att.json") or f.endswith("m.mul.json")):
                 files.append(f)
         else:
-            if re.match(r"^[a-z]+\d+[a-z]\d*\.(mul|nrf|att)\.json$", f):
+            # Match both sutta and vinaya patterns
+            if re.match(r"^(s\d+|vin\d+).*\.(mul|nrf|att)\.json$", f):
                 files.append(f)
     return sorted(files)
 
@@ -387,36 +388,40 @@ def load_corpus(prefix=None):
     corpus = defaultdict(dict)
     
     if prefix=='all':
-      files=[]
-      for prefix0 in ['s01','s02','s03','s04','s05']:
-        files0 = get_sutta_files(prefix0)
-        files.extend(files0)
+        files = []
+        # Include both sutta and vinaya prefixes
+        for prefix0 in ['s01','s02','s03','s04','s05', 'vin01', 'vin02']:
+        # ~ for prefix0 in [ 's02','s05',]:
+            files0 = get_sutta_files(prefix0)
+            files.extend(files0)
     else:
-      files = get_sutta_files(prefix)
+        files = get_sutta_files(prefix)
     
     for f in files:
-        # Extract the base prefix (first part before .mul or .att)
-        # ~ base = f.split('.')[0]  # s0101m, s0101a, etc.
-        # ~ # Remove the trailing m/a to group mul and att together
-        # ~ group = base[:-1]  # s0101
-        base = f.split('.')[0]  # s0402m1, s0402a, etc.
-        # Extract core sutta identifier (e.g., s0402 from s0402m1 or s0402a)
-        import re
-        match = re.match(r'(s\d{2}\d+)', base)
-        group = match.group(1) if match else base
+        base = f.split('.')[0]  # vin01a, vin01m, vin02a1, etc.
         
-        if f.endswith("mul.json") or f.endswith("m.nrf.json"):
+        # Determine the group based on file pattern
+        if base.startswith('vin'):
+            # For vinaya files, group by the main number (vin01, vin02)
+            match = re.match(r'(vin\d{2})', base)
+            if match:
+                group = match.group(1)
+            else:
+                group = base
+        else:
+            # For sutta files, extract the core sutta identifier
+            match = re.match(r'(s\d{2}\d+)', base)
+            group = match.group(1) if match else base
+        
+        # Now group mul and att files together
+        if f.endswith("mul.json") or f.endswith("m.nrf.json") or f.endswith("m.mul.json"):
             if "mul" not in corpus[group]:
-              corpus[group]["mul"] = []
+                corpus[group]["mul"] = []
             corpus[group]["mul"].append(f)
         elif f.endswith("att.json"):
             if "att" not in corpus[group]:
                 corpus[group]["att"] = []
             corpus[group]["att"].append(f)
-        # ~ if f.endswith("mul.json"):
-            # ~ corpus[group]["mul"] = f
-        # ~ elif f.endswith("att.json"):
-            # ~ corpus[group]["att"] = f
     
     return corpus
 # --------------------------------------------------
@@ -424,12 +429,13 @@ def load_corpus(prefix=None):
 # --------------------------------------------------
 
 def index_para(entries):
+    """Create index and also return ordered list for sequential matching"""
     idx = defaultdict(list)
     leading_entries = []
     found_first_number = False
     
-    # Store the full ordered list for sequential rendering
-    ordered_entries = entries  # Keep reference to original order
+    # Store original order for sequential processing
+    ordered_entries = entries.copy()
     
     for e in entries:
         para = e.get("n")
@@ -455,10 +461,12 @@ def index_para(entries):
     if leading_entries:
         idx['leading'] = leading_entries
     
-    # Also store the full ordered list
-    idx['ordered'] = ordered_entries
-    
-    return idx
+    # Return both index and ordered list
+    return {
+        'index': idx,
+        'ordered': ordered_entries,
+        'usage_counter': defaultdict(int)  # Track how many times each para number has been used
+    }
 # --------------------------------------------------
 # HTML Wrapper
 # --------------------------------------------------
@@ -769,6 +777,55 @@ document.addEventListener("click", function(e){{
         if(popup) popup.style.display = "none";
     }}
 }});
+
+
+// NEW: Middle click on pali text toggles Hindi translation
+document.addEventListener('auxclick', function(e) {{
+    // Check for middle button (button === 1)
+    if (e.button === 1) {{
+        // Find the closest pali div
+        const paliDiv = e.target.closest('.pali');
+        if (paliDiv) {{
+            e.preventDefault(); // Prevent default middle-click behavior
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) {{
+                toggleIcon.onclick(e);
+            }}
+        }}
+    }}
+}});
+
+// Prevent default middle-click scrolling
+document.addEventListener('mousedown', function(e) {{
+    if (e.button === 1) {{
+        e.preventDefault();
+        return false;
+    }}
+}});
+
+
+// Double finger tap on Android/tablets toggles Hindi translation
+let touchTimer = null;
+let touchCount = 0;
+
+document.addEventListener('touchstart', function(e) {{
+    // Check for two-finger touch
+    if (e.touches.length === 2) {{
+        e.preventDefault(); // Prevent zoom/context menu
+        
+        // Find the pali div under either touch point
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const paliDiv = element?.closest('.pali');
+        
+        if (paliDiv) {{
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) {{
+                toggleIcon.onclick(e);
+            }}
+        }}
+    }}
+}}, {{ passive: false }});
 </script>
 
 </head>
@@ -799,46 +856,49 @@ def merge_gatha_parts(entries):
     """Merge sequences of gatha1, gatha2, ... gathalast into single gatha entries"""
     merged = []
     i = 0
+    gatha_counter = 0
     while i < len(entries):
         entry = entries[i]
         rend = entry.get("rend", "")
         
         # Check if this is the start of a gatha sequence
-        if rend and rend.startswith("gatha") and rend not in ["gatha", "gathalast"] and rend[5:].isdigit():
+        if rend and rend.startswith("gatha") and rend != "gatha":
             # Start collecting gatha parts
             gatha_parts = []
             gatha_hindi_parts = []
             first_id = entry.get("id", "")
+            current_verse_number = entry.get("n")  # Get verse number from first part
             
-            # Collect all consecutive gatha1, gatha2, ... gathalast
+            # Collect ALL consecutive gatha-prefixed entries
             while i < len(entries):
                 current = entries[i]
                 current_rend = current.get("rend", "")
                 
-                # Stop if we hit something that's not part of the gatha sequence
-                if not (current_rend and (current_rend.startswith("gatha") or current_rend == "gathalast")):
+                if not current_rend or not current_rend.startswith("gatha"):
                     break
                 
-                # Add text parts
                 if current.get("text"):
                     gatha_parts.append(current.get("text", ""))
                 if current.get("hi"):
                     gatha_hindi_parts.append(current.get("hi", ""))
                 
                 i += 1
-                
-                # Stop at gathalast
-                if current_rend == "gathalast":
-                    break
             
-            # Create merged gatha entry
+            # Create merged gatha entry with UNIQUE ID
             if gatha_parts:
+                gatha_counter += 1
+                # Use verse number if available, otherwise use counter
+                if current_verse_number:
+                    unique_id = f"{first_id.split('_')[0]}_gatha_v{current_verse_number}"
+                else:
+                    unique_id = f"{first_id.split('_')[0]}_gatha_{gatha_counter}"
+                
                 merged_entry = {
-                    "id": first_id.split('_')[0] + "_gatha",
+                    "id": unique_id,
                     "tag": "p",
-                    "n": entry.get("n"),
+                    "n": current_verse_number,
                     "rend": "gatha",
-                    "text": "\\n".join(gatha_parts),  # Join with literal \n
+                    "text": "\\n".join(gatha_parts),
                     "hi": " ".join(gatha_hindi_parts) if gatha_hindi_parts else ""
                 }
                 merged.append(merged_entry)
@@ -848,7 +908,6 @@ def merge_gatha_parts(entries):
             i += 1
     
     return merged
-
 def format_gatha_text(text):
     """Convert literal \n to line breaks and format for HTML"""
     if not text:
@@ -866,11 +925,16 @@ def format_gatha_text(text):
 # --------------------------------------------------
 # Render Sutta Page
 # --------------------------------------------------
-
-def render_sutta_page(prefix, block, att_index, att):
+def render_sutta_page(prefix, block, att_index_data, att):
     html = []
     used_words = set()
     sutta_title = None
+    current_verse_number = None  # Add this to track verse numbers
+
+    # Extract components from att_index_data
+    att_index = att_index_data['index']
+    att_ordered = att_index_data['ordered']
+    usage_counter = att_index_data['usage_counter']
 
     for e in block:
 
@@ -900,17 +964,26 @@ def render_sutta_page(prefix, block, att_index, att):
                 html.append(f"<div class='hindi' id='{hindi_id}'>{hindi_text}</div>")
             continue  # Skip the rest of the loop for subheads
 
-# Process any rend that contains text content
-        content_rends = ["bodytext", "gatha", "subhead", "verse", "prose"]
+        # Process any rend that contains text content
+        content_rends = ["bodytext", "gatha", "subhead", "verse", "prose","hangnum"]
+        
+        # SPECIAL HANDLING FOR HANGNUM - do this FIRST
+        if e.get("rend") == "hangnum":
+            verse_text = e.get('text', '')
+            html.append(f"""
+            <div class="verse-number">{verse_text}</div>
+            """)
+            # Store the verse number for the next gatha
+            if e.get("n"):
+                current_verse_number = e.get("n")
+            continue  # Skip to next entry
+        
         if e.get("rend") in content_rends:
-        # ~ if e.get("rend") == "bodytext":
-          
-
             para_id = e.get("id", "para")
             pali_raw = e.get("text","")
             rend = e.get("rend", "")
+            hindi_text = e.get("hi", "")  # Make sure this is captured
             
-              # Add a class based on rend type
             # Add a class based on rend type
             extra_class = ""
             if rend == "gatha":
@@ -929,32 +1002,52 @@ def render_sutta_page(prefix, block, att_index, att):
             else:
                 pali_text = wrap_pali_words(pali_raw)
             hindi_text = e.get("hi","")
-            # Add the extra_class to the pali div
-            # ~ html.append(f"""
-            # ~ <div class="pali{extra_class}">
-                # ~ <span style="float:right; cursor:pointer" 
-                      # ~ onclick="toggleHindi('{para_id}_hi', event)" 
-                      # ~ title="Toggle Hindi translation">📖</span>
-            # ~ """)
 
             html.append(f"""
             <div class="pali{extra_class}">
                 
             """)
 
-            # Check if this paragraph has commentary
+            # Check if this paragraph has commentary - UPDATED WITH SEQUENTIAL LOGIC
             para_num = None
             has_commentary = False
             commentary_entries = []
             
-            if e.get("n"):
+            # For gathas, use the stored verse number
+            if rend == "gatha" and current_verse_number is not None:
+                try:
+                    para_num = int(current_verse_number)
+                    if para_num and para_num in att_index:
+                        all_entries_for_num = att_index[para_num]
+                        if all_entries_for_num:
+                            current_usage = usage_counter[para_num]
+                            if current_usage < len(all_entries_for_num):
+                                current_entry = all_entries_for_num[current_usage]
+                                commentary_entries = [current_entry]
+                                has_commentary = True
+                                usage_counter[para_num] += 1
+                except:
+                    pass
+            # For regular entries, use their own n value
+            elif e.get("n"):
                 try:
                     para_num = int(e["n"])
                     if para_num and para_num in att_index:
-                        has_commentary = True
-                        commentary_entries = att_index[para_num]
+                        all_entries_for_num = att_index[para_num]
+                        if all_entries_for_num:
+                            current_usage = usage_counter[para_num]
+                            if current_usage < len(all_entries_for_num):
+                                current_entry = all_entries_for_num[current_usage]
+                                commentary_entries = [current_entry]
+                                has_commentary = True
+                                usage_counter[para_num] += 1
                 except:
                     pass
+            
+            # Reset current_verse_number after using it? 
+            # Only reset if we want one verse number per gatha
+            if rend == "gatha":
+                current_verse_number = None
 
             # Mula Pali line with both icons (Hindi and Commentary)
             html.append(f"""
@@ -985,42 +1078,41 @@ def render_sutta_page(prefix, block, att_index, att):
             </div>
             """)
             
-            # Commentary section (completely hidden by default)
+            # Commentary section - UPDATED TO USE att_ordered
             if has_commentary and commentary_entries:
-                # Find the start index in the ordered commentary list
+                # Find this specific entry in the ordered list
+                target_id = commentary_entries[0].get('id')
                 start_idx = -1
-                first_entry_id = commentary_entries[0].get('id')
-                for i, att_entry in enumerate(att_index['ordered']):
-                    if att_entry.get('id') == first_entry_id:
+                
+                for i, att_entry in enumerate(att_ordered):
+                    if att_entry.get('id') == target_id:
                         start_idx = i
                         break
                 
-                # Start commentary div
-                html.append(f"""
-            <div class="commentary" id="{para_id}_comm" style="display:none;">
-            """)
-                
-                # Render all commentary entries from start_idx until n changes
                 if start_idx >= 0:
-                    ordered = att_index['ordered']
-                    for j in range(start_idx, len(ordered)):
-                        att_entry = ordered[j]
+                    html.append(f"""
+            <div class="commentary" id="{para_id}_comm" style="display:none;">
+                    """)
+                    
+                    # Render all commentary entries from start_idx until n changes
+                    for j in range(start_idx, len(att_ordered)):
+                        att_entry = att_ordered[j]
                         current_n = att_entry.get('n')
                         
-                        # FIX: Handle range entries like "301-302"
+                        # Check if this entry matches current paragraph
                         matches_current_para = False
                         if current_n is not None:
-                            if '-' in current_n:
-                                # This is a range like "301-302"
+                            if '-' in str(current_n):
+                                # Handle range entries like "301-302"
                                 try:
-                                    parts = current_n.split('-')
+                                    parts = str(current_n).split('-')
                                     start = int(parts[0])
                                     end = int(parts[1])
                                     if start <= para_num <= end:
                                         matches_current_para = True
                                 except:
                                     pass
-                            elif current_n == str(para_num):
+                            elif str(current_n) == str(para_num):
                                 matches_current_para = True
                         
                         # Stop if we hit an entry with a different non-null n that doesn't match
@@ -1033,7 +1125,16 @@ def render_sutta_page(prefix, block, att_index, att):
                         
                         att_text = att_entry.get("text","")
                         att_hindi = att_entry.get("hi","")
-                        att_id = att_entry.get("id", f"commentary_{prefix}_{para_num}_{j}")
+                        # ~ att_id = att_entry.get("id", f"commentary_{prefix}_{para_num}_{j}")
+                        
+                        # Replace with this:
+                        original_id = att_entry.get("id", f"commentary_{prefix}_{para_num}_{j}")
+                        # Make ID unique by appending paragraph number if it's a range commentary
+                        if '-' in str(att_entry.get("n", "")):
+                            unique_att_id = f"{original_id}_p{para_num}"
+                        else:
+                            unique_att_id = original_id
+                        
                         att_rend = att_entry.get("rend", "")
                         
                         for w in att_text.split():
@@ -1047,27 +1148,27 @@ def render_sutta_page(prefix, block, att_index, att):
                             extra_class = " gatha"
                         
                         html.append(f"""
-                <div class="pali{extra_class}">
-                    {wrapped_att}
-                    <span style="float:right; cursor:pointer" 
-                          onclick="toggleHindi('{att_id}_hi', event)">📖</span>
-                </div>
+                        <div class="pali{extra_class}">
+                            {wrapped_att}
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('{unique_att_id}_hi', event)">📖</span>
+                        </div>
                         """)
                         
                         if att_hindi:
                             html.append(f"""
-                <div class="hindi" id="{att_id}_hi">
-                    {att_hindi}
-                </div>
-                            """)
-                
-                html.append("</div>")  # Close commentary div
+                        <div class="hindi" id="{unique_att_id}_hi">
+                            {att_hindi}
+                        </div>
+                        """)
+                    
+                    html.append("</div>")  # Close commentary div
             
             html.append("</div>")  # Close the inner pali div
             html.append("</div>")  # Close the outer pali{extra_class} div
             html.append("</div>")  # Close para div
 
-    # Build local dictionary subset - COMPACT, INFO# Build local dictionary subset - COMPACT, NO REDUNDANT HEADWORD
+    # Build local dictionary subset - COMPACT, NO REDUNDANT HEADWORD
     local_dict = {}
     
     for w in used_words:
@@ -1158,7 +1259,7 @@ def render_sutta_page(prefix, block, att_index, att):
             # Literal meaning
             if lit and lit != meaning:
                 parts.append(f"(lit. {lit})")
-            # ~ print(parts)
+            
             entries.append(" ".join(parts))
         
         if entries:
@@ -1179,7 +1280,7 @@ def render_sutta_page(prefix, block, att_index, att):
     with open(os.path.join(outdir, filename), "w", encoding="utf8") as f:
         f.write(wrap_page(sutta_title or prefix,
                           "\n".join(html),
-                          local_dict_js))                        
+                          local_dict_js))
 # --------------------------------------------------
 # Build blocks
 # --------------------------------------------------
@@ -1211,68 +1312,126 @@ def generate_hierarchical_index(output_dir, corpus, intro_pages):
     """Generate a single index.html with complete nikaya/vagga/sutta hierarchy including intros"""
     global NIKAYA_MAP
     
-    # First, scan all mul files to extract structure
-    structure = {}
+    # Structure for both pitakas
+    structure = {
+        "sutta": {},  # For Sutta Pitaka (nikayas)
+        "vinaya": {}  # For Vinaya Pitaka
+    }
     
-    for prefix, files in corpus.items():
+    # Track processed groups to avoid duplicates
+    processed_groups = set()
+    
+    for prefix, files in sorted(corpus.items()):
         if "mul" not in files:
             continue
             
+        # Skip if we've already processed this group
+        if prefix in processed_groups:
+            continue
+        processed_groups.add(prefix)
+        
         # Handle multiple mul files
         mul_data = []
         if isinstance(files["mul"], list):
-            for mul_file in files["mul"]:
+            for mul_file in sorted(files["mul"]):  # Sort to ensure consistent order
                 with open(mul_file, "r", encoding="utf8") as f:
                     mul_data.extend(json.load(f))
         else:
             with open(files["mul"], "r", encoding="utf8") as f:
                 mul_data = json.load(f)
         
-        current_nikaya = None
-        current_vagga = None
-        current_sutta = None
+        # Determine if this is Vinaya or Sutta
+        is_vinaya = prefix.startswith('vin')
         
-        for e in mul_data:
-            rend = e.get("rend")
-            text = e.get("text", "")
+        if is_vinaya:
+            # VINAYA STRUCTURE
+            current_pitaka = "विनयपिटके"
+            current_division = None
+            current_chapter = None
+            current_item = None
             
-            if rend == "nikaya":
-                current_nikaya = text
-                # Normalize nikaya name to consistent form
-                if current_nikaya == "मज्झिमनिकाये":
-                    current_nikaya = "मज्झिमनिकायो"
-                elif current_nikaya == "संयुत्तनिकाये":
-                    current_nikaya = "संयुत्तनिकायो"
-                elif current_nikaya == "खुद्दकनिकाये":
-                    current_nikaya = "खुद्दकनिकायो"
-                if current_nikaya not in structure:
-                    structure[current_nikaya] = {}
+            # Initialize Vinaya structure if needed
+            if current_pitaka not in structure["vinaya"]:
+                structure["vinaya"][current_pitaka] = {}
             
-            elif rend in ["book", "vagga", "nipata", "samyutta"]:
-                current_vagga = text
-                if current_nikaya and current_vagga not in structure[current_nikaya]:
-                    structure[current_nikaya][current_vagga] = []
-                    print(f"Added vagga: {current_vagga} to {current_nikaya}")
-
+            for e in mul_data:
+                rend = e.get("rend")
+                text = e.get("text", "")
+                
+                if rend == "book" or rend == "vagga":
+                    # Major division (like पाराजिकपाळि, पाचित्तियपाळि)
+                    current_division = text
+                    if current_division not in structure["vinaya"][current_pitaka]:
+                        structure["vinaya"][current_pitaka][current_division] = []
+                    print(f"Added Vinaya division: {current_division}")
+                
+                elif rend == "chapter":
+                    # Chapter within a division
+                    current_chapter = {
+                        "title": text,
+                        "hi": e.get("hi", ""),
+                        "file": os.path.join(prefix, e.get("id", "chapter") + ".html"),
+                        "id": e.get("id"),
+                        "subsections": []
+                    }
+                    if current_division:
+                        structure["vinaya"][current_pitaka][current_division].append(current_chapter)
+                    current_item = current_chapter
+                
+                elif rend == "subhead" and current_item:
+                    # Subsection within a chapter
+                    current_item["subsections"].append({
+                        "title": text,
+                        "hi": e.get("hi", ""),
+                        "id": e.get("id")
+                    })
+        
+        else:
+            # SUTTA STRUCTURE (existing code, preserved exactly)
+            current_nikaya = None
+            current_vagga = None
+            current_sutta = None
             
-            elif rend in ["chapter", "sutta"]:
-                current_sutta = {
-                    "title": text,
-                    "hi": e.get("hi", ""),
-                    "file": os.path.join(prefix, e.get("id", "sutta") + ".html"),
-                    "id": e.get("id"),
-                    "subsections": []
-                }
-                if current_nikaya and current_vagga:
-                    structure[current_nikaya][current_vagga].append(current_sutta)
-            
-            elif rend == "subhead" and current_sutta:
-                # Add subsection to current sutta
-                current_sutta["subsections"].append({
-                    "title": text,
-                    "hi": e.get("hi", ""),
-                    "id": e.get("id")
-                })
+            for e in mul_data:
+                rend = e.get("rend")
+                text = e.get("text", "")
+                
+                if rend == "nikaya":
+                    current_nikaya = text
+                    # Normalize nikaya name to consistent form
+                    if current_nikaya == "मज्झिमनिकाये":
+                        current_nikaya = "मज्झिमनिकायो"
+                    elif current_nikaya == "संयुत्तनिकाये":
+                        current_nikaya = "संयुत्तनिकायो"
+                    elif current_nikaya == "खुद्दकनिकाये":
+                        current_nikaya = "खुद्दकनिकायो"
+                    if current_nikaya not in structure["sutta"]:
+                        structure["sutta"][current_nikaya] = {}
+                
+                elif rend in ["book", "vagga", "nipata", "samyutta"]:
+                    current_vagga = text
+                    if current_nikaya and current_vagga not in structure["sutta"][current_nikaya]:
+                        structure["sutta"][current_nikaya][current_vagga] = []
+                        print(f"Added vagga: {current_vagga} to {current_nikaya}")
+                
+                elif rend in ["chapter", "sutta"]:
+                    current_sutta = {
+                        "title": text,
+                        "hi": e.get("hi", ""),
+                        "file": os.path.join(prefix, e.get("id", "sutta") + ".html"),
+                        "id": e.get("id"),
+                        "subsections": []
+                    }
+                    if current_nikaya and current_vagga:
+                        structure["sutta"][current_nikaya][current_vagga].append(current_sutta)
+                
+                elif rend == "subhead" and current_sutta:
+                    # Add subsection to current sutta
+                    current_sutta["subsections"].append({
+                        "title": text,
+                        "hi": e.get("hi", ""),
+                        "id": e.get("id")
+                    })
     
     # Generate HTML with enhanced styling
     html = []
@@ -1281,7 +1440,7 @@ def generate_hierarchical_index(output_dir, corpus, intro_pages):
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tipitaka - Sutta Index</title>
+    <title>Tipitaka - Index</title>
     <style>
         body {
             max-width: 1000px;
@@ -1295,204 +1454,191 @@ def generate_hierarchical_index(output_dir, corpus, intro_pages):
             border-bottom: 2px solid #8B4513;
             padding-bottom: 10px;
         }
-        .nikaya {
-    background: white;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* Nikaya level */
-.nikaya h2 {
-    color: #8B4513;
-    margin: 0;
-    padding: 12px;
-    cursor: pointer;
-    border-left: 5px solid #8B4513;
-    background: #f9f9f9;
-    border-radius: 5px;
-    transition: background 0.2s;
-    font-size: 1.4em;
-}
-
-.nikaya h2:hover {
-    background: #f0f0f0;
-}
-
-.nikaya h2:before {
-    content: "▶ ";
-    font-size: 0.9em;
-    color: #8B4513;
-    display: inline-block;
-    transition: transform 0.2s;
-}
-
-.nikaya h2.expanded:before {
-    content: "▼ ";
-}
-
-.nikaya-content {
-    display: none;
-    margin-top: 15px;
-}
-
-.nikaya-content.expanded {
-    display: block;
-}
-
-/* Intro section */
-.nikaya-intro {
-    margin: 10px 0 15px 20px;
-    padding: 10px 15px;
-    background: #f5f5f5;
-    border-left: 3px solid #8B4513;
-    border-radius: 0 5px 5px 0;
-}
-
-.nikaya-intro a {
-    color: #8B4513;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1.1em;
-}
-
-.nikaya-intro a:hover {
-    text-decoration: underline;
-}
-
-.nikaya-intro .intro-hi {
-    color: #666;
-    font-size: 0.9em;
-    margin-left: 10px;
-}
-
-/* Vagga level */
-.vagga {
-    margin: 15px 0 10px 15px;
-}
-
-.vagga h3 {
-    color: #666;
-    margin: 10px 0 8px 0;
-    padding: 8px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-    transition: background 0.2s;
-    font-size: 1.2em;
-}
-
-.vagga h3:hover {
-    background: #f5f5f5;
-}
-
-.vagga h3:before {
-    content: "▶ ";
-    font-size: 0.8em;
-    color: #999;
-    display: inline-block;
-    transition: transform 0.2s;
-}
-
-.vagga h3.expanded:before {
-    content: "▼ ";
-}
-
-.vagga-content {
-    display: none;
-    margin-left: 20px;
-}
-
-.vagga-content.expanded {
-    display: block;
-}
-
-/* Sutta level */
-.sutta {
-    margin: 8px 0 8px 20px;
-}
-
-.sutta-header {
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background 0.2s;
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-}
-
-.sutta-header:hover {
-    background: #f5f5f5;
-}
-
-.sutta-header:before {
-    content: "▶ ";
-    font-size: 0.8em;
-    color: #999;
-    display: inline-block;
-    transition: transform 0.2s;
-    margin-right: 5px;
-}
-
-.sutta-header.expanded:before {
-    content: "▼ ";
-}
-
-.sutta-title {
-    color: #0066cc;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.sutta-title:hover {
-    text-decoration: underline;
-}
-
-.sutta-hi {
-    color: #666;
-    font-size: 0.9em;
-    margin-left: 10px;
-}
-
-.sutta-content {
-    display: none;
-    margin-left: 25px;
-    padding-left: 15px;
-    border-left: 2px dotted #ddd;
-}
-
-.sutta-content.expanded {
-    display: block;
-}
-
-.subsection-list {
-    list-style: none;
-    padding: 5px 0 5px 5px;
-    margin: 5px 0;
-}
-
-.subsection-item {
-    margin: 3px 0;
-    padding: 3px 8px;
-}
-
-.subsection-link {
-    color: #777;
-    text-decoration: none;
-    font-size: 0.95em;
-}
-
-.subsection-link:hover {
-    color: #0066cc;
-    text-decoration: underline;
-}
-
-.subsection-hi {
-    color: #888;
-    font-size: 0.9em;
-    margin-left: 10px;
-}
+        .pitaka {
+            margin-bottom: 30px;
+        }
+        .pitaka h2 {
+            color: #8B4513;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+            border-left: 5px solid #8B4513;
+        }
+        .pitaka h2:before {
+            content: "▶ ";
+            font-size: 0.9em;
+            color: #8B4513;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .pitaka h2.expanded:before {
+            content: "▼ ";
+        }
+        .pitaka-content {
+            display: none;
+            margin-top: 15px;
+        }
+        .pitaka-content.expanded {
+            display: block;
+        }
+        .nikaya, .vinaya-division {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .nikaya h3, .vinaya-division h3 {
+            color: #8B4513;
+            margin: 0;
+            padding: 12px;
+            cursor: pointer;
+            border-left: 5px solid #8B4513;
+            background: #f9f9f9;
+            border-radius: 5px;
+            transition: background 0.2s;
+            font-size: 1.2em;
+        }
+        .nikaya h3:hover, .vinaya-division h3:hover {
+            background: #f0f0f0;
+        }
+        .nikaya h3:before, .vinaya-division h3:before {
+            content: "▶ ";
+            font-size: 0.9em;
+            color: #8B4513;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .nikaya h3.expanded:before, .vinaya-division h3.expanded:before {
+            content: "▼ ";
+        }
+        .nikaya-content, .division-content {
+            display: none;
+            margin-top: 15px;
+        }
+        .nikaya-content.expanded, .division-content.expanded {
+            display: block;
+        }
+        .intro-section {
+            margin: 10px 0 15px 20px;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            border-left: 3px solid #8B4513;
+            border-radius: 0 5px 5px 0;
+        }
+        .intro-section a {
+            color: #8B4513;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+        .intro-section a:hover {
+            text-decoration: underline;
+        }
+        .vagga, .chapter-section {
+            margin: 15px 0 10px 15px;
+        }
+        .vagga h4, .chapter-section h4 {
+            color: #666;
+            margin: 10px 0 8px 0;
+            padding: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+            font-size: 1.1em;
+        }
+        .vagga h4:hover, .chapter-section h4:hover {
+            background: #f5f5f5;
+        }
+        .vagga h4:before, .chapter-section h4:before {
+            content: "▶ ";
+            font-size: 0.8em;
+            color: #999;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .vagga h4.expanded:before, .chapter-section h4.expanded:before {
+            content: "▼ ";
+        }
+        .vagga-content, .chapter-content {
+            display: none;
+            margin-left: 20px;
+        }
+        .vagga-content.expanded, .chapter-content.expanded {
+            display: block;
+        }
+        .sutta, .chapter-item {
+            margin: 8px 0 8px 20px;
+        }
+        .sutta-header, .chapter-header {
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+        .sutta-header:hover, .chapter-header:hover {
+            background: #f5f5f5;
+        }
+        .sutta-header:before, .chapter-header:before {
+            content: "▶ ";
+            font-size: 0.8em;
+            color: #999;
+            display: inline-block;
+            transition: transform 0.2s;
+            margin-right: 5px;
+        }
+        .sutta-header.expanded:before, .chapter-header.expanded:before {
+            content: "▼ ";
+        }
+        .sutta-title, .chapter-title {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .sutta-title:hover, .chapter-title:hover {
+            text-decoration: underline;
+        }
+        .sutta-hi, .chapter-hi {
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+        .sutta-content, .chapter-content-inner {
+            display: none;
+            margin-left: 25px;
+            padding-left: 15px;
+            border-left: 2px dotted #ddd;
+        }
+        .sutta-content.expanded, .chapter-content-inner.expanded {
+            display: block;
+        }
+        .subsection-list {
+            list-style: none;
+            padding: 5px 0 5px 5px;
+            margin: 5px 0;
+        }
+        .subsection-item {
+            margin: 3px 0;
+            padding: 3px 8px;
+        }
+        .subsection-link {
+            color: #777;
+            text-decoration: none;
+            font-size: 0.95em;
+        }
+        .subsection-link:hover {
+            color: #0066cc;
+            text-decoration: underline;
+        }
+        .subsection-hi {
+            color: #888;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
         .note {
             color: #666;
             font-style: italic;
@@ -1501,79 +1647,135 @@ def generate_hierarchical_index(output_dir, corpus, intro_pages):
     </style>
 </head>
 <body>
-    <h1>📚 तिपिटक - सुत्त पिटक</h1>
-    <p class="note">दीघ, मज्झिम, संयुत्त, अङ्गुत्तर, खुद्दक निकाय</p>
+    <h1>📚 तिपिटक - Index</h1>
+    <p class="note">सुत्त पिटक एवं विनय पिटक</p>
 """)
     
-    # Sort nikayas in traditional order
-    nikaya_order = ["दीघनिकायो", "मज्झिमनिकायो", "संयुत्तनिकायो", "अङ्गुत्तरनिकायो", "खुद्दकनिकायो"]
-    nikaya_display = NIKAYA_MAP
-    
-    for nikaya in nikaya_order:
-        if nikaya not in structure:
-            continue
-            
-        display_name = nikaya_display.get(nikaya, nikaya)
-        html.append(f'<div class="nikaya">')
-        html.append(f'<h2>{display_name}</h2>')
-        html.append(f'<div class="nikaya-content">')
+    # First, render Vinaya Pitaka if it exists
+    if structure["vinaya"]:
+        html.append('<div class="pitaka">')
+        html.append('<h2>📖 विनय पिटक</h2>')
+        html.append('<div class="pitaka-content">')
         
-        # Add intro link if this nikaya has an intro page
-        intro_file = intro_pages.get(nikaya, {}).get("file")
-        if intro_file:
-            html.append(f"""
-        <div class="nikaya-intro">
-            <a href="{intro_file}">📖 परिचय (Introduction)</a>
-            <span class="intro-hi">{nikaya}</span>
-        </div>
-            """)
-
-        vaggas = structure[nikaya]
-        for vagga, suttas in vaggas.items():
-            html.append(f'<div class="vagga">')
-            html.append(f'<h3>{vagga}</h3>')
-            html.append(f'<div class="vagga-content">')
-            
-            for sutta in suttas:
-                html.append('<div class="sutta">')
-                html.append(f'<div class="sutta-header">')
-                html.append(f'<a class="sutta-title" href="{sutta["file"]}">{sutta["title"]}</a>')
-                if sutta.get("hi"):
-                    html.append(f'<span class="sutta-hi">{sutta["hi"]}</span>')
-                html.append('</div>')
+        for pitaka_name, divisions in structure["vinaya"].items():
+            for division_name, chapters in divisions.items():
+                html.append(f'<div class="vinaya-division">')
+                html.append(f'<h3>{division_name}</h3>')
+                html.append(f'<div class="division-content">')
                 
-                if sutta.get("subsections"):
-                    html.append('<div class="sutta-content">')
-                    html.append('<ul class="subsection-list">')
-                    for sub in sutta["subsections"]:
-                        html.append('<li class="subsection-item">')
-                        subsection_link = f'{sutta["file"]}#{sub["id"]}'
-                        html.append(f'<a class="subsection-link" href="{subsection_link}">{sub["title"]}</a>')
-                        if sub.get("hi"):
-                            html.append(f'<span class="subsection-hi"> – {sub["hi"]}</span>')
-                        html.append('</li>')
-                    html.append('</ul>')
+                for chapter in chapters:
+                    html.append('<div class="chapter-section">')
+                    html.append(f'<h4>{chapter["title"]}</h4>')
+                    html.append('<div class="chapter-content">')
+                    
+                    html.append('<div class="chapter-item">')
+                    html.append(f'<div class="chapter-header">')
+                    html.append(f'<a class="chapter-title" href="{chapter["file"]}">{chapter["title"]}</a>')
+                    if chapter.get("hi"):
+                        html.append(f'<span class="chapter-hi">{chapter["hi"]}</span>')
+                    html.append('</div>')
+                    
+                    if chapter.get("subsections"):
+                        html.append('<div class="chapter-content-inner">')
+                        html.append('<ul class="subsection-list">')
+                        for sub in chapter["subsections"]:
+                            html.append('<li class="subsection-item">')
+                            subsection_link = f'{chapter["file"]}#{sub["id"]}'
+                            html.append(f'<a class="subsection-link" href="{subsection_link}">{sub["title"]}</a>')
+                            if sub.get("hi"):
+                                html.append(f'<span class="subsection-hi"> – {sub["hi"]}</span>')
+                            html.append('</li>')
+                        html.append('</ul>')
+                        html.append('</div>')
+                    
+                    html.append('</div>')  # Close chapter-item
+                    html.append('</div>')  # Close chapter-content
+                    html.append('</div>')  # Close chapter-section
+                
+                html.append('</div>')  # Close division-content
+                html.append('</div>')  # Close vinaya-division
+        
+        html.append('</div>')  # Close pitaka-content
+        html.append('</div>')  # Close pitaka
+    
+    # Then render Sutta Pitaka (existing code, preserved)
+    if structure["sutta"]:
+        html.append('<div class="pitaka">')
+        html.append('<h2>📖 सुत्त पिटक</h2>')
+        html.append('<div class="pitaka-content">')
+        
+        # Sort nikayas in traditional order
+        nikaya_order = ["दीघनिकायो", "मज्झिमनिकायो", "संयुत्तनिकायो", "अङ्गुत्तरनिकायो", "खुद्दकनिकायो"]
+        nikaya_display = NIKAYA_MAP
+        
+        for nikaya in nikaya_order:
+            if nikaya not in structure["sutta"]:
+                continue
+                
+            display_name = nikaya_display.get(nikaya, nikaya)
+            html.append(f'<div class="nikaya">')
+            html.append(f'<h3>{display_name}</h3>')
+            html.append(f'<div class="nikaya-content">')
+            
+            # Add intro link if this nikaya has an intro page
+            intro_file = intro_pages.get(nikaya, {}).get("file")
+            if intro_file:
+                html.append(f"""
+            <div class="intro-section">
+                <a href="{intro_file}">📖 परिचय (Introduction)</a>
+                <span class="intro-hi">{nikaya}</span>
+            </div>
+                """)
+            
+            vaggas = structure["sutta"][nikaya]
+            for vagga, suttas in vaggas.items():
+                html.append(f'<div class="vagga">')
+                html.append(f'<h4>{vagga}</h4>')
+                html.append(f'<div class="vagga-content">')
+                
+                for sutta in suttas:
+                    html.append('<div class="sutta">')
+                    html.append(f'<div class="sutta-header">')
+                    html.append(f'<a class="sutta-title" href="{sutta["file"]}">{sutta["title"]}</a>')
+                    if sutta.get("hi"):
+                        html.append(f'<span class="sutta-hi">{sutta["hi"]}</span>')
+                    html.append('</div>')
+                    
+                    if sutta.get("subsections"):
+                        html.append('<div class="sutta-content">')
+                        html.append('<ul class="subsection-list">')
+                        for sub in sutta["subsections"]:
+                            html.append('<li class="subsection-item">')
+                            subsection_link = f'{sutta["file"]}#{sub["id"]}'
+                            html.append(f'<a class="subsection-link" href="{subsection_link}">{sub["title"]}</a>')
+                            if sub.get("hi"):
+                                html.append(f'<span class="subsection-hi"> – {sub["hi"]}</span>')
+                            html.append('</li>')
+                        html.append('</ul>')
+                        html.append('</div>')
+                    
                     html.append('</div>')
                 
                 html.append('</div>')
+                html.append('</div>')
             
             html.append('</div>')
             html.append('</div>')
         
-        html.append('</div>')
-        html.append('</div>')
+        html.append('</div>')  # Close pitaka-content
+        html.append('</div>')  # Close pitaka
     
     html.append("""
 </body>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle Nikaya
-    document.querySelectorAll('.nikaya h2').forEach(function(header) {
+    // Toggle Pitaka
+    document.querySelectorAll('.pitaka h2').forEach(function(header) {
         header.addEventListener('click', function(e) {
             e.stopPropagation();
             this.classList.toggle('expanded');
             var content = this.nextElementSibling;
-            while(content && !content.classList.contains('nikaya-content')) {
+            while(content && !content.classList.contains('pitaka-content')) {
                 content = content.nextElementSibling;
             }
             if(content) {
@@ -1582,13 +1784,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Toggle Vagga
-    document.querySelectorAll('.vagga h3').forEach(function(header) {
+    // Toggle Nikaya/Vinaya Division
+    document.querySelectorAll('.nikaya h3, .vinaya-division h3').forEach(function(header) {
         header.addEventListener('click', function(e) {
             e.stopPropagation();
             this.classList.toggle('expanded');
             var content = this.nextElementSibling;
-            while(content && !content.classList.contains('vagga-content')) {
+            while(content && !content.classList.contains('nikaya-content') && !content.classList.contains('division-content')) {
                 content = content.nextElementSibling;
             }
             if(content) {
@@ -1597,13 +1799,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Toggle Sutta
-    document.querySelectorAll('.sutta-header').forEach(function(header) {
+    // Toggle Vagga/Chapter Section
+    document.querySelectorAll('.vagga h4, .chapter-section h4').forEach(function(header) {
         header.addEventListener('click', function(e) {
             e.stopPropagation();
             this.classList.toggle('expanded');
             var content = this.nextElementSibling;
-            while(content && !content.classList.contains('sutta-content')) {
+            while(content && !content.classList.contains('vagga-content') && !content.classList.contains('chapter-content')) {
                 content = content.nextElementSibling;
             }
             if(content) {
@@ -1612,12 +1814,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Expand first nikaya by default
-    var firstNikaya = document.querySelector('.nikaya h2');
-    if(firstNikaya) {
-        firstNikaya.classList.add('expanded');
-        var firstContent = firstNikaya.nextElementSibling;
-        while(firstContent && !firstContent.classList.contains('nikaya-content')) {
+    // Toggle Sutta/Chapter Item
+    document.querySelectorAll('.sutta-header, .chapter-header').forEach(function(header) {
+        header.addEventListener('click', function(e) {
+            e.stopPropagation();
+            this.classList.toggle('expanded');
+            var content = this.nextElementSibling;
+            while(content && !content.classList.contains('sutta-content') && !content.classList.contains('chapter-content-inner')) {
+                content = content.nextElementSibling;
+            }
+            if(content) {
+                content.classList.toggle('expanded');
+            }
+        });
+    });
+    
+    // Expand first pitaka by default
+    var firstPitaka = document.querySelector('.pitaka h2');
+    if(firstPitaka) {
+        firstPitaka.classList.add('expanded');
+        var firstContent = firstPitaka.nextElementSibling;
+        while(firstContent && !firstContent.classList.contains('pitaka-content')) {
             firstContent = firstContent.nextElementSibling;
         }
         if(firstContent) {
@@ -1633,8 +1850,7 @@ document.addEventListener('DOMContentLoaded', function() {
     with open(index_path, "w", encoding="utf8") as f:
         f.write("\n".join(html))
     
-    print(f"✅ Generated enhanced hierarchical index at {index_path}")  
-
+    print(f"✅ Generated enhanced hierarchical index at {index_path}")
 # --------------------------------------------------
 # --------------------------------------------------
 # Main
@@ -1654,13 +1870,11 @@ def main():
     # Track intro pages for each nikaya
     intro_pages = {}
 
+    # In main() function, find this section:
     for prefix, files in tqdm.tqdm(corpus.items()):
-
         if "mul" not in files or "att" not in files:
             continue
-
-        # ~ mul = json.load(open(files["mul"],encoding="utf8"))
-        # ~ att = json.load(open(files["att"],encoding="utf8"))
+    
         # Handle multiple mul files
         mul_data = []
         if isinstance(files["mul"], list):
@@ -1677,20 +1891,25 @@ def main():
         else:
             att_data = json.load(open(files["att"], encoding="utf8"))
         
-        # Merge gatha parts in both mula and commentary
+        # Merge gatha parts
         mul_data = merge_gatha_parts(mul_data)
         att_data = merge_gatha_parts(att_data)
         
         mul = mul_data
         att = att_data
-
-        att_index = index_para(att)
+    
+        # REPLACE THIS LINE:
+        # att_index = index_para(att)
+        
+        # WITH THIS:
+        att_index_data = index_para(att)  # Returns dict with index, ordered, usage_counter
+        att_index = att_index_data['index']  # Keep for backward compatibility if needed elsewhere
+    
         blocks = build_blocks(mul)
-
-        # Create intro page for this nikaya if it has leading entries
+    
+        # Create intro page
         intro_info = render_nikaya_intro(prefix, files["att"], corpus)
         if intro_info:
-            # Find nikaya name from mul
             nikaya_name = None
             for e in mul:
                 if e.get("rend") == "nikaya":
@@ -1698,9 +1917,10 @@ def main():
                     break
             if nikaya_name:
                 intro_pages[nikaya_name] = intro_info
-
+    
+        # UPDATE THIS FUNCTION CALL to pass att_index_data instead of just att_index
         for block in blocks:
-            render_sutta_page(prefix, block, att_index, att)
+            render_sutta_page(prefix, block, att_index_data, att)  # Pass the full data structure
     
     # Generate hierarchical index after all suttas are rendered
     print("\nGenerating hierarchical index...")
