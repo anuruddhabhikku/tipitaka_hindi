@@ -1,0 +1,1512 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+   font-size: 100%;  /* Base size - 100% = 16px default */
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 1.2em;  /* Change from 20px to 1.2em */
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+    font-size: 1.2em;  /* Slightly smaller than Pali (1.2em) but larger than body */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Floating Navigation Buttons */
+.floating-nav {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.floating-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.floating-btn:hover {
+    background: rgba(0,0,0,0.8);
+    transform: scale(1.05);
+}
+
+/* Progress Bar */
+.progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: #8B4513;
+    z-index: 9999;
+    transition: width 0.1s;
+}
+
+/* Font Size Controls */
+.font-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 100px;
+    display: flex;
+    gap: 8px;
+    z-index: 9999;
+}
+
+.font-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+    transition: all 0.2s;
+}
+
+.font-btn:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background: #1a1a2e;
+    color: #eee;
+}
+
+body.dark-mode .para {
+    border-bottom-color: #333;
+}
+
+body.dark-mode .pali.subhead {
+    color: #ddd;
+}
+
+body.dark-mode .commentary {
+    border-left-color: #444;
+    color: #ccc;
+}
+
+body.dark-mode .hindi {
+    color: #ccc;
+}
+
+body.dark-mode .paliword.has-dict:hover {
+    background: #2a2a3e;
+}
+
+body.dark-mode .paliword.no-dict:hover {
+    background: #252535;
+}
+
+/* Mobile Touch Improvements */
+@media (max-width: 768px) {
+    .paliword {
+        padding: 2px 0;
+        display: inline-block;
+    }
+    
+    .floating-btn, .font-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+    }
+    
+    .pali {
+        font-size: 1.1em;  /* Slightly smaller on mobile */
+    }
+}
+
+/* Scroll to Top Button */
+.scroll-top {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.scroll-top.visible {
+    display: flex;
+}
+
+/* TOC Panel */
+.toc-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 400px;
+    max-height: 80vh;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 10000;
+    overflow-y: auto;
+    font-family: 'TiroDevanagariHindi', sans-serif;
+}
+
+body.dark-mode .toc-panel {
+    background: #2a2a3e;
+    color: #eee;
+}
+
+.toc-header {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    background: inherit;
+}
+
+.toc-content {
+    padding: 10px;
+}
+
+.toc-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.toc-item:hover {
+    background: #f0f0f0;
+}
+
+body.dark-mode .toc-item:hover {
+    background: #3a3a4e;
+}
+
+/* Menu Dropdown Buttons */
+.menu-dropdown {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: rgba(30,30,40,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 8px 0;
+    min-width: 200px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.menu-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.menu-dropdown button:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Floating Menu Container */
+.floating-menu-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.floating-menu-container.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Main Menu Button */
+.menu-main-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 28px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-main-btn:hover {
+    background: rgba(0,0,0,0.9);
+    transform: scale(1.05);
+}
+</style>
+
+<script>
+const LOCAL_DICT = {"bhāvetabbaṃ": "1 <i>ptp</i> should be cultivated; should be developed [ptp of bhāveti] ‹ भावेति (lit. to cause to be)", "paṭhamaṃ": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>ind</i> first; firstly; at first; first of all [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>5 <i>ind</i> before; recently; newly; just [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>6 <i>fem</i> [fem]", "kalyāṇamittatā": "1 <i>fem</i> fact of having excellent friendship; fact of having spiritual companionship [fem, abstr, , from kalyāṇamitta] ‹ कल्याणमित्त (lit. good friend state)", "uddhaccasuttaṃ": "1 <i>nt</i> [nt,]", "mahicchatāya": "1 <i>fem</i> greediness; having many desires [fem, abstr, , from mahiccha] ‹ mahiccha (lit. many wishes state)", "katame": "1 <i>pron</i> what?; which (of the many)? [pron, interr, from ka] ‹ ka", "vā": "1 <i>lett</i> (gram) letter v; 37th letter of the alphabet; dento-labial semi-vowel [letter, masc]<br>2 <i>ind</i> or; either or [ind]<br>3 <i>ind</i> (gram) or; in some cases; not always; alternatively; optionally [ind]<br>4 <i>ind</i> exact; very; precise [ind, emph]<br>5 <i>ind</i> and; as well as [ind, conj]", "assādasuttaṃ": "1 <i>nt</i> [nt,]", "avihiṃsāsaññā": "1 <i>fem</i> perception connected with non-harm; recognition concerned with non-cruelty [fem, abstr,]", "sovacassatā": "1 <i>fem</i> suavity; gentleness; courteousness [fem, abstr, from sovacassa] ‹ sovacassa (lit. easy to speak to state)<br>2 <i>fem</i> docility; obedience; amenability to instruction [fem, abstr, from sovacassa] ‹ sovacassa (lit. easy to speak to state)", "adhammacariyā": "1 <i>fem</i> conduct not in line with the Dhamma; unethical conduct; unlawful behaviour; misconduct [fem,]", "abyāpādadhātu": "1 <i>fem</i> state of goodwill [fem, abstr,] (lit. non hatred state)", "micchādiṭṭhīti": "1 <i>fem</i> wrong view; incorrect belief [fem,]<br>2 <i>adj</i> having wrong view; with incorrect belief [adj,]", "uddhaccaṃ": "1 <i>nt</i> agitation; restlessness; distraction; excitement [nt, abstr, from uddhata] ‹ uddhata (lit. carrying up)", "manosucaritaṃ": "1 <i>nt</i> good mental conduct; wholesome thought [nt,]", "aratiyā": "1 <i>fem</i> dissatisfaction; dislike; discontent; aversion; boredom (towards); ennui (with) [fem, abstr, from na rati] ‹ rati (lit. not delight)<br>2 <i>fem</i> name of one of the three daughters of Death [fem, from na rati] ‹ rati (lit. non-delight)<br>3 <i>fem</i> dissatisfaction; dislike; discontent; aversion [fem, from na rati] ‹ rati (lit. non-delight)", "vihiṃsādhātu": "1 <i>fem</i> state of harming; state of cruelty [fem, abstr,]", "moho": "1 <i>masc</i> illusion; delusion; misapprehension [masc, from muyhati] ‹ muyhati<br>2 <i>masc</i> deception; deluding [masc, from muyhati] ‹ muyhati", "imesaṃ": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> for these; for them; for those [pron, masc & nt dat pl of ima] ‹ ima<br>3 <i>pron</i> of these; their [pron, masc & nt gen pl of ima] ‹ ima", "dovacassatāya": "1 <i>fem</i> unruliness; contumacy; not being amenable to verbal correction [fem, abstr, from dovacassa] ‹ dovacassa (lit. hard to talk to state)", "kāyaduccaritassa": "1 <i>nt</i> physical misconduct; bodily misbehaviour [nt,]", "vacīduccaritassa": "1 <i>nt</i> bad speech; verbal misconduct; misbehaviour in speech [nt,]", "sammādiṭṭhīti": "1 <i>fem</i> right view; correct outlook; correct belief [fem,]<br>2 <i>fem</i> Majjhima Nikāya 9 (MN9) [fem,] (lit. (discourse on) right view)<br>3 <i>adj</i> having right view; with correct outlook; with correct belief [adj,]", "cetaso": "1 <i>masc</i> mind; thought; intention [masc, mano group, from ceteti] ‹ ceteti<br>2 <i>adj</i> with mind; having mind [adj, in s, from cetas] ‹ cetas<br>3 <i>masc</i> for (one having such a) mind [masc, in s, dat sg of cetas, mano group] ‹ cetas<br>4 <i>masc</i> of mind [masc, gen sg of cetas, mano group] ‹ cetas", "dasamaṃ": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "micchādiṭṭhi": "1 <i>fem</i> wrong view; incorrect belief [fem,]<br>2 <i>adj</i> having wrong view; with incorrect belief [adj,]", "asubhāti": "1 <i>adj</i> ugly; disgusting; foul; unattractive [adj, from na sobhati] ‹ sobhati (lit. not beautiful)<br>2 <i>nt</i> (meditation on) ugliness; foulness; unattractiveness [nt, abstr, from na sobhati] ‹ sobhati (lit. not beautiful)<br>3 <i>nt</i> [nt, from na sobhati] ‹ sobhati", "rāgassa": "1 <i>masc</i> desire; passion; lust; greed (for); infatuation (with) [masc, from rajjati] ‹ rajjati (lit. attachment)<br>2 <i>masc</i> [masc, from rajati] ‹ rajati", "adhammacariyāya": "1 <i>fem</i> conduct not in line with the Dhamma; unethical conduct; unlawful behaviour; misconduct [fem,]", "santuṭṭhitāsuttaṃ": "1 <i>nt</i> [nt,]", "asantuṭṭhitāya": "1 <i>fem</i> dissatisfaction; non-content (with) [fem, abstr, from na santuṭṭhi] ‹ सन्तुट्ठि (lit. not content state)", "dhātūti": "1 <i>masc</i> [masc, agent, from dhāreti] ‹ धारेति<br>2 <i>fem</i> state; property; condition; element [fem, abstr, from dadhāti] ‹ दधाति<br>3 <i>fem</i> state of being; realm of existence [fem, abstr, from dadhāti] ‹ दधाति<br>4 <i>fem</i> (of the Buddha or arahant) relic [fem, abstr, from dadhāti] ‹ दधाति<br>5 <i>fem</i> fact; state (of) [fem, abstr, from dadhāti] ‹ दधाति<br>6 <i>fem</i> (gram) verbal root [fem, abstr, from dadhāti] ‹ दधाति<br>7 <i>fem</i> metal ore [fem, from dadhāti] ‹ दधाति<br>8 <i>fem</i> one of the eighteen components of perceptual experience, corresponding to the six sense organs, their associated external field and corresponding consciousness [fem, abstr, from dadhāti] ‹ दधाति<br>9 <i>masc</i> supporter; bearer, carrier; upholder [masc, agent, from dhāreti] ‹ धारेति (lit. who causes to carry)<br>10 <i>masc</i> (gram) verbal root [masc, abstr, from dadhāti] ‹ दधाति<br>11 <i>fem</i> in reference to MN140 Dhātuvibhaṅgasutta [fem, from dadhāti] ‹ दधाति (lit. state)", "vihiṃsāvitakkassa": "1 <i>masc</i> thought of harming; idea of hurting; malign thought; thought of cruelty [masc,]", "asaṃvarassa": "1 <i>masc</i> no control; lack of restraint (in) [masc, from na saṃvarati] ‹ संवरति", "vitakkasuttaṃ": "1 <i>nt</i> [nt,]", "manoduccaritassa": "1 <i>nt</i> mental misconduct; misbehaviour by mind [nt,]", "mettāti": "1 <i>adj</i> friendly; benevolent; kind [adj, from mitta] ‹ mitta<br>2 <i>nt</i> goodwill (towards); friendliness (to); kindness (to) [nt, from mitta] ‹ mitta<br>3 <i>fem</i> goodwill (towards); friendliness (to); benevolence (for) [fem, abstr, from mitta] ‹ mitta", "rāgo": "1 <i>masc</i> desire; passion; lust; greed (for); infatuation (with) [masc, from rajjati] ‹ rajjati (lit. attachment)<br>2 <i>masc</i> [masc, from rajati] ‹ rajati", "rāgasuttaṃ": "1 <i>nt</i> [nt,]", "byāpādadhātu": "1 <i>fem</i> state of ill-will [fem, abstr,]", "tayome": "1 <i>sand</i> these three [sandhi, adj + pron]", "tatiyaṃ": "1 <i>ordi</i> third (3rd) [ordin of ti] ‹ ti<br>2 <i>masc</i> (gram) third consonant of each vagga; g, j, ḍ, d, b [masc, from ti] ‹ ti<br>3 <i>adj</i> [adj, from tatha] ‹ tatha<br>4 <i>ind</i> for the third time [ind, adv, acc sg of tatiya] ‹ tatiya<br>5 <i>fem</i> [fem]", "appamādo": "1 <i>masc</i> alertness; care; carefulness; caution; vigilance; diligence; conscientiousness; heedfulness [masc, abstr, from na pamajjati] ‹ pamajjati (lit. not heedless)", "chaṭṭhe": "1 <i>ordi</i> sixth (6th) [ordin of cha] ‹ cha", "paṭhame": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>fem</i> [fem]", "asubhā": "1 <i>adj</i> ugly; disgusting; foul; unattractive [adj, from na sobhati] ‹ sobhati (lit. not beautiful)<br>2 <i>nt</i> (meditation on) ugliness; foulness; unattractiveness [nt, abstr, from na sobhati] ‹ sobhati (lit. not beautiful)<br>3 <i>nt</i> [nt, from na sobhati] ‹ sobhati", "byāpādadhātuyā": "1 <i>fem</i> state of ill-will [fem, abstr,]", "vikkhepo": "1 <i>masc</i> waving motion; moving to and fro [masc, from vikkhipati] ‹ vikkhipati (lit. throwing apart)<br>2 <i>masc</i> disjunction; disconnection [masc, from vikkhipati] ‹ vikkhipati (lit. throwing apart)<br>3 <i>masc</i> disturbance; confusion; derangement [masc, from vikkhipati] ‹ vikkhipati (lit. throwing apart)", "vacīsucaritaṃ": "1 <i>nt</i> good verbal conduct [nt,] (lit. good behaviour with speech)", "assādadiṭṭhīti": "1 <i>fem</i> belief in gratification; concept of (eternal) happiness [fem,]", "vacīduccaritaṃ": "1 <i>nt</i> bad speech; verbal misconduct; misbehaviour in speech [nt,]", "vihiṃsāsaññā": "1 <i>fem</i> perception connected with harm; recognition concerned with cruelty [fem, abstr,]", "catutthaṃ": "1 <i>ordi</i> fourth (4th) [ordin of catu] ‹ catu<br>2 <i>masc</i> (gram) fourth consonant of each vagga; gh, jh, ḍh, dh, bh [masc, from catu] ‹ catu (lit. fourth)<br>3 <i>ind</i> for the fourth time; on the fourth day [ind, adv, acc sg of catuttha] ‹ catuttha", "attānudiṭṭhi": "1 <i>fem</i> sense of self; concept of identity; speculation about self; view that the self exists [fem, abstr,] (lit. following view of self)", "ānāpānassati": "1 <i>fem</i> mindfulness while breathing in and out; mindfulness during inhalation and exhalation [fem, abstr,]", "sesaṃ": "1 <i>pron</i> own; one's own; one's own possession [pron, base, reflx]<br>2 <i>adj</i> remaining; left; left over [adj, from sissati] ‹ sissati<br>3 <i>masc</i> leftovers; remains; remainder; remnant [masc, from sissati] ‹ sissati<br>4 <i>nt</i> rest; remainder [nt, from sissati] ‹ sissati", "saññā": "1 <i>adj</i> perceiving; having perception; regarding (as) [adj, in s, from saññā] ‹ सञ्ञा (lit. knowing together)<br>2 <i>fem</i> perception; conception; recognition; third of the five aggregates [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>3 <i>fem</i> name; label; concept; idea; notion; impression; representation; symbol [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>4 <i>fem</i> sign; signal; gesture [fem, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>5 <i>fem</i> (gram) grammatical term; technical term; definition [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>6 <i>fem</i> consciousness; awareness [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)", "attānudiṭṭhīti": "1 <i>fem</i> sense of self; concept of identity; speculation about self; view that the self exists [fem, abstr,] (lit. following view of self)", "paññāti": "1 <i>adj</i> wise; intelligent; learned; knowledgeable; skilled [adj, in s, from paññā] ‹ पञ्ञा<br>2 <i>fem</i> wisdom; knowledge; understanding; insight; distinctive knowledge [fem, abstr, from pajānāti] ‹ पजानाति<br>3 <i>fem</i> with wisdom; with intelligence; with understanding [fem, instr sg of paññā, irreg] ‹ पञ्ञा", "asubhakammaṭṭhānaṃ": "1 <i>nt</i> [nt,]", "mahicchatā": "1 <i>fem</i> greediness; having many desires [fem, abstr, , from mahiccha] ‹ mahiccha (lit. many wishes state)", "vihiṃsāvitakko": "1 <i>masc</i> thought of harming; idea of hurting; malign thought; thought of cruelty [masc,]", "ekādasamassa": "1 <i>ordi</i> eleventh (11th) [ordin of ekādasa,] ‹ एकादस", "dvāsaṭṭhividhāpi": "1 <i>adj</i> of sixty two kinds [adj,]", "pāpamittatāya": "1 <i>fem</i> bad friendship; friendship with bad people [fem, abstr, , from pāpamitta] ‹ पापमित्त", "samatho": "1 <i>masc</i> stilling (of); serenity (of); calming (of); settling (of); peace (of); (comm) mental unification [masc, abstr, from sammati] ‹ sammati<br>2 <i>masc</i> (vinaya) settlement; deciding; appeasement; adjudication (of) [masc, abstr, from sammati] ‹ sammati", "dhammā": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>nt</i> teaching; discourse; doctrine [nt, from dharati, irreg] ‹ dharati<br>13 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>14 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>15 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>16 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu<br>17 <i>fem</i> name of an arahant nun [fem, from dhamma] ‹ dhamma", "paññā": "1 <i>adj</i> wise; intelligent; learned; knowledgeable; skilled [adj, in s, from paññā] ‹ पञ्ञा<br>2 <i>fem</i> wisdom; knowledge; understanding; insight; distinctive knowledge [fem, abstr, from pajānāti] ‹ पजानाति<br>3 <i>fem</i> with wisdom; with intelligence; with understanding [fem, instr sg of paññā, irreg] ‹ पञ्ञा", "sakkāyadiṭṭhi": "1 <i>fem</i> view that one is an embodied being; belief in self-identity; the view that this mind-body complex is an independent entity [fem,]", "muditā": "1 <i>pp</i> happy; glad [pp of modati] ‹ modati (lit. became soft)<br>2 <i>fem</i> happiness (for); appreciation; sympathetic joy [fem, abstr, from mudita] ‹ mudita<br>3 <i>masc</i> name of an arahant monk [masc, pp of modati] ‹ modati (lit. happy)", "avihiṃsāvitakko": "1 <i>masc</i> harmless thinking; thought of helping; thought of non-cruelty [masc,]", "aṭṭhamaṃ": "1 <i>ordi</i> eighth (8th) [ordin of aṭṭha] ‹ अट्ठ<br>2 <i>masc</i> name of a privately awakened Buddha [masc, ordin of aṭṭha] ‹ अट्ठ (lit. eighth)<br>3 <i>ind</i> for the eighth time [ind, adv, acc sg of aṭṭhama] ‹ अट्ठम", "pamādassa": "1 <i>masc</i> carelessness; negligence; heedlessness [masc, abstr, from pamajjati] ‹ pamajjati<br>2 <i>masc</i> intoxication; inebriation; drunkenness [masc, abstr, from pamajjati] ‹ pamajjati", "maggapaññā": "1 <i>fem</i> wisdom of the path; understanding of the path [fem,]", "vihesā": "1 <i>fem</i> irritation; annoyance; trouble [fem, abstr, from vihiṃsati] ‹ विहिंसति<br>2 <i>fem</i> harm; cruelty; viciousness; brutality [fem, abstr, from vihiṃsati] ‹ विहिंसति", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "byāpādavitakkassa": "1 <i>masc</i> malevolent thought; thought of ill-will [masc,]", "vihiṃsāya": "1 <i>fem</i> harm; injury; pain [fem, abstr, from vihiṃsati] ‹ विहिंसति<br>2 <i>fem</i> trouble; annoyance; vexation [fem, abstr, from vihiṃsati] ‹ विहिंसति<br>3 <i>fem</i> cruelty [fem, abstr, from vihiṃsati] ‹ विहिंसति", "kho": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "pañcamaṃ": "1 <i>ordi</i> fifth (5th) [ordin of pañca] ‹ पञ्च<br>2 <i>masc</i> fifth of the seven primary musical notes [masc, ordin of pañca] ‹ पञ्च (lit. fifth)", "uddhaccena": "1 <i>nt</i> agitation; restlessness; distraction; excitement [nt, abstr, from uddhata] ‹ uddhata (lit. carrying up)", "abyāpādavitakko": "1 <i>masc</i> thought of goodwill; kind thought [masc,] (lit. not ill-will thought)", "avihiṃsā": "1 <i>fem</i> non-violence; non-cruelty; non-harm [fem, abstr, from na vihiṃsati] ‹ विहिंसति", "vikkhepassa": "1 <i>masc</i> waving motion; moving to and fro [masc, from vikkhipati] ‹ vikkhipati (lit. throwing apart)<br>2 <i>masc</i> disjunction; disconnection [masc, from vikkhipati] ‹ vikkhipati (lit. throwing apart)<br>3 <i>masc</i> disturbance; confusion; derangement [masc, from vikkhipati] ‹ vikkhipati (lit. throwing apart)", "duve": "1 <i>card</i> two (2) [card, x pl]", "duccaritasuttaṃ": "1 <i>nt</i> [nt,]", "sabbattha": "1 <i>ind</i> everywhere; every place [ind, adv, from sabba] ‹ sabba<br>2 <i>ind</i> in every way; in every respect; entirely [ind, adv, from sabba] ‹ sabba<br>3 <i>ind</i> (gram) in all cases; in all instances [ind, adv, from sabba] ‹ sabba<br>4 <i>masc</i> all cases; all matters; all things [masc pl,]", "vihiṃsādhātuyā": "1 <i>fem</i> state of harming; state of cruelty [fem, abstr,]", "pahānāya": "1 <i>nt</i> giving up; letting go; removal; abandoning (of) [nt, act, from pajahati] ‹ pajahati (lit. actively abandoning)", "sattamaṃ": "1 <i>ordi</i> seventh (7th) [ordin of satta] ‹ satta<br>2 <i>adj</i> best; most excellent; highest [adj, superl of santa] ‹ santa", "byāpādasaññāya": "1 <i>fem</i> perception connected with ill-will; recognition concerned with dislike [fem, abstr,]", "asampajaññassa": "1 <i>nt</i> lack of attentiveness; lack of clear comprehension [nt, abstr, from na sampajāna] ‹ सम्पजान (lit. not actively knowing together)", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "kāyaduccaritaṃ": "1 <i>nt</i> physical misconduct; bodily misbehaviour [nt,]", "santuṭṭhitā": "1 <i>fem</i> contentment; satisfaction [fem, abstr, from santuṭṭhi] ‹ सन्तुट्ठि (lit. contentment state)", "dhammānaṃ": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>nt</i> teaching; discourse; doctrine [nt, from dharati, irreg] ‹ dharati<br>13 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>14 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>15 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>16 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu<br>17 <i>fem</i> name of an arahant nun [fem, from dhamma] ‹ dhamma", "bhāvetabbo": "1 <i>ptp</i> should be cultivated; should be developed [ptp of bhāveti] ‹ भावेति (lit. to cause to be)", "kāmasaññā": "1 <i>fem</i> perception connected with sensual pleasure; recognition concerned with sensual desire [fem, abstr,]", "dasame": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "ime": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> these [pron, masc nom & acc pl of ima] ‹ ima", "pamādo": "1 <i>masc</i> carelessness; negligence; heedlessness [masc, abstr, from pamajjati] ‹ pamajjati<br>2 <i>aor</i> was careless (about); neglected; was negligent (with); was heedless (about) [aor of pamādeti] ‹ पमादेति<br>3 <i>masc</i> intoxication; inebriation; drunkenness [masc, abstr, from pamajjati] ‹ pamajjati", "arati": "1 <i>fem</i> dissatisfaction; dislike; discontent; aversion; boredom (towards); ennui (with) [fem, abstr, from na rati] ‹ rati (lit. not delight)<br>2 <i>fem</i> name of one of the three daughters of Death [fem, from na rati] ‹ rati (lit. non-delight)<br>3 <i>fem</i> dissatisfaction; dislike; discontent; aversion [fem, from na rati] ‹ rati (lit. non-delight)", "kāyasucaritaṃ": "1 <i>nt</i> good physical conduct; virtuous bodily behaviour [nt,]", "attānudiṭṭhiyā": "1 <i>fem</i> sense of self; concept of identity; speculation about self; view that the self exists [fem, abstr,] (lit. following view of self)", "vīsativatthukā": "1 <i>adj</i> [adj,]", "manoduccaritaṃ": "1 <i>nt</i> mental misconduct; misbehaviour by mind [nt,]", "byāpādasaññā": "1 <i>fem</i> perception connected with ill-will; recognition concerned with dislike [fem, abstr,]", "kāmavitakkassa": "1 <i>masc</i> sensual thought; sexual thought [masc,]", "vihiṃsāsaññāya": "1 <i>fem</i> perception connected with harm; recognition concerned with cruelty [fem, abstr,]", "nekkhammavitakko": "1 <i>masc</i> thought of renunciation; thought of letting go of sensual pleasure [masc,]", "sammādiṭṭhi": "1 <i>fem</i> right view; correct outlook; correct belief [fem,]<br>2 <i>fem</i> Majjhima Nikāya 9 (MN9) [fem,] (lit. (discourse on) right view)<br>3 <i>adj</i> having right view; with correct outlook; with correct belief [adj,]", "anugatā": "1 <i>pp</i> permeated (with); pervaded (with); penetrated (by) [pp of anugacchati] ‹ anugacchati (lit. gone along)<br>2 <i>pp</i> followed; conforming (to) [pp of anugacchati] ‹ anugacchati (lit. gone along)<br>3 <i>pp</i> accompanied (by) [pp of anugacchati] ‹ anugacchati (lit. gone along)<br>4 <i>pp</i> afflicted (by); suffering (from) [pp of anugacchati] ‹ anugacchati (lit. gone along)", "maggasammādiṭṭhi": "1 <i>fem</i> right view of the path [fem,]", "vihiṃsā": "1 <i>prp</i> [prp of vihiṃsati] ‹ विहिंसति<br>2 <i>fem</i> harm; injury; pain [fem, abstr, from vihiṃsati] ‹ विहिंसति<br>3 <i>fem</i> trouble; annoyance; vexation [fem, abstr, from vihiṃsati] ‹ विहिंसति<br>4 <i>fem</i> cruelty [fem, abstr, from vihiṃsati] ‹ विहिंसति<br>5 <i>aor</i> [aor of vihiṃsati] ‹ विहिंसति", "tayo": "1 <i>card</i> three (3) [card, masc nom pl of ti] ‹ ti<br>2 <i>card</i> three (3) (object) [card, masc acc pl of ti] ‹ ti<br>3 <i>card</i> three (3) [card, masc fem & nt pl]<br>4 <i>ve</i> (gram) ti; verbal ending of the present tense 3rd person singular [ve, masc]", "assādadiṭṭhiyā": "1 <i>fem</i> belief in gratification; concept of (eternal) happiness [fem,]", "vuccati": "1 <i>pr</i> is said to be; is called [pr, pass of vacati] ‹ vacati", "pāpamittatā": "1 <i>fem</i> bad friendship; friendship with bad people [fem, abstr, , from pāpamitta] ‹ पापमित्त", "dutiyaṃ": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>ind</i> second time [ind, adv, acc sg of dutiya] ‹ dutiya<br>5 <i>fem</i> second woman; another woman; female companion [fem, from dvi] ‹ dvi<br>6 <i>fem</i> [fem]<br>7 <i>fem</i> [fem, from dūta] ‹ दूत<br>8 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "uttānamevāti": "1 <i>sand</i> is clear as is [sandhi, adj + ind + ind]", "navamaṃ": "1 <i>ordi</i> ninth (9th) [ordin of nava] ‹ nava", "avihiṃsādhātu": "1 <i>fem</i> state of non-harm; state of non-cruelty [fem, abstr,]", "dosassa": "1 <i>masc</i> aversion; ill-will; hate; hatred [masc, from dussati] ‹ dussati<br>2 <i>masc</i> fault; wrong; error [masc, from dussati] ‹ dussati<br>3 <i>masc</i> defect; corruption; problem [masc, from dussati] ‹ dussati<br>4 <i>adj</i> angry; wrathful; malicious; upset [adj, from dussati] ‹ dussati<br>5 <i>masc</i> nightfall; dusk; early evening [masc, from dussati] ‹ dussati<br>6 <i>masc</i> (of the body) humour; elemental condition [masc, from dussati] ‹ dussati (lit. fault)<br>7 <i>masc</i> accusation; blame; reproach [masc, from dussati] ‹ dussati", "kāmavitakko": "1 <i>masc</i> sensual thought; sexual thought [masc,]", "natthi": "1 <i>pr</i> is not; it is not; there is not; there is no; there is nothing [pr, from na atthi] ‹ atthi<br>2 <i>pr</i> does not exist; no longer exists [pr, from na atthi] ‹ atthi", "mohassa": "1 <i>masc</i> illusion; delusion; misapprehension [masc, from muyhati] ‹ muyhati<br>2 <i>masc</i> deception; deluding [masc, from muyhati] ‹ muyhati", "diṭṭhi": "1 <i>fem</i> view; belief; opinion; concept; theory; attitude; philosophy; credo; creed; dogma [fem, abstr] ‹ √dis<br>2 <i>fem</i> wrong view; incorrect belief [fem, abstr] ‹ √dis<br>3 <i>adj</i> having a view; having the opinion; holding the belief [adj, from diṭṭhi] ‹ दिट्ठि<br>4 <i>masc</i> who has a view; who has the opinion [masc, agent, from diṭṭhi] ‹ दिट्ठि<br>5 <i>adj</i> with a view; having a belief; holding an opinion; with a theory [adj, in s] ‹ √dis", "asampajaññaṃ": "1 <i>nt</i> lack of attentiveness; lack of clear comprehension [nt, abstr, from na sampajāna] ‹ सम्पजान (lit. not actively knowing together)", "dovacassatā": "1 <i>fem</i> unruliness; contumacy; not being amenable to verbal correction [fem, abstr, from dovacassa] ‹ dovacassa (lit. hard to talk to state)", "mettā": "1 <i>adj</i> friendly; benevolent; kind [adj, from mitta] ‹ mitta<br>2 <i>nt</i> goodwill (towards); friendliness (to); kindness (to) [nt, from mitta] ‹ mitta<br>3 <i>fem</i> goodwill (towards); friendliness (to); benevolence (for) [fem, abstr, from mitta] ‹ mitta", "tassuddānaṃ": "1 <i>sand</i> summary; a short verse given at the end of each vagga listing the titles or topics of the relevant suttas [sandhi, pron + nt] (lit. tying up of that)", "chaṭṭhaṃ": "1 <i>ordi</i> sixth (6th) [ordin of cha] ‹ cha", "asantuṭṭhitā": "1 <i>fem</i> dissatisfaction; non-content (with) [fem, abstr, from na santuṭṭhi] ‹ सन्तुट्ठि (lit. not content state)", "bhāvetabbā": "1 <i>ptp</i> should be cultivated; should be developed [ptp of bhāveti] ‹ भावेति (lit. to cause to be)", "kāmadhātuyā": "1 <i>fem</i> realm of desire; world of sense pleasure [fem, abstr,] (lit. sensual state)", "aratisuttaṃ": "1 <i>nt</i> Saṃyutta Nikāya 8.2 (SN8.2) [nt,] (lit. discourse on boredom)<br>2 <i>nt</i> [nt,]", "nekkhammasaññā": "1 <i>fem</i> perception connected with renunciation; recognition concerned with giving up sensual pleasure [fem, abstr,]", "nekkhammadhātu": "1 <i>fem</i> state of renunciation [fem, abstr,]", "sassatadiṭṭhi": "1 <i>fem</i> eternalism; doctrine of an everlasting soul [fem,]", "doso": "1 <i>masc</i> aversion; ill-will; hate; hatred [masc, from dussati] ‹ dussati<br>2 <i>masc</i> fault; wrong; error [masc, from dussati] ‹ dussati<br>3 <i>masc</i> defect; corruption; problem [masc, from dussati] ‹ dussati<br>4 <i>adj</i> angry; wrathful; malicious; upset [adj, from dussati] ‹ dussati<br>5 <i>masc</i> nightfall; dusk; early evening [masc, from dussati] ‹ dussati<br>6 <i>masc</i> (of the body) humour; elemental condition [masc, from dussati] ‹ dussati (lit. fault)<br>7 <i>masc</i> accusation; blame; reproach [masc, from dussati] ‹ dussati", "dhammacariyā": "1 <i>fem</i> conduct in line with the Dhamma; ethical conduct; moral behaviour [fem,]", "abyāpādasaññā": "1 <i>fem</i> perception connected with goodwill; recognition concerned with kindness [fem, abstr,] (lit. not ill-will perception)", "attānaṃ": "1 <i>masc</i> self; soul; spirit; essence [masc, atta group]<br>2 <i>adj</i> personal; related to oneself [adj, in s]<br>3 <i>nt</i> taking up; accepting; seizing; grasping [nt, pp of ādadāti] ‹ आददाति (lit. taken)<br>4 <i>pp</i> taken up; accepted; seized; grasped [pp of ādadāti] ‹ आददाति<br>5 <i>nt</i> (gram) the negative prefix a [nt, abstr, from na] ‹ na (lit. na state)<br>6 <i>masc</i> self; himself; herself; itself; yourself; oneself (object) [masc, acc sg of atta, atta group] ‹ atta", "sampajaññaṃ": "1 <i>nt</i> attentiveness; clear awareness; full comprehension [nt, abstr, from sampajāna] ‹ सम्पजान (lit. actively knowing together)<br>2 <i>adj</i> attentive; clearly aware; fully comprehending [adj, from sampajañña] ‹ सम्पजञ्ञ (lit. actively knowing together)", "asaṃvaroti": "1 <i>masc</i> no control; lack of restraint (in) [masc, from na saṃvarati] ‹ संवरति", "saṃvaro": "1 <i>masc</i> control; restraint; holding back (according to) [masc, from saṃvarati] ‹ संवरति<br>2 <i>masc</i> control (over); restraint (of); holding back (of) [masc, from saṃvarati] ‹ संवरति<br>3 <i>aor</i> [aor of saṃvarati] ‹ संवरति", "assādadiṭṭhi": "1 <i>fem</i> belief in gratification; concept of (eternal) happiness [fem,]", "kāmadhātu": "1 <i>fem</i> realm of desire; world of sense pleasure [fem, abstr,] (lit. sensual state)", "aniccasaññā": "1 <i>fem</i> recognition of impermanence; perception of instability (in); concept of inconsistency [fem, abstr,]", "saññāsuttaṃ": "1 <i>nt</i> [nt,]", "dovacassatāsuttaṃ": "1 <i>nt</i> [nt,]", "mettākammaṭṭhānaṃ": "1 <i>nt</i> [nt,]", "kāmasaññāya": "1 <i>fem</i> perception connected with sensual pleasure; recognition concerned with sensual desire [fem, abstr,]", "dhātusuttaṃ": "1 <i>nt</i> [nt,]", "anattasaññā": "1 <i>fem</i> recognition of impersonality; perception of non-self; concept of no self [fem, abstr,]", "byāpādavitakko": "1 <i>masc</i> malevolent thought; thought of ill-will [masc,]", "tiṇṇaṃ": "1 <i>card</i> three (3) [card, masc fem & nt pl]<br>2 <i>pp</i> crossed over; gone beyond [pp of tarati] ‹ tarati<br>3 <i>pp</i> who has crossed over; who has gone beyond [pp of tarati] ‹ tarati<br>4 <i>card</i> of three [card, masc & nt gen pl of ti] ‹ ti", "asaṃvaro": "1 <i>masc</i> no control; lack of restraint (in) [masc, from na saṃvarati] ‹ संवरति", "bhāvetabbāti": "1 <i>ptp</i> should be cultivated; should be developed [ptp of bhāveti] ‹ भावेति (lit. to cause to be)", "micchādiṭṭhiyā": "1 <i>fem</i> wrong view; incorrect belief [fem,]<br>2 <i>adj</i> having wrong view; with incorrect belief [adj,]", "uddhaccassa": "1 <i>nt</i> agitation; restlessness; distraction; excitement [nt, abstr, from uddhata] ‹ uddhata (lit. carrying up)", "appicchatā": "1 <i>fem</i> fact of having few wishes; contentment [fem, abstr, , from appiccha] ‹ appiccha (lit. few wishes state)"};
+const SUTTA_DATA = {"toc": [{"id": "s0403m2.mul_00802", "title": "१. रागसुत्तं", "hi": "१. रागसुत्त (आसक्ति पर उपदेश)"}, {"id": "s0403m2.mul_00804", "title": "२. दुच्‍चरितसुत्तं", "hi": "२. दुश्चरित सूत्र"}, {"id": "s0403m2.mul_00806", "title": "३. वितक्‍कसुत्तं", "hi": "३. वितर्क सूत्र"}, {"id": "s0403m2.mul_00808", "title": "४. सञ्‍ञासुत्तं", "hi": "४. संज्ञा-सूत्र (sañjñā-sūtra)"}, {"id": "s0403m2.mul_00810", "title": "५. धातुसुत्तं", "hi": "५. धातु सूत्र"}, {"id": "s0403m2.mul_00812", "title": "६. अस्सादसुत्तं", "hi": "६. आस्वाद सूक्त (तृप्ति का सूत्र)"}, {"id": "s0403m2.mul_00814", "title": "७. अरतिसुत्तं", "hi": "७. अरति सूत्र"}, {"id": "s0403m2.mul_00816", "title": "८. सन्तुट्ठितासुत्तं", "hi": "८. सन्तुष्टिता सूत्र (Saṃtuṣṭitā-sutta)"}, {"id": "s0403m2.mul_00818", "title": "९. दोवचस्सतासुत्तं", "hi": "९. दौवचस्यता सूत्र (दुर्वचता पर प्रवचन)"}, {"id": "s0403m2.mul_00820", "title": "१०. उद्धच्‍चसुत्तं", "hi": "१०. औद्धत्य-सूत्र (उद्धच्च-सुत्त)"}], "totalSuttasInFile": 10, "currentIndex": 40, "totalSuttas": 53, "prevFileUrl": "s0403m2.mul_00772_10_ānisaṃsavaggo.html", "nextFileUrl": "s0403m2.mul_00825_12_sāmaññavaggo.html"};
+
+
+// ========== GLOBAL VARIABLES ==========
+let currentFontSize = localStorage.getItem('fontSize') || '100';
+let isDarkMode = localStorage.getItem('darkMode') === 'true';
+let menuHideTimer = null;
+let isMenuVisible = false;
+
+// ========== DICTIONARY FUNCTIONS (unchanged) ==========
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+// ========== TOGGLE FUNCTIONS ==========
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+// ========== MIDDLE CLICK (PRESERVED) ==========
+document.addEventListener('auxclick', function(e) {
+    // Check for middle button (button === 1)
+    if (e.button === 1) {
+        // Find the closest pali div
+        const paliDiv = e.target.closest('.pali');
+        if (paliDiv) {
+            e.preventDefault(); // Prevent default middle-click behavior
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) {
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+});
+
+// Prevent default middle-click scrolling
+document.addEventListener('mousedown', function(e) {
+    if (e.button === 1) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+
+// ========== TOUCH GESTURES ==========
+document.addEventListener('touchstart', function(e) { 
+    if (e.touches.length === 2) { 
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const paliDiv = element?.closest('.pali');
+        
+        if (paliDiv) { 
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) { 
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+    else if (e.touches.length === 3) { 
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const paliDiv = element?.closest('.pali');
+        
+        if (paliDiv) { 
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleCommentary"]');
+            if (toggleIcon && toggleIcon.onclick) { 
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+}, { passive: false });
+
+
+// ========== FLOATING MENU FUNCTIONS ==========
+function showMenu() {
+    const menu = document.getElementById('floatingMenu');
+    if (menu) {
+        menu.classList.add('visible');
+        isMenuVisible = true;
+        
+        // Clear existing timer
+        if (menuHideTimer) clearTimeout(menuHideTimer);
+        
+        // Hide after 3 seconds of inactivity
+        menuHideTimer = setTimeout(() => {
+            menu.classList.remove('visible');
+            isMenuVisible = false;
+        }, 3000);
+    }
+}
+
+function toggleMenuDropdown() {
+    const dropdown = document.getElementById('menuDropdown');
+    if (dropdown) {
+        const isVisible = dropdown.style.display === 'block';
+        dropdown.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+function goFullScreen() {
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        var docEl = document.documentElement;
+        var requestFullScreen = docEl.requestFullscreen ||
+                                docEl.mozRequestFullScreen ||
+                                docEl.webkitRequestFullScreen ||
+                                docEl.msRequestFullscreen;
+        if (requestFullScreen) {
+            requestFullScreen.call(docEl);
+        }
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+    showMenu();
+}
+
+function togglePaliVisibility() {
+// Get all main Pali divs
+        const paliDivs = document.querySelectorAll('.para > .pali');
+        
+        // Toggle visibility of the ENTIRE Pali div (both text and icons)
+        paliDivs.forEach(paliDiv => {
+            if (paliDiv.style.display === 'none') {
+                paliDiv.style.display = '';  // Show
+            } else {
+                paliDiv.style.display = 'none';  // Hide
+            }
+        });
+        
+        // Also toggle Hindi (existing functionality)
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+            
+    showMenu();
+}
+
+function goBackToIndex() {
+    window.location.href = '../index.html';
+}
+
+let currentSuttaIndex = 0;  // Track which sutta we're viewing
+let suttasInFile = [];      // Array of sutta IDs from TOC
+
+function goPrevSutta() {
+    if (suttasInFile.length === 0) {
+        // No multiple suttas, just go to prev file
+        if (SUTTA_DATA && SUTTA_DATA.prevFileUrl) {
+            window.location.href = SUTTA_DATA.prevFileUrl;
+        }
+        return;
+    }
+    
+    if (currentSuttaIndex > 0) {
+        // Go to previous sutta in same file
+        currentSuttaIndex--;
+        const targetId = suttasInFile[currentSuttaIndex];
+        window.location.hash = targetId;
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        // At first sutta, go to previous file
+        if (SUTTA_DATA && SUTTA_DATA.prevFileUrl) {
+            window.location.href = SUTTA_DATA.prevFileUrl;
+        }
+    }
+}
+
+function goNextSutta() {
+    if (suttasInFile.length === 0) {
+        // No multiple suttas, just go to next file
+        if (SUTTA_DATA && SUTTA_DATA.nextFileUrl) {
+            window.location.href = SUTTA_DATA.nextFileUrl;
+        }
+        return;
+    }
+    
+    if (currentSuttaIndex < suttasInFile.length - 1) {
+        // Go to next sutta in same file
+        currentSuttaIndex++;
+        const targetId = suttasInFile[currentSuttaIndex];
+        window.location.hash = targetId;
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        // At last sutta, go to next file
+        if (SUTTA_DATA && SUTTA_DATA.nextFileUrl) {
+            window.location.href = SUTTA_DATA.nextFileUrl;
+        }
+    }
+}
+
+function updateCurrentSutta() {
+    // Check URL hash to determine which sutta were viewing
+    const hash = window.location.hash.substring(1);
+    if (hash && suttasInFile.length > 0) {
+        const index = suttasInFile.indexOf(hash);
+        if (index !== -1) {
+            currentSuttaIndex = index;
+            
+            // Ensure the element is visible
+            const targetElement = document.getElementById(hash);
+            if (targetElement) {
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    }
+    
+    // Update TOC highlighting
+    document.querySelectorAll('.toc-item').forEach((item, idx) => {
+        if (idx === currentSuttaIndex) {
+            item.style.background = '#e6f0ff';
+        } else {
+            item.style.background = '';
+        }
+    });
+}
+
+// Initialize suttasInFile from TOC
+function initNavigation() {
+    if (SUTTA_DATA && SUTTA_DATA.toc) {
+        suttasInFile = SUTTA_DATA.toc.map(item => item.id);
+    }
+    updateCurrentSutta();
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', updateCurrentSutta);
+}
+
+function showTOC() {
+    const tocPanel = document.getElementById('tocPanel');
+    if (tocPanel) {
+        const isVisible = tocPanel.style.display === 'block';
+        tocPanel.style.display = isVisible ? 'none' : 'block';
+        
+        // Ensure TOC items have proper click handling
+        if (!isVisible) {
+            setTimeout(() => {
+                document.querySelectorAll('.toc-item a').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        // Close TOC after clicking
+                        setTimeout(() => {
+                            tocPanel.style.display = 'none';
+                        }, 100);
+                    });
+                });
+            }, 100);
+        }
+    }
+}
+
+function changeFontSize(delta) {
+    let newSize = currentFontSize + delta;
+    if (newSize < 80) newSize = 80;
+    if (newSize > 150) newSize = 150;
+    currentFontSize = newSize;
+    localStorage.setItem('fontSize', currentFontSize);
+    
+    // Apply to body - this will affect all em-based sizes
+    document.body.style.fontSize = currentFontSize + '%';
+    
+    // Force reflow to ensure changes apply
+    document.body.style.display = 'none';
+    document.body.offsetHeight; // Force reflow
+    document.body.style.display = '';
+    
+    showMenu();
+}
+
+function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    localStorage.setItem('darkMode', isDarkMode);
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+    showMenu(); // Keep menu visible after action
+}
+
+function updateProgressBar() {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) progressBar.style.width = scrolled + '%';
+    
+    // Show/hide scroll to top button
+    const scrollBtn = document.getElementById('scrollTopBtn');
+    if (scrollBtn) {
+        if (winScroll > 300) {
+            scrollBtn.classList.add('visible');
+        } else {
+            scrollBtn.classList.remove('visible');
+        }
+    }
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Save scroll position when leaving
+function saveScrollPosition() {
+    const scrollPos = window.scrollY;
+    const currentPath = window.location.pathname;
+    localStorage.setItem('scrollPos_' + currentPath, scrollPos);
+}
+
+// Restore scroll position on load
+function restoreScrollPosition() {
+    const currentPath = window.location.pathname;
+    const savedPos = localStorage.getItem('scrollPos_' + currentPath);
+    if (savedPos && parseInt(savedPos) > 0) {
+        setTimeout(() => {
+            window.scrollTo(0, parseInt(savedPos));
+        }, 100);
+    }
+}
+
+// ========== PROXIMITY DETECTION ==========
+function handleMouseMove(e) {
+    const bottomRightThreshold = 150;
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+    
+    // Check if mouse is near bottom-right corner
+    if (e.clientY > windowHeight - bottomRightThreshold && 
+        e.clientX > windowWidth - bottomRightThreshold) {
+        showMenu();
+    }
+}
+
+// Double tap detection for mobile
+let lastTap = 0;
+function handleTouchEnd(e) {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    
+    // Check if double tap
+    if (tapLength < 300 && tapLength > 0) {
+        // Get tap position
+        const touch = e.changedTouches[0];
+        const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
+        const bottomRightThreshold = 150;
+        
+        // Check if double tap near bottom-right corner
+        if (touch.clientY > windowHeight - bottomRightThreshold && 
+            touch.clientX > windowWidth - bottomRightThreshold) {
+            e.preventDefault();
+            showMenu();
+        }
+    }
+    lastTap = currentTime;
+}
+
+// ========== INITIALIZATION ==========
+document.addEventListener("DOMContentLoaded", function() {
+    // Highlight words that have dictionary entries
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+    
+    // Apply saved font size
+    document.body.style.fontSize = currentFontSize + '%';
+    
+    // Apply saved dark mode
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    }
+    
+    // Restore scroll position
+    //restoreScrollPosition();
+    
+    // Save scroll position before unload
+    //window.addEventListener('beforeunload', saveScrollPosition);
+    
+    // Progress bar
+    window.addEventListener('scroll', updateProgressBar);
+    updateProgressBar();
+    
+    // Proximity detection for desktop
+    document.addEventListener('mousemove', handleMouseMove);
+    
+    // Double tap detection for mobile
+    document.addEventListener('touchend', handleTouchEnd);
+    
+    // Keyboard shortcut: Ctrl+H for Hindi only mode
+    document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'h') {
+        e.preventDefault();
+        
+        // Get all main Pali divs
+        const paliDivs = document.querySelectorAll('.para > .pali');
+        
+        // Toggle visibility of the ENTIRE Pali div (both text and icons)
+        paliDivs.forEach(paliDiv => {
+            if (paliDiv.style.display === 'none') {
+                paliDiv.style.display = '';  // Show
+            } else {
+                paliDiv.style.display = 'none';  // Hide
+            }
+        });
+        
+        // Also toggle Hindi (existing functionality)
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+    }
+});
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('menuDropdown');
+        const mainBtn = document.getElementById('menuMainBtn');
+        if (dropdown && mainBtn && !mainBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+        
+        const tocPanel = document.getElementById('tocPanel');
+        const tocBtn = document.getElementById('tocBtn');
+        if (tocPanel && tocBtn && !tocBtn.contains(e.target) && !tocPanel.contains(e.target)) {
+            tocPanel.style.display = 'none';
+        }
+    });
+    
+    
+        // Show/hide prev/next buttons based on availability
+   // Show/hide prev/next buttons based on availability
+if (SUTTA_DATA.prevFileUrl) {
+    document.getElementById('prevSuttaBtn').style.display = 'block';
+}
+if (SUTTA_DATA.nextFileUrl) {
+    document.getElementById('nextSuttaBtn').style.display = 'block';
+}
+    
+    // Build TOC
+   // Build TOC
+      // Build TOC
+    // Build TOC with sutta index
+    const tocContent = document.getElementById('tocContent');
+    if (tocContent && SUTTA_DATA && SUTTA_DATA.toc) {
+        tocContent.innerHTML = '';
+        SUTTA_DATA.toc.forEach((item, idx) => {
+            const tocItem = document.createElement('div');
+            tocItem.className = 'toc-item';
+            tocItem.setAttribute('data-sutta-index', idx);
+            
+            const link = document.createElement('a');
+            link.href = `#${item.id}`;
+            link.style.textDecoration = 'none';
+            link.style.color = 'inherit';
+            link.innerHTML = `${idx + 1}. ${item.title}`;
+            tocItem.appendChild(link);
+            
+            if (item.hi) {
+                const span = document.createElement('span');
+                span.style.color = '#888';
+                span.style.fontSize = '0.9em';
+                span.style.marginLeft = '8px';
+                span.innerHTML = ` – ${item.hi}`;
+                tocItem.appendChild(span);
+            }
+            
+            tocItem.onclick = (e) => {
+                if (e.target.tagName !== 'A') {
+                    // Update current index when clicking TOC
+                    currentSuttaIndex = idx;
+                    setTimeout(() => {
+                        document.getElementById('tocPanel').style.display = 'none';
+                    }, 150);
+                }
+            };
+            
+            tocContent.appendChild(tocItem);
+        });
+        
+        // Initialize navigation after TOC is built
+        initNavigation();
+    }
+    
+        // Keyboard shortcut: Ctrl+Left for previous sutta, Ctrl+Right for next sutta
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'ArrowLeft') {
+            e.preventDefault();
+            goPrevSutta();
+        }
+        if (e.ctrlKey && e.key === 'ArrowRight') {
+            e.preventDefault();
+            goNextSutta();
+        }
+    });
+  
+});
+
+// Dictionary popup handler
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+</head>
+<body>
+
+<h1>११. तिकवग्गो</h1>
+
+<!-- Progress Bar -->
+<div id="progressBar" class="progress-bar"></div>
+
+<!-- Floating Menu Container -->
+<div id="floatingMenu" class="floating-menu-container">
+    <button id="menuMainBtn" class="menu-main-btn" onclick="toggleMenuDropdown()">⋮</button>
+    <div id="menuDropdown" class="menu-dropdown" style="display: none;">
+        <button onclick="goBackToIndex()">← Back to Index</button>
+        <button onclick="goPrevSutta()" id="prevSuttaBtn" style="display: none;">← Previous Sutta</button>
+        <button onclick="goNextSutta()" id="nextSuttaBtn" style="display: none;">Next Sutta →</button>
+        <button onclick="goFullScreen()">⛶ Fullscreen</button>
+<!--         
+        <button onclick="changeFontSize(-10)">A- Smaller Font</button>
+        <button onclick="changeFontSize(10)">A+ Larger Font</button> 
+-->
+        <button onclick="togglePaliVisibility()">🔤 Toggle Pali Text (Ctrl+H)</button>
+        <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+        <button id="tocBtn" onclick="showTOC()">📑 Table of Contents</button>
+    </div>
+</div>
+
+<!-- TOC Panel -->
+<div id="tocPanel" class="toc-panel" style="display: none;">
+    <div class="toc-header">
+        <strong>११. तिकवग्गो</strong>
+        <button onclick="showTOC()" style="float: right;">✕</button>
+    </div>
+    <div id="tocContent" class="toc-content"></div>
+</div>
+
+<!-- Scroll to Top -->
+<button id="scrollTopBtn" class="scroll-top" onclick="scrollToTop()" title="Scroll to top">↑</button>
+
+<h3 id='s0403m2.mul_00802'><span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="rāgasuttaṃ">रागसुत्तं</span></h3>
+<div class='hindi' id='s0403m2.mul_00802_hi'>१. रागसुत्त (आसक्ति पर उपदेश)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00803_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0403m2.mul_00803_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="107">१०७.</span> <span class="paliword" data-word="tayome">‘‘तयोमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="rāgo">रागो,</span> <span class="paliword" data-word="doso">दोसो,</span> <span class="paliword" data-word="moho">मोहो।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="rāgassa">रागस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="asubhā">असुभा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="dosassa">दोसस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="mettā">मेत्ता</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="mohassa">मोहस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="paññā">पञ्‍ञा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbāti">भावेतब्बा’’ति।</span> <span class="paliword" data-word="paṭhamaṃ">पठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00803_hi">
+                १०७.
+“हे भिक्षुओं, ये तीन धर्म (प्रवृत्तियाँ) हैं।
+वे तीन कौन से हैं? राग (आसक्ति), दोष (द्वेष), और मोह (अज्ञान)।
+भिक्षुओं, निश्चित रूप से ये ही वे तीन धर्म हैं।
+हे भिक्षुओं, इन तीन धर्मों के परित्याग के लिए तीन अन्य धर्मों का अभ्यास करना चाहिए।
+वे तीन कौन से हैं? राग के त्याग के लिए अशुभ (असुभा) का ध्यान करना चाहिए, द्वेष के त्याग के लिए मैत्री (मेत्ता) का भाव विकसित करना चाहिए, और मोह के नाश के लिए प्रज्ञा (पञ्ञा) जाग्रत करनी चाहिए।
+भिक्षुओं, इन तीन अकुशल धर्मों के उन्मूलन हेतु वास्तव में इन तीन कुशल धर्मों की भावना करनी चाहिए।”
+प्रथम।
+            </div>
+            
+
+            <div class="commentary" id="s0403m2.mul_00803_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="107">१०७.</span> <span class="paliword" data-word="ekādasamassa">एकादसमस्स</span> <span class="paliword" data-word="paṭhame">पठमे</span> <span class="paliword" data-word="asubhāti">असुभाति</span> <span class="paliword" data-word="asubhakammaṭṭhānaṃ">असुभकम्मट्ठानं।</span> <span class="paliword" data-word="mettāti">मेत्ताति</span> <span class="paliword" data-word="mettākammaṭṭhānaṃ">मेत्ताकम्मट्ठानं।</span> <span class="paliword" data-word="paññāti">पञ्‍ञाति</span> <span class="paliword" data-word="sahavipassanā">सहविपस्सना</span> <span class="paliword" data-word="maggapaññā">मग्गपञ्‍ञा।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0403a.att_00732_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0403a.att_00732_hi">
+                            १०७. ग्यारहवें अध्याय के प्रथम भाग में, 'अशुभ' (asubha) से तात्पर्य अशुभ-कर्मस्थान से है। 'मैत्री' (mettā) से अर्थ मैत्री-कर्मस्थान है। 'प्रज्ञा' (paññā) का अर्थ विपश्यना (vipassanā) के साथ संयुक्त मार्ग-प्रज्ञा है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="assādasuttavaṇṇanā">अस्सादसुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0403a.att_00733_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0403a.att_00733_hi">
+                            ६. अस्साद-सूत्त की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0403m2.mul_00804'><span class="paliword" data-word="2">२.</span> <span class="paliword" data-word="duccaritasuttaṃ">दुच्‍चरितसुत्तं</span></h3>
+<div class='hindi' id='s0403m2.mul_00804_hi'>२. दुश्चरित सूत्र</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00805_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="108">१०८.</span> <span class="paliword" data-word="tayome">‘‘तयोमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="kāyaduccaritaṃ">कायदुच्‍चरितं,</span> <span class="paliword" data-word="vacīduccaritaṃ">वचीदुच्‍चरितं,</span> <span class="paliword" data-word="manoduccaritaṃ">मनोदुच्‍चरितं।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="kāyaduccaritassa">कायदुच्‍चरितस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="kāyasucaritaṃ">कायसुचरितं</span> <span class="paliword" data-word="bhāvetabbaṃ">भावेतब्बं,</span> <span class="paliword" data-word="vacīduccaritassa">वचीदुच्‍चरितस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="vacīsucaritaṃ">वचीसुचरितं</span> <span class="paliword" data-word="bhāvetabbaṃ">भावेतब्बं,</span> <span class="paliword" data-word="manoduccaritassa">मनोदुच्‍चरितस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="manosucaritaṃ">मनोसुचरितं</span> <span class="paliword" data-word="bhāvetabbaṃ">भावेतब्बं।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbāti">भावेतब्बा’’ति।</span> <span class="paliword" data-word="dutiyaṃ">दुतियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00805_hi">
+                १०८.
+‘‘भिक्षुओं, ये तीन धर्म हैं।
+वे तीन कौन से हैं? शरीर का दुराचरण, वाणी का दुराचरण, और मन का दुराचरण।
+भिक्षुओं, वास्तव में ये ही तीन धर्म हैं।
+भिक्षुओं, इन तीन धर्मों के त्याग के लिए तीन (अन्य) धर्मों का अभ्यास करना चाहिए।
+वे तीन कौन से हैं? शारीरिक दुराचरण के त्याग के लिए शारीरिक सुचरित का अभ्यास करना चाहिए, वाणी के दुराचरण के त्याग के लिए वाणी के सुचरित का अभ्यास करना चाहिए, और मानसिक दुराचरण के त्याग के लिए मानसिक सुचरित का अभ्यास करना चाहिए।
+भिक्षुओं, इन तीन धर्मों के परित्याग के लिए वास्तव में इन तीन धर्मों का ही अभ्यास करना चाहिए।’’
+द्वितीय।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m2.mul_00806'><span class="paliword" data-word="3">३.</span> <span class="paliword" data-word="vitakkasuttaṃ">वितक्‍कसुत्तं</span></h3>
+<div class='hindi' id='s0403m2.mul_00806_hi'>३. वितर्क सूत्र</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00807_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="109">१०९.</span> <span class="paliword" data-word="tayome">‘‘तयोमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="kāmavitakko">कामवितक्‍को,</span> <span class="paliword" data-word="byāpādavitakko">ब्यापादवितक्‍को,</span> <span class="paliword" data-word="vihiṃsāvitakko">विहिंसावितक्‍को।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="kāmavitakkassa">कामवितक्‍कस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="nekkhammavitakko">नेक्खम्मवितक्‍को</span> <span class="paliword" data-word="bhāvetabbo">भावेतब्बो,</span> <span class="paliword" data-word="byāpādavitakkassa">ब्यापादवितक्‍कस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="abyāpādavitakko">अब्यापादवितक्‍को</span> <span class="paliword" data-word="bhāvetabbo">भावेतब्बो,</span> <span class="paliword" data-word="vihiṃsāvitakkassa">विहिंसावितक्‍कस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="avihiṃsāvitakko">अविहिंसावितक्‍को</span> <span class="paliword" data-word="bhāvetabbo">भावेतब्बो।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbāti">भावेतब्बा’’ति।</span> <span class="paliword" data-word="tatiyaṃ">ततियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00807_hi">
+                १०९.
+"हे भिक्षुओं, ये तीन मानसिक अवस्थाएँ हैं।
+वे तीन कौन सी हैं? काम-वितर्क (इच्छा संबंधी विचार), व्यापाद-वितर्क (द्वेष संबंधी विचार), और विहिंसा-वितर्क (क्रूरता संबंधी विचार)।
+हे भिक्षुओं, ये ही वे तीन मानसिक अवस्थाएँ हैं।
+हे भिक्षुओं, इन तीन अवस्थाओं के त्याग के लिए तीन अन्य अवस्थाओं का अभ्यास करना चाहिए।
+वे तीन कौन सी हैं? काम-वितर्क के त्याग के लिए निष्काम-वितर्क (नैष्क्रम्य) का अभ्यास करना चाहिए, व्यापाद-वितर्क के त्याग के लिए अ-व्यापाद (मैत्रीपूर्ण विचार) का अभ्यास करना चाहिए, और विहिंसा-वितर्क के त्याग के लिए अ-विहिंसा (अहिंसात्मक विचार) का अभ्यास करना चाहिए।
+हे भिक्षुओं, इन तीन मानसिक अवस्थाओं के परित्याग के लिए इन तीन (कुशल) अवस्थाओं का अभ्यास किया जाना चाहिए।"
+तृतीय।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m2.mul_00808'><span class="paliword" data-word="4">४.</span> <span class="paliword" data-word="saññāsuttaṃ">सञ्‍ञासुत्तं</span></h3>
+<div class='hindi' id='s0403m2.mul_00808_hi'>४. संज्ञा-सूत्र (sañjñā-sūtra)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00809_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="110">११०.</span> <span class="paliword" data-word="tayome">‘‘तयोमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="kāmasaññā">कामसञ्‍ञा,</span> <span class="paliword" data-word="byāpādasaññā">ब्यापादसञ्‍ञा,</span> <span class="paliword" data-word="vihiṃsāsaññā">विहिंसासञ्‍ञा।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="kāmasaññāya">कामसञ्‍ञाय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="nekkhammasaññā">नेक्खम्मसञ्‍ञा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="byāpādasaññāya">ब्यापादसञ्‍ञाय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="abyāpādasaññā">अब्यापादसञ्‍ञा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="vihiṃsāsaññāya">विहिंसासञ्‍ञाय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="avihiṃsāsaññā">अविहिंसासञ्‍ञा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbāti">भावेतब्बा’’ति।</span> <span class="paliword" data-word="catutthaṃ">चतुत्थं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00809_hi">
+                ११०.
+“भिक्षुओं, ये तीन धर्म हैं।
+वे तीन कौन से हैं? काम-संज्ञा (इन्द्रिय-भोगों का विचार), व्यापाद-संज्ञा (द्वेष का विचार) और विहिंसा-संज्ञा (क्रूरता का विचार)।
+भिक्षुओं, ये ही वे तीन धर्म हैं।
+भिक्षुओं, इन तीन धर्मों के प्रहाण (त्याग) के लिए तीन धर्मों की भावना करनी चाहिए।
+वे तीन कौन से हैं? काम-संज्ञा के प्रहाण के लिए नैष्क्रम्य-संज्ञा (त्याग का विचार) की भावना करनी चाहिए, व्यापाद-संज्ञा के प्रहाण के लिए अव्यापाद-संज्ञा (अद्वेष का विचार) की भावना करनी चाहिए, और विहिंसा-संज्ञा के प्रहाण के लिए अविहिंसा-संज्ञा (अक्रूरता का विचार) की भावना करनी चाहिए।
+भिक्षुओं, इन तीन धर्मों के त्याग के लिए इन तीन धर्मों का अभ्यास करना चाहिए।”
+चौथा।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m2.mul_00810'><span class="paliword" data-word="5">५.</span> <span class="paliword" data-word="dhātusuttaṃ">धातुसुत्तं</span></h3>
+<div class='hindi' id='s0403m2.mul_00810_hi'>५. धातु सूत्र</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00811_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="111">१११.</span> <span class="paliword" data-word="tayome">‘‘तयोमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="kāmadhātu">कामधातु,</span> <span class="paliword" data-word="byāpādadhātu">ब्यापादधातु,</span> <span class="paliword" data-word="vihiṃsādhātu">विहिंसाधातु।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="kāmadhātuyā">कामधातुया</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="nekkhammadhātu">नेक्खम्मधातु</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="byāpādadhātuyā">ब्यापादधातुया</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="abyāpādadhātu">अब्यापादधातु</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="vihiṃsādhātuyā">विहिंसाधातुया</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="avihiṃsādhātu">अविहिंसाधातु</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbāti">भावेतब्बा’’ति।</span> <span class="paliword" data-word="pañcamaṃ">पञ्‍चमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00811_hi">
+                १११.
+“भिक्षुओं, ये तीन धर्म हैं।
+वे तीन कौन से हैं? काम-धातु (इन्द्रिय-भोग का तत्व), व्यापाद-धातु (द्वेष का तत्व) और विहिंसा-धातु (क्रूरता का तत्व)।
+भिक्षुओं, ये ही वे तीन धर्म हैं।
+भिक्षुओं, इन तीन धर्मों के प्रहाण (त्याग) के लिए तीन अन्य धर्मों की भावना करनी चाहिए।
+वे तीन कौन से हैं? काम-धातु के प्रहाण के लिए नैष्क्रम्य-धातु (ऩैष्काम्य) की भावना करनी चाहिए, व्यापाद-धातु के प्रहाण के लिए अव्यापाद-धातु (अद्वेष) की भावना करनी चाहिए और विहिंसा-धातु के प्रहाण के लिए अविहिंसा-धातु (अक्रूरता) की भावना करनी चाहिए।
+भिक्षुओं, इन तीन धर्मों के प्रहाण के लिए इन तीन धर्मों की भावना की जानी चाहिए।”
+पाँचवाँ (अध्याय)।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m2.mul_00812'><span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="assādasuttaṃ">अस्सादसुत्तं</span></h3>
+<div class='hindi' id='s0403m2.mul_00812_hi'>६. आस्वाद सूक्त (तृप्ति का सूत्र)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00813_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0403m2.mul_00813_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="112">११२.</span> <span class="paliword" data-word="tayome">‘‘तयोमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="assādadiṭṭhi">अस्साददिट्ठि,</span> <span class="paliword" data-word="attānudiṭṭhi">अत्तानुदिट्ठि,</span> <span class="paliword" data-word="micchādiṭṭhi">मिच्छादिट्ठि।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="assādadiṭṭhiyā">अस्साददिट्ठिया</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="aniccasaññā">अनिच्‍चसञ्‍ञा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="attānudiṭṭhiyā">अत्तानुदिट्ठिया</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="anattasaññā">अनत्तसञ्‍ञा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="micchādiṭṭhiyā">मिच्छादिट्ठिया</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="sammādiṭṭhi">सम्मादिट्ठि</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbāti">भावेतब्बा’’ति।</span> <span class="paliword" data-word="chaṭṭhaṃ">छट्ठं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00813_hi">
+                ११२.
+“हे भिक्षुओं, ये तीन धर्म हैं।
+वे तीन कौन से हैं? आस्वादन की दृष्टि (अस्साद-दिट्ठि), आत्म-दृष्टि (अत्तानु-दिट्ठि) और मिथ्या-दृष्टि (मिच्छा-दिट्ठि)।
+हे भिक्षुओं, ये ही वे तीन धर्म हैं।
+हे भिक्षुओं, इन तीन धर्मों के त्याग के लिए तीन [अन्य] धर्मों का अभ्यास करना चाहिए।
+वे तीन कौन से हैं? आस्वादन की दृष्टि के त्याग के लिए अनित्य की संज्ञा (अनिच्च-सञ्ञा) का अभ्यास करना चाहिए, आत्म-दृष्टि के त्याग के लिए अनात्म की संज्ञा (अनत्त-सञ्ञा) का अभ्यास करना चाहिए, और मिथ्या-दृष्टि के त्याग के लिए सम्यक्-दृष्टि (सम्मा-दिट्ठि) का अभ्यास करना चाहिए।
+हे भिक्षुओं, इन तीन धर्मों के परित्याग के लिए इन तीन धर्मों का अभ्यास किया जाना चाहिए।”
+छठा (समाप्त)।
+            </div>
+            
+
+            <div class="commentary" id="s0403m2.mul_00813_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="112">११२.</span> <span class="paliword" data-word="chaṭṭhe">छट्ठे</span> <span class="paliword" data-word="assādadiṭṭhīti">अस्साददिट्ठीति</span> <span class="paliword" data-word="sassatadiṭṭhi">सस्सतदिट्ठि।</span> <span class="paliword" data-word="attānudiṭṭhīti">अत्तानुदिट्ठीति</span> <span class="paliword" data-word="attānaṃ">अत्तानं</span> <span class="paliword" data-word="anugatā">अनुगता</span> <span class="paliword" data-word="vīsativatthukā">वीसतिवत्थुका</span> <span class="paliword" data-word="sakkāyadiṭṭhi">सक्‍कायदिट्ठि।</span> <span class="paliword" data-word="micchādiṭṭhīti">मिच्छादिट्ठीति</span> <span class="paliword" data-word="dvāsaṭṭhividhāpi">द्वासट्ठिविधापि</span> <span class="paliword" data-word="diṭṭhi">दिट्ठि।</span> <span class="paliword" data-word="sammādiṭṭhīti">सम्मादिट्ठीति</span> <span class="paliword" data-word="maggasammādiṭṭhi">मग्गसम्मादिट्ठि,</span> <span class="paliword" data-word="natthi">नत्थि</span> <span class="paliword" data-word="dinnantiādikā">दिन्‍नन्तिआदिका</span> <span class="paliword" data-word="vā">वा</span> <span class="paliword" data-word="micchādiṭṭhi">मिच्छादिट्ठि,</span> <span class="paliword" data-word="kammassakatañāṇaṃ">कम्मस्सकतञाणं</span> <span class="paliword" data-word="sammādiṭṭhi">सम्मादिट्ठि।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0403a.att_00734_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0403a.att_00734_hi">
+                            ११२.
+छठे में, 'अस्वाद-दृष्टि' (assāda-diṭṭhi) से तात्पर्य 'शाश्वत-दृष्टि' (sassata-diṭṭhi) से है।
+'आत्मानु-दृष्टि' (attānu-diṭṭhi) का अर्थ आत्मा से जुड़ी हुई बीस प्रकार की 'सत्काय-दृष्टि' (sakkāya-diṭṭhi) है।
+'मिथ्या-दृष्टि' (micchā-diṭṭhi) के अंतर्गत सभी बासठ प्रकार की दृष्टियाँ आती हैं।
+'सम्यक्-दृष्टि' (sammā-diṭṭhi) का अर्थ 'मार्ग-सम्यक्-दृष्टि' (magga-sammā-diṭṭhi) है, अथवा 'दान जैसा कुछ नहीं है' इत्यादि जैसी मिथ्या-दृष्टि का अभाव है; कर्म-स्वकीयता का ज्ञान ही सम्यक्-दृष्टि है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="7">७.</span> <span class="paliword" data-word="aratisuttavaṇṇanā">अरतिसुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0403a.att_00735_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0403a.att_00735_hi">
+                            ७. अरति सूत्र की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0403m2.mul_00814'><span class="paliword" data-word="7">७.</span> <span class="paliword" data-word="aratisuttaṃ">अरतिसुत्तं</span></h3>
+<div class='hindi' id='s0403m2.mul_00814_hi'>७. अरति सूत्र</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00815_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="113">११३.</span> <span class="paliword" data-word="tayome">‘‘तयोमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="arati">अरति,</span> <span class="paliword" data-word="vihiṃsā">विहिंसा</span> <span class="paliword" data-word="vihesā">विहेसा</span> <span class="paliword" data-word="ka॰">(क॰),</span> <span class="paliword" data-word="adhammacariyā">अधम्मचरिया।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="aratiyā">अरतिया</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="muditā">मुदिता</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="vihiṃsāya">विहिंसाय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="avihiṃsā">अविहिंसा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="adhammacariyāya">अधम्मचरियाय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="dhammacariyā">धम्मचरिया</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbāti">भावेतब्बा’’ति।</span> <span class="paliword" data-word="sattamaṃ">सत्तमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00815_hi">
+                ११३.
+‘‘भिक्षुओं, ये तीन धर्म (बातें) हैं।
+वे तीन कौन से हैं? अरति (असन्तोष), विहिंसा (क्रूरता), और अधम्मचर्या (अधार्मिक आचरण)।
+भिक्षुओं, ये ही वे तीन धर्म हैं।
+भिक्षुओं, इन तीन धर्मों के प्रहाण (त्याग) के लिए तीन अन्य धर्मों की भावना (अभ्यास) करनी चाहिए।
+वे तीन कौन से हैं? अरति के प्रहाण के लिए मुदिता (सहानुभूतिपूर्ण हर्ष) की भावना करनी चाहिए, विहिंसा के प्रहाण के लिए अविहिंसा (अहिंसा) की भावना करनी चाहिए, और अधम्मचर्या के प्रहाण के लिए धम्मचर्या (धार्मिक आचरण) की भावना करनी चाहिए।
+भिक्षुओं, इन तीन धर्मों के प्रहाण के लिए इन तीन धर्मों की भावना करनी चाहिए।’’
+सातवाँ (सुत्त)।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m2.mul_00816'><span class="paliword" data-word="8">८.</span> <span class="paliword" data-word="santuṭṭhitāsuttaṃ">सन्तुट्ठितासुत्तं</span></h3>
+<div class='hindi' id='s0403m2.mul_00816_hi'>८. सन्तुष्टिता सूत्र (Saṃtuṣṭitā-sutta)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00817_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="114">११४.</span> <span class="paliword" data-word="tayome">‘‘तयोमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="asantuṭṭhitā">असन्तुट्ठिता,</span> <span class="paliword" data-word="asampajaññaṃ">असम्पजञ्‍ञं,</span> <span class="paliword" data-word="mahicchatā">महिच्छता।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="asantuṭṭhitāya">असन्तुट्ठिताय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="santuṭṭhitā">सन्तुट्ठिता</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="asampajaññassa">असम्पजञ्‍ञस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="sampajaññaṃ">सम्पजञ्‍ञं</span> <span class="paliword" data-word="bhāvetabbaṃ">भावेतब्बं,</span> <span class="paliword" data-word="mahicchatāya">महिच्छताय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="appicchatā">अप्पिच्छता</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbāti">भावेतब्बा’’ति।</span> <span class="paliword" data-word="aṭṭhamaṃ">अट्ठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00817_hi">
+                ११४.
+“भिक्षुओं, ये तीन धर्म (प्रवृत्तियाँ) हैं।
+वे तीन कौन से हैं? असंतोष, सचेत जागरूकता का अभाव (असम्प्रजन्य), और अत्यधिक इच्छा।
+भिक्षुओं, ये ही वे तीन धर्म हैं।
+भिक्षुओं, इन तीन धर्मों के त्याग के लिए तीन अन्य धर्मों का अभ्यास किया जाना चाहिए।
+वे तीन कौन से हैं? असंतोष को त्यागने के लिए संतोष (संतुष्टि) का अभ्यास करना चाहिए, सचेत जागरूकता के अभाव को दूर करने के लिए सचेत जागरूकता (सम्प्रजन्य) का अभ्यास करना चाहिए, और अत्यधिक इच्छा को त्यागने के लिए अल्प-इच्छा (अल्पेच्छता) का अभ्यास करना चाहिए।
+भिक्षुओं, इन तीन धर्मों के परित्याग के लिए इन तीन धर्मों का ही अनुशीलन किया जाना चाहिए।”
+आठवाँ (सुत्त)।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m2.mul_00818'><span class="paliword" data-word="9">९.</span> <span class="paliword" data-word="dovacassatāsuttaṃ">दोवचस्सतासुत्तं</span></h3>
+<div class='hindi' id='s0403m2.mul_00818_hi'>९. दौवचस्यता सूत्र (दुर्वचता पर प्रवचन)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00819_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="115">११५.</span> <span class="paliword" data-word="tayome">‘‘तयोमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="dovacassatā">दोवचस्सता,</span> <span class="paliword" data-word="pāpamittatā">पापमित्तता,</span> <span class="paliword" data-word="cetaso">चेतसो</span> <span class="paliword" data-word="vikkhepo">विक्खेपो।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="dovacassatāya">दोवचस्सताय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="sovacassatā">सोवचस्सता</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="pāpamittatāya">पापमित्तताय</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="kalyāṇamittatā">कल्याणमित्तता</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा,</span> <span class="paliword" data-word="cetaso">चेतसो</span> <span class="paliword" data-word="vikkhepassa">विक्खेपस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ānāpānassati">आनापानस्सति</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbāti">भावेतब्बा’’ति।</span> <span class="paliword" data-word="navamaṃ">नवमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00819_hi">
+                ११५.
+"भिक्षुओं, ये तीन धर्म (बातें) हैं।
+वे तीन कौन से हैं? उग्रवचनता (दुर्वचन), पाप मित्रों की संगति, और चित्त का विक्षेप।
+भिक्षुओं, ये ही वे तीन धर्म हैं।
+भिक्षुओं, इन तीन धर्मों के प्रहाण (त्याग) के लिए तीन अन्य धर्मों की भावना (अभ्यास) करनी चाहिए।
+वे तीन कौन से हैं? उग्रवचनता के त्याग के लिए सुवचनता (विनम्रता) की भावना करनी चाहिए, पाप मित्रों की संगति के त्याग के लिए कल्याणमित्रता (अच्छे मित्रों का साथ) की भावना करनी चाहिए, और चित्त के विक्षेप के त्याग के लिए आनापानस्मृति (Śvāsānu-smṛti/Ānāpānasati) की भावना करनी चाहिए।
+भिक्षुओं, इन तीन धर्मों को छोड़ने के लिए इन तीन धर्मों का अभ्यास करना चाहिए।"
+नवाँ (सूत्र)।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0403m2.mul_00820'><span class="paliword" data-word="10">१०.</span> <span class="paliword" data-word="uddhaccasuttaṃ">उद्धच्‍चसुत्तं</span></h3>
+<div class='hindi' id='s0403m2.mul_00820_hi'>१०. औद्धत्य-सूत्र (उद्धच्च-सुत्त)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00821_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0403m2.mul_00821_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="116">११६.</span> <span class="paliword" data-word="tayome">‘‘तयोमे,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="uddhaccaṃ">उद्धच्‍चं,</span> <span class="paliword" data-word="asaṃvaro">असंवरो,</span> <span class="paliword" data-word="pamādo">पमादो।</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbā">भावेतब्बा।</span> <span class="paliword" data-word="katame">कतमे</span> <span class="paliword" data-word="tayo">तयो?</span> <span class="paliword" data-word="uddhaccassa">उद्धच्‍चस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="samatho">समथो</span> <span class="paliword" data-word="bhāvetabbo">भावेतब्बो,</span> <span class="paliword" data-word="asaṃvarassa">असंवरस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="saṃvaro">संवरो</span> <span class="paliword" data-word="bhāvetabbo">भावेतब्बो,</span> <span class="paliword" data-word="pamādassa">पमादस्स</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="appamādo">अप्पमादो</span> <span class="paliword" data-word="bhāvetabbo">भावेतब्बो।</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="tiṇṇaṃ">तिण्णं</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="pahānāya">पहानाय</span> <span class="paliword" data-word="ime">इमे</span> <span class="paliword" data-word="tayo">तयो</span> <span class="paliword" data-word="dhammā">धम्मा</span> <span class="paliword" data-word="bhāvetabbāti">भावेतब्बा’’ति।</span> <span class="paliword" data-word="dasamaṃ">दसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00821_hi">
+                ११६.
+“भिक्षुओं, ये तीन धर्म हैं।
+वे तीन कौन से हैं? उद्विग्नता (auddhatya), असंयम और प्रमाद।
+भिक्षुओं, वास्तव में ये ही तीन धर्म हैं।
+भिक्षुओं, इन तीन धर्मों के त्याग के लिए तीन अन्य धर्मों का अभ्यास किया जाना चाहिए।
+वे तीन कौन से हैं? उद्विग्नता के त्याग के लिए शमथ (śamatha) का अभ्यास करना चाहिए, असंयम के त्याग के लिए संवर (saṃvara) का अभ्यास करना चाहिए, और प्रमाद के त्याग के लिए अप्रमाद (apramāda) का अभ्यास करना चाहिए।
+भिक्षुओं, इन तीन धर्मों के परित्याग के लिए वास्तव में इन्हीं तीन धर्मों का अनुशीलन किया जाना चाहिए।”
+दसवां।
+            </div>
+            
+
+            <div class="commentary" id="s0403m2.mul_00821_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="116">११६.</span> <span class="paliword" data-word="dasame">दसमे</span> <span class="paliword" data-word="asaṃvaroti">असंवरोति</span> <span class="paliword" data-word="anadhivāsakabhāvo">अनधिवासकभावो।</span> <span class="paliword" data-word="sesaṃ">सेसं</span> <span class="paliword" data-word="sabbattha">सब्बत्थ</span> <span class="paliword" data-word="uttānamevāti">उत्तानमेवाति।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0403a.att_00738_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0403a.att_00738_hi">
+                            ११६.
+दसवें में, 'असंयम' का अर्थ है सहन न करने की अवस्था।
+शेष सभी स्थानों पर अर्थ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="12">१२.</span> <span class="paliword" data-word="sāmaññavaggavaṇṇanā">सामञ्‍ञवग्गवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0403a.att_00739_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0403a.att_00739_hi">
+                            १२. सामञ्जवग्गवण्णना (श्रामण्यवर्गवर्णना) का अर्थ है: श्रमणता से संबंधित वर्गों की व्याख्या।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_00822_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_00822_hi">
+                इसका सारांश इस प्रकार है:
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0403m2.mul_gatha_81_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="rāgaduccaritavitakka">रागदुच्‍चरितवितक्‍क,</span> <span class="paliword" data-word="saññā">सञ्‍ञा</span> <span class="paliword" data-word="dhātūti">धातूति</span> <span class="paliword" data-word="vuccati">वुच्‍चति।</span><br><span class="paliword" data-word="assādaaratituṭṭhi">अस्सादअरतितुट्ठि,</span> <span class="paliword" data-word="duve">दुवे</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="uddhaccena">उद्धच्‍चेन</span> <span class="paliword" data-word="vaggoti||">वग्गोति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0403m2.mul_gatha_81_hi">
+                रागपूर्ण दुश्चरित्र के वितर्क, संज्ञा और धातु कहलाते हैं। आस्वाद, अरुचि और संतोष; दो प्रकार की उद्भ्रान्ति के साथ यह एक वर्ग है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

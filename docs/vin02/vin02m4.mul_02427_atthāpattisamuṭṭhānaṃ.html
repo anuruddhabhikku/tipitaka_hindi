@@ -1,0 +1,1668 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+   font-size: 100%;  /* Base size - 100% = 16px default */
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 1.2em;  /* Change from 20px to 1.2em */
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+    font-size: 1.2em;  /* Slightly smaller than Pali (1.2em) but larger than body */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Floating Navigation Buttons */
+.floating-nav {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.floating-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.floating-btn:hover {
+    background: rgba(0,0,0,0.8);
+    transform: scale(1.05);
+}
+
+/* Progress Bar */
+.progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: #8B4513;
+    z-index: 9999;
+    transition: width 0.1s;
+}
+
+/* Font Size Controls */
+.font-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 100px;
+    display: flex;
+    gap: 8px;
+    z-index: 9999;
+}
+
+.font-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+    transition: all 0.2s;
+}
+
+.font-btn:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background: #1a1a2e;
+    color: #eee;
+}
+
+body.dark-mode .para {
+    border-bottom-color: #333;
+}
+
+body.dark-mode .pali.subhead {
+    color: #ddd;
+}
+
+body.dark-mode .commentary {
+    border-left-color: #444;
+    color: #ccc;
+}
+
+body.dark-mode .hindi {
+    color: #ccc;
+}
+
+body.dark-mode .paliword.has-dict:hover {
+    background: #2a2a3e;
+}
+
+body.dark-mode .paliword.no-dict:hover {
+    background: #252535;
+}
+
+/* Mobile Touch Improvements */
+@media (max-width: 768px) {
+    .paliword {
+        padding: 2px 0;
+        display: inline-block;
+    }
+    
+    .floating-btn, .font-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+    }
+    
+    .pali {
+        font-size: 1.1em;  /* Slightly smaller on mobile */
+    }
+}
+
+/* Scroll to Top Button */
+.scroll-top {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.scroll-top.visible {
+    display: flex;
+}
+
+/* TOC Panel */
+.toc-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 400px;
+    max-height: 80vh;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 10000;
+    overflow-y: auto;
+    font-family: 'TiroDevanagariHindi', sans-serif;
+}
+
+body.dark-mode .toc-panel {
+    background: #2a2a3e;
+    color: #eee;
+}
+
+.toc-header {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    background: inherit;
+}
+
+.toc-content {
+    padding: 10px;
+}
+
+.toc-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.toc-item:hover {
+    background: #f0f0f0;
+}
+
+body.dark-mode .toc-item:hover {
+    background: #3a3a4e;
+}
+
+/* Menu Dropdown Buttons */
+.menu-dropdown {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: rgba(30,30,40,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 8px 0;
+    min-width: 200px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.menu-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.menu-dropdown button:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Floating Menu Container */
+.floating-menu-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.floating-menu-container.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Main Menu Button */
+.menu-main-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 28px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-main-btn:hover {
+    background: rgba(0,0,0,0.9);
+    transform: scale(1.05);
+}
+</style>
+
+<script>
+const LOCAL_DICT = {"paṭhamaṃ": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>ind</i> first; firstly; at first; first of all [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>5 <i>ind</i> before; recently; newly; just [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>6 <i>fem</i> [fem]", "ekena": "1 <i>card</i> one (1) [card, masc fem nt sg]<br>2 <i>adj</i> a; a certain; a single [adj, used as indefinite article]<br>3 <i>adj</i> alone; single; solitary [adj]<br>4 <i>adj</i> only [adj, in s]<br>5 <i>adj</i> same; one and the same [adj]<br>6 <i>nt</i> one thing; single thing; a certain thing [nt]<br>7 <i>card</i> by one; with one [card, masc & nt instr sg of eka] ‹ eka", "vā": "1 <i>lett</i> (gram) letter v; 37th letter of the alphabet; dento-labial semi-vowel [letter, masc]<br>2 <i>ind</i> or; either or [ind]<br>3 <i>ind</i> (gram) or; in some cases; not always; alternatively; optionally [ind]<br>4 <i>ind</i> exact; very; precise [ind, emph]<br>5 <i>ind</i> and; as well as [ind, conj]", "dve": "1 <i>card</i> two (2) [card, x pl]<br>2 <i>masc</i> couple; pair [masc, irreg]", "vācāhi": "1 <i>adj</i> talking; speaking; of speech [adj, in s, from vācā] ‹ वाचा<br>2 <i>fem</i> speech; words; statement; talk [fem, from vacati] ‹ vacati<br>3 <i>fem</i> line of verse; sentence [fem, from vacati] ‹ vacati", "paṭicca": "1 <i>ger</i> dependent; depending (on); contingent (upon); relying (on); because (of); supported (by); on account (of); grounded (on) [ger of pacceti] ‹ pacceti<br>2 <i>ptp</i> [ptp of pacceti] ‹ pacceti", "āpajjati": "1 <i>pr</i> comes to; experiences; gets (pleasure); suffers (pain); meets (with) [pr]<br>2 <i>pr</i> arouses; exhibits; produces; brings into being<br>3 <i>pr</i> engages in [pr]<br>4 <i>pr</i> (of an offence) commits; falls into [pr]<br>5 <i>pr</i> causes; effects [pr]<br>6 <i>pr</i> enters into a state or condition; becomes [pr]<br>7 <i>pr</i> [pr]<br>8 <i>pr</i> achieves; reaches; attains [pr]", "amūlakena": "1 <i>adj</i> groundless; baseless; unfounded; unsupported [adj, in s, from na mūla] ‹ मूल (lit. rootless)", "vācato": "1 <i>adj</i> talking; speaking; of speech [adj, in s, from vācā] ‹ वाचा<br>2 <i>fem</i> speech; words; statement; talk [fem, from vacati] ‹ vacati<br>3 <i>fem</i> line of verse; sentence [fem, from vacati] ‹ vacati", "saṅghādisesā": "1 <i>adj</i> related to an offence requiring suspension [adj,] (lit. related to an offence requiring involvement of the community from start to finish)<br>2 <i>masc</i> offence requiring suspension [masc,] (lit. offence requiring involvement of the community from start to finish)", "pārājikaṃ": "1 <i>adj</i> (vinaya) defeated; deposed; disqualified; expelled [adj, from parājeti] ‹ पराजेति (lit. who has been conquered)<br>2 <i>adj</i> (vinaya) involving defeat; related to expulsion [adj, from parājeti] ‹ पराजेति<br>3 <i>nt</i> (vinaya) offence involving defeat; transgression requiring expulsion [nt, from parājeti] ‹ पराजेति", "aññabhāgiyassa": "1 <i>adj</i> (vinaya) belonging to another class; connected with another category (of offences or issues) [adj,]", "ñāyena": "1 <i>masc</i> way; means; method; system; approach [masc] ‹ नी √इ", "mātugāmassa": "1 <i>masc</i> woman; female; women in general; womankind [masc,] (lit. collection of mothers)", "tatiyaṃ": "1 <i>ordi</i> third (3rd) [ordin of ti] ‹ ti<br>2 <i>masc</i> (gram) third consonant of each vagga; g, j, ḍ, d, b [masc, from ti] ‹ ti<br>3 <i>adj</i> [adj, from tatha] ‹ tatha<br>4 <i>ind</i> for the third time [ind, adv, acc sg of tatiya] ‹ tatiya<br>5 <i>fem</i> [fem]", "santike": "1 <i>adj</i> near; close [adj, from anta] ‹ anta<br>2 <i>nt</i> vicinity (of); presence (of); near (to) [nt, from anta] ‹ anta<br>3 <i>adj</i> giving peace (to); pacifying; calming [adj, , abbrev of santikara] ‹ santikara<br>4 <i>ind</i> to; in the presence (of); near (to); nearby; close (to); on the verge (of) [ind, prep, loc sg of santika] ‹ santika<br>5 <i>ind</i> compared (to) [ind, adv, loc sg of santika] ‹ santika (lit. near)<br>6 <i>fem</i> (a game variously called) jackstraws; spillikins; spellicans; pick-up-sticks [fem, from santika] ‹ santika", "saṅghādisesaṃ": "1 <i>adj</i> related to an offence requiring suspension [adj,] (lit. related to an offence requiring involvement of the community from start to finish)<br>2 <i>masc</i> offence requiring suspension [masc,] (lit. offence requiring involvement of the community from start to finish)", "sañcarittaṃ": "1 <i>nt</i> matchmaking; carrying proposals [nt, abstr, from sañcara] ‹ सञ्चर (lit. going between)", "asuciṃ": "1 <i>adj</i> impure; unclean; filthy; foul; disgusting [adj] ‹ √suc<br>2 <i>masc</i> impurity; filth [masc] ‹ √suc<br>3 <i>nt</i> impure thing; something dirty; foul thing [nt] ‹ √suc (lit. impurity)<br>4 <i>nt</i> sperm; semen [nt] ‹ √suc (lit. impurity)", "kusalacitto": "1 <i>adj</i> [adj,]", "catutthaṃ": "1 <i>ordi</i> fourth (4th) [ordin of catu] ‹ catu<br>2 <i>masc</i> (gram) fourth consonant of each vagga; gh, jh, ḍh, dh, bh [masc, from catu] ‹ catu (lit. fourth)<br>3 <i>ind</i> for the fourth time; on the fourth day [ind, adv, acc sg of catuttha] ‹ catuttha", "bhāsantassa": "1 <i>prp</i> speaking; talking (about) [prp of bhāsati] ‹ भासति", "samanubhāsanāya": "1 <i>fem</i> admonishing; sternly advising [fem, abstr, act, from samanubhāsati] ‹ समनुभासति (lit. speaking together)", "vuṭṭhāti": "1 <i>pr</i> (of meditation) emerges (from); comes out (of) [pr] (lit. stands up)<br>2 <i>pr</i> (of an offence) rehabilitates; re-emerges; reinstitutes [pr] (lit. stands up)<br>3 <i>pr</i> (of an illness) gets better; recovers (from) [pr] (lit. stands up)<br>4 <i>pr</i> arises; emerges; comes up (from) [pr] (lit. stands up)", "pārājikā": "1 <i>adj</i> (vinaya) defeated; deposed; disqualified; expelled [adj, from parājeti] ‹ पराजेति (lit. who has been conquered)<br>2 <i>adj</i> (vinaya) involving defeat; related to expulsion [adj, from parājeti] ‹ पराजेति<br>3 <i>nt</i> (vinaya) offence involving defeat; transgression requiring expulsion [nt, from parājeti] ‹ पराजेति", "uccāraṃ": "1 <i>masc</i> excrement; faeces [masc] ‹ ud √car", "chahi": "1 <i>card</i> six (6) [card, x pl]", "catūhi": "1 <i>card</i> four (4) [card, masc fem & nt pl]<br>2 <i>card</i> with four; by four [card, masc fem & nt instr pl of catu] ‹ catu<br>3 <i>card</i> from four [card, masc fem & nt abl pl of catu] ‹ catu", "aniyatā": "1 <i>pp</i> uncertain; undecided; indefinite; inconclusive [pp of na niyameti] ‹ niyameti (lit. not fixed down)", "samuṭṭhānehi": "1 <i>adj</i> arising (from); originating (from); due (to); based (on) [adj, from samuṭṭhāti] ‹ समुट्ठाति (lit. standing up together)<br>2 <i>nt</i> [nt, act, from samuṭṭhāti] ‹ समुट्ठाति (lit. standing up together)", "ceva": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)<br>6 <i>ind</i> if [ind, cond]<br>7 <i>ind</i> but; than [ind]<br>8 <i>sand</i> only if; if just [sandhi, ind + ind]<br>9 <i>sand</i> and even; as well as [sandhi, ind + ind]<br>10 <i>sand</i> but then [sandhi, ind + ind]<br>11 <i>sand</i> and just [sandhi, ind + ind]", "tiṃsa": "1 <i>card</i> thirty (30) [card, fem sg,]<br>2 <i>ordi</i> thirtieth (30th) [ordin of tiṃsā,] ‹ तिंसा", "dubbacassa": "1 <i>adj</i> hard to talk to; obstinate; obdurate; stubborn; unamenable to verbal correction [adj, from vacas] ‹ vacas", "bhikkhūnaṃ": "1 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "yathādhammena": "1 <i>adj</i> according to the rule; in accordance with the case [adj,]<br>2 <i>adj</i> according to the Dhamma; in accordance with the teaching [adj,]", "bhedakānuvattakānaṃ": "1 <i>adj</i> [adj,]", "passāvaṃ": "1 <i>masc</i> urine [masc, from passavati] ‹ passavati", "pāṭidesanīyā": "1 <i>ptp</i> should be acknowledged; to be admitted [ptp of paṭideseti] ‹ पटिदेसेति (lit. to cause to be pointed out)", "nissaggiyā": "1 <i>ptp</i> involving relinquishment; to be given up; to be forfeited [ptp of nissajjati] ‹ nissajjati (lit. to be relinquished away)<br>2 <i>ptp</i> able to be cast; able to be thrown [ptp of nissajjati] ‹ nissajjati (lit. to be relinquished away)<br>3 <i>adj</i> [adj, abbrev of nissaggiya] ‹ nissaggiya (lit. to be relinquished away)", "samuṭṭhanti": "1 <i>pr</i> arises; originates [pr] (lit. stands up together)<br>2 <i>pr</i> rises up; comes up; stands back up [pr] (lit. stands up together)", "dukkaṭaṃ": "1 <i>adj</i> badly done; wrongly done [adj, from kaṭa] ‹ कट<br>2 <i>nt</i> bad deed; wrong action [nt, from kaṭa] ‹ कट<br>3 <i>nt</i> class of vinaya offence; wrong-doing [nt, from kaṭa] ‹ कट (lit. badly done)", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "tīhi": "1 <i>card</i> three (3) [card, masc fem & nt pl]<br>2 <i>ve</i> (gram) ti; verbal ending of the present tense 3rd person singular [ve, masc]<br>3 <i>card</i> by three; with three [card, masc fem & nt instr pl of ti] ‹ ti", "obhāsentassa": "1 <i>prp</i> [prp of obhāseti] ‹ ओभासेति", "dhammena": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>nt</i> teaching; discourse; doctrine [nt, from dharati, irreg] ‹ dharati<br>13 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>14 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>15 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>16 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu<br>17 <i>ind</i> righteously; ethically; religiously; morally [ind, adv, instr sg of dhamma] ‹ dhamma (lit. with the law)<br>18 <i>ind</i> lawfully; legally [ind, adv, instr sg of dhamma] ‹ dhamma (lit. with the law)", "adhikaraṇassa": "1 <i>nt</i> (vinaya) issue; legal action; disciplinary proceedings [nt, from adhikaroti] ‹ adhikaroti (lit. higher doing)<br>2 <i>nt</i> (gram) relationship; agreement; conjugation [nt, from adhikaroti] ‹ adhikaroti (lit. higher doing)<br>3 <i>nt</i> cause; reason; basis; support [nt, from adhikaroti] ‹ adhikaroti (lit. higher doing)<br>4 <i>nt</i> detail; technicality; point of dispute; hot question [nt, from adhikaroti] ‹ adhikaroti (lit. higher doing)<br>5 <i>nt</i> [nt, from adhikaroti] ‹ adhikaroti<br>6 <i>adj</i> having issues; with considerations; having matters [adj, in s, from adhikaroti] ‹ adhikaroti (lit. higher doing)", "dvenavuti": "1 <i>card</i> ninety-two (92) [card, fem sg,]", "attakāmapāricariyāya": "1 <i>fem</i> ministering to oneself with sex; attending to one's sexual pleasure; taking care of one's sexual needs [fem,]", "saddhiṃ": "1 <i>ind</i> together (with); with [ind, prep]", "saṅghabhedakassa": "1 <i>adj</i> schismatic; who causes dissension in the community; who causes the monastic order to break apart [adj,]", "pañcasattati": "1 <i>card</i> [card, fem sg,]", "upakkamitvā": "1 <i>abs</i> having exerted oneself; having made an effort [abs of upakkamati] ‹ upakkamati", "vihāraṃ": "1 <i>masc</i> dwelling; residence; abode [masc, from viharati] ‹ viharati<br>2 <i>masc</i> monastery [masc, from viharati] ‹ viharati<br>3 <i>masc</i> mode of living; way of life; way to spend time; mode of existence [masc, from viharati] ‹ viharati<br>4 <i>masc</i> meditation attainment; state of mind [masc, from viharati] ‹ viharati", "paṭinissajjantānaṃ": "1 <i>prp</i> giving up; relinquishing; dropping; abandoning [prp of paṭinissajjati] ‹ पटिनिस्सज्जति", "desaṃ": "1 <i>masc</i> place; location; region; area [masc, from disati] ‹ disati<br>2 <i>masc</i> point; item; detail; fact [masc, from disati] ‹ disati<br>3 <i>masc</i> part; portion [masc, from disati] ‹ disati", "bhikkhuno": "1 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)<br>2 <i>masc</i> for a monk; to the monastic [masc, dat sg of bhikkhu] ‹ bhikkhu<br>3 <i>masc</i> of a monk; monastic's [masc, gen sg of bhikkhu] ‹ bhikkhu<br>4 <i>masc</i> when a monk [masc, gen sg of bhikkhu, gen abs] ‹ bhikkhu", "anuddhaṃsentassa": "1 <i>prp</i> [prp of anuddhaṃseti] ‹ अनुद्धंसेति (lit. causing to fall upon)", "samāpajjantassa": "1 <i>prp</i> entering; attaining; dwelling in a meditation attainment [prp of samāpajjati] ‹ समापज्जति", "siyā": "1 <i>opt</i> could be; may be; might be; should be [opt of atthi, irreg] ‹ atthi<br>2 <i>opt</i> there could be [opt of atthi, irreg] ‹ atthi", "saṅghādiseso": "1 <i>adj</i> related to an offence requiring suspension [adj,] (lit. related to an offence requiring involvement of the community from start to finish)<br>2 <i>masc</i> offence requiring suspension [masc,] (lit. offence requiring involvement of the community from start to finish)", "lesamattaṃ": "1 <i>adj</i> which is a mere ploy; as a mere pretext [adj,]", "kāyato": "1 <i>masc</i> body; physical body; physical process [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>2 <i>masc</i> group; host; company; collection; multitude; mass [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>3 <i>masc</i> process; collection [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>4 <i>masc</i> category; class; group (of) [masc, in s, from cināti] ‹ चिनाति (lit. accumulation)<br>5 <i>masc</i> physical existence; material existence [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>6 <i>masc</i> group of beings; class of beings; state of existence [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>7 <i>masc</i> mass; heap; bulk; body [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>8 <i>adj</i> with a body; having (a certain kind of) body; -bodied [adj, from cināti] ‹ चिनाति (lit. accumulation)<br>9 <i>masc</i> embodiment; living manifestation [masc, from cināti] ‹ चिनाति (lit. accumulation)", "samuṭṭhāti": "1 <i>pr</i> arises; originates [pr] (lit. stands up together)<br>2 <i>pr</i> rises up; comes up; stands back up [pr] (lit. stands up together)", "udake": "1 <i>nt</i> water [nt] ‹ √ud<br>2 <i>adj</i> living in water; related to water [adj] ‹ √ud<br>3 <i>nt</i> juice; drink [nt] ‹ √ud<br>4 <i>masc</i> name of the Buddha's second teacher; Udaka Rāmaputta [masc]", "karontassa": "1 <i>prp</i> doing; performing [prp of karoti] ‹ karoti<br>2 <i>prp</i> making [prp of karoti] ‹ karoti<br>3 <i>prp</i> building; constructing; erecting [prp of karoti] ‹ karoti", "na": "1 <i>ind</i> no; not; neither; nor [ind]<br>2 <i>ind</i> (adds a question mark) surely?; does one not? [ind, interr]<br>3 <i>pref</i> not [prefix, in s]<br>4 <i>masc</i> (gram) negative prefix na [masc, prefix]", "bhikkhuṃ": "1 <i>aor</i> begged; begged for alms [aor of bhikkhati] ‹ bhikkhati<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "akusalacitto": "1 <i>adj</i> [adj,]", "kiñci": "1 <i>pron</i> someone; something; anyone; anything; whoever [pron, base, from ka] ‹ ka<br>2 <i>ind</i> something; anything [ind, from kaci] ‹ kaci<br>3 <i>pron</i> some; something; anything [pron, nt nom sg of kaci] ‹ kaci<br>4 <i>pron</i> some; something; anything (object) [pron, masc & nt acc sg of kaci] ‹ kaci<br>5 <i>pron</i> a little; small amount [pron, masc & nt acc sg of kaci] ‹ kaci", "upādāya": "1 <i>ger</i> taking; taking up; grasping (onto); taking possession (of) [ger of upādiyati] ‹ उपादियति (lit. taking near)<br>2 <i>ind</i> derived (from); dependent (on); based (on) [ind, adv, ger of upādiyati] ‹ उपादियति (lit. taking near)<br>3 <i>ind</i> on account (of); because (of); with reference (to) [ind, adv, ger of upādiyati] ‹ उपादियति (lit. taking near)<br>4 <i>ind</i> according (to) [ind, adv, ger of upādiyati] ‹ उपादियति (lit. taking near)<br>5 <i>ind</i> compared (to); in comparison (with) [ind, adv, ger of upādiyati] ‹ उपादियति (lit. taking near)", "dutiyaṃ": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>ind</i> second time [ind, adv, acc sg of dutiya] ‹ dutiya<br>5 <i>fem</i> second woman; another woman; female companion [fem, from dvi] ‹ dvi<br>6 <i>fem</i> [fem]<br>7 <i>fem</i> [fem, from dūta] ‹ दूत<br>8 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "pācittiyā": "1 <i>nt</i> (vinaya) offence requiring confession [nt]<br>2 <i>adj</i> (vinaya) related to an offence requiring confession [adj]<br>3 <i>fem</i> (vinaya) offence requiring confession [fem]", "kāyasaṃsaggaṃ": "1 <i>masc</i> physical contact; physical intimacy; touching the body [masc,]", "paṭinissajjantassa": "1 <i>prp</i> giving up; relinquishing; dropping; abandoning [prp of paṭinissajjati] ‹ पटिनिस्सज्जति", "anādariyaṃ": "1 <i>nt</i> disrespect (for); rudeness (towards); contemptuous (towards) [nt, abstr, from na ādara] ‹ आदर (lit. no respect state)", "terasa": "1 <i>card</i> thirteen (13) [card, x pl,]<br>2 <i>ordi</i> thirteenth (13th) [ordin of terasa,] ‹ terasa", "samuṭṭhānañca": "1 <i>adj</i> arising (from); originating (from); due (to); based (on) [adj, from samuṭṭhāti] ‹ समुट्ठाति (lit. standing up together)<br>2 <i>nt</i> [nt, act, from samuṭṭhāti] ‹ समुट्ठाति (lit. standing up together)", "katihi": "1 <i>pron</i> how many? [pron, interr]", "yāvatatiyaṃ": "1 <i>ind</i> as many as three times; after the third time; up to the third time [ind, adv,]<br>2 <i>adj</i> up to the third time [adj,]", "mātugāmena": "1 <i>masc</i> woman; female; women in general; womankind [masc,] (lit. collection of mothers)", "kārāpentassa": "1 <i>prp</i> causing to make; causing to do [prp of kārāpeti] ‹ कारापेति", "acittako": "1 <i>adj</i> without thought; unintentional [adj, from na citta] ‹ citta<br>2 <i>adj</i> mindless; senseless; unconscious [adj, in s, from na citta] ‹ citta", "cattāro": "1 <i>card</i> four (4) [card, masc fem & nt pl]<br>2 <i>card</i> four (4) [card, masc nom & acc pl of catu] ‹ catu", "abyākatacitto": "1 <i>adj</i> [adj,]", "samuṭṭhānaṃ": "1 <i>adj</i> arising (from); originating (from); due (to); based (on) [adj, from samuṭṭhāti] ‹ समुट्ठाति (lit. standing up together)<br>2 <i>nt</i> [nt, act, from samuṭṭhāti] ‹ समुट्ठाति (lit. standing up together)", "vaṇṇaṃ": "1 <i>masc</i> beauty; good looks [masc, pp of √var] ‹ √var (lit. cover)<br>2 <i>masc</i> colour [masc, pp of √var] ‹ √var (lit. cover)<br>3 <i>masc</i> appearance; complexion; countenance [masc, pp of √var] ‹ √var (lit. cover)<br>4 <i>masc</i> sort; kind; type [masc, pp of √var] ‹ √var (lit. cover)<br>5 <i>masc</i> caste; social class [masc, pp of √var] ‹ √var (lit. cover)<br>6 <i>masc</i> reason; cause [masc, pp of √var] ‹ √var (lit. cover)<br>7 <i>masc</i> (gram) letter; phoneme; syllable [masc, pp of √var] ‹ √var (lit. cover)<br>8 <i>masc</i> size; measure; type [masc, pp of √var] ‹ √var (lit. cover)<br>9 <i>masc</i> shape; form; physical manifestation [masc, pp of √var] ‹ √var (lit. cover)<br>10 <i>masc</i> praise; approval; value (of) [masc, from vaṇṇeti] ‹ वण्णेति<br>11 <i>adj</i> having a certain colour [adj, from vaṇṇa] ‹ वण्ण<br>12 <i>masc</i> [masc, pp of √var] ‹ √var<br>13 <i>masc</i> good point; positive quality; excellent characteristic [masc, from vaṇṇeti] ‹ वण्णेति (lit. praise)<br>14 <i>masc</i> guise; disguise; appearance; form (of) [masc, pp of √var] ‹ √var", "kuṭiṃ": "1 <i>fem</i> hut; cabin; simple monastic dwelling [fem] ‹ √कुट्<br>2 <i>fem</i> curve; curvature, shape [fem, abstr, in s] ‹ √कुट्", "kuladūsakassa": "1 <i>masc</i> who corrupts families; who subverts households; (comm) who spoils the faith of families with bad behaviour [masc,]", "sekhiyā": "1 <i>ptp</i> related to training; to be practised [ptp of sikkhati] ‹ sikkhati (lit. to be trained)<br>2 <i>nt</i> training rule; rule of conduct [nt, ptp of sikkhati] ‹ sikkhati (lit. to be trained)", "samuṭṭhānena": "1 <i>adj</i> arising (from); originating (from); due (to); based (on) [adj, from samuṭṭhāti] ‹ समुट्ठाति (lit. standing up together)<br>2 <i>nt</i> [nt, act, from samuṭṭhāti] ‹ समुट्ठाति (lit. standing up together)", "sabbathā": "1 <i>ind</i> in every way; in every case [ind, adv, from sabba] ‹ sabba (lit. in every place)", "mātugāmaṃ": "1 <i>masc</i> woman; female; women in general; womankind [masc,] (lit. collection of mothers)", "sacittako": "1 <i>adj</i> endowed with mind; possessing consciousness; of which one is aware [adj, from citta] ‹ citta", "mocentassa": "1 <i>prp</i> [prp of moceti] ‹ moceti (lit. causing release)", "saññācikāya": "1 <i>adj</i> (acquired by) one's own begging [adj,]<br>2 <i>fem</i> one's own begging [fem,]", "pārājikena": "1 <i>adj</i> (vinaya) defeated; deposed; disqualified; expelled [adj, from parājeti] ‹ पराजेति (lit. who has been conquered)<br>2 <i>adj</i> (vinaya) involving defeat; related to expulsion [adj, from parājeti] ‹ पराजेति<br>3 <i>nt</i> (vinaya) offence involving defeat; transgression requiring expulsion [nt, from parājeti] ‹ पराजेति", "duṭṭhullāhi": "1 <i>adj</i> (of speech) rude; obscene; vulgar; coarse [adj, from thūla] ‹ थूल (lit. bad heavy)<br>2 <i>adj</i> (of an offence) serious; heavy; bad; corrupt [adj, from thūla] ‹ थूल (lit. bad heavy)", "mahallakaṃ": "1 <i>adj</i> old; aged; ancient [adj, from mahalla] ‹ महा<br>2 <i>masc</i> old man; senior citizen [masc, from mahalla] ‹ महा<br>3 <i>adj</i> large; great; extensive [adj, from mahalla] ‹ महा", "cittato": "1 <i>nt</i> mind; heart [nt, from ceteti] ‹ ceteti<br>2 <i>nt</i> thought; intention; idea [nt, from ceteti] ‹ ceteti (lit. mind)<br>3 <i>adj</i> decorated; beautiful; adorned [adj, from citteti] ‹ citteti<br>4 <i>adj</i> varied; different; diverse [adj, from citteti] ‹ citteti<br>5 <i>nt</i> painting; picture; artwork; illusion [nt, from citteti] ‹ citteti<br>6 <i>masc</i> name of a householder lay-disciple; foremost lay disciple in giving Dhamma talks [masc, from citteti] ‹ citteti<br>7 <i>masc</i> name of a monk; Citta Hatthisāriputta [masc, from citteti] ‹ citteti<br>8 <i>masc</i> name of a lunar month; March-April [masc, from citteti] ‹ citteti<br>9 <i>nt</i> [nt]<br>10 <i>fem</i> name of an arahant nun [fem, from citta] ‹ citta (lit. adorned)"};
+const SUTTA_DATA = {"toc": [{"id": "vin02m4.mul_02428", "title": "१. पाराजिकं", "hi": "१. पाराजिकं"}, {"id": "vin02m4.mul_02435", "title": "२. सङ्घादिसेसं", "hi": "२. सङ्घादिसेसं"}, {"id": "vin02m4.mul_02452", "title": "३. पाराजिकादि", "hi": "३. पाराजिकादि"}], "totalSuttasInFile": 3, "currentIndex": 48, "totalSuttas": 51, "prevFileUrl": "vin02m4.mul_02192_upālipañcakaṃ.html", "nextFileUrl": "vin02m4.mul_02462_dutiyagāthāsaṅgaṇikaṃ.html"};
+
+
+// ========== GLOBAL VARIABLES ==========
+let currentFontSize = localStorage.getItem('fontSize') || '100';
+let isDarkMode = localStorage.getItem('darkMode') === 'true';
+let menuHideTimer = null;
+let isMenuVisible = false;
+
+// ========== DICTIONARY FUNCTIONS (unchanged) ==========
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+// ========== TOGGLE FUNCTIONS ==========
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+// ========== MIDDLE CLICK (PRESERVED) ==========
+document.addEventListener('auxclick', function(e) {
+    // Check for middle button (button === 1)
+    if (e.button === 1) {
+        // Find the closest pali div
+        const paliDiv = e.target.closest('.pali');
+        if (paliDiv) {
+            e.preventDefault(); // Prevent default middle-click behavior
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) {
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+});
+
+// Prevent default middle-click scrolling
+document.addEventListener('mousedown', function(e) {
+    if (e.button === 1) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+
+// ========== TOUCH GESTURES ==========
+document.addEventListener('touchstart', function(e) { 
+    if (e.touches.length === 2) { 
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const paliDiv = element?.closest('.pali');
+        
+        if (paliDiv) { 
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) { 
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+    else if (e.touches.length === 3) { 
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const paliDiv = element?.closest('.pali');
+        
+        if (paliDiv) { 
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleCommentary"]');
+            if (toggleIcon && toggleIcon.onclick) { 
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+}, { passive: false });
+
+
+// ========== FLOATING MENU FUNCTIONS ==========
+function showMenu() {
+    const menu = document.getElementById('floatingMenu');
+    if (menu) {
+        menu.classList.add('visible');
+        isMenuVisible = true;
+        
+        // Clear existing timer
+        if (menuHideTimer) clearTimeout(menuHideTimer);
+        
+        // Hide after 3 seconds of inactivity
+        menuHideTimer = setTimeout(() => {
+            menu.classList.remove('visible');
+            isMenuVisible = false;
+        }, 3000);
+    }
+}
+
+function toggleMenuDropdown() {
+    const dropdown = document.getElementById('menuDropdown');
+    if (dropdown) {
+        const isVisible = dropdown.style.display === 'block';
+        dropdown.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+function goFullScreen() {
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        var docEl = document.documentElement;
+        var requestFullScreen = docEl.requestFullscreen ||
+                                docEl.mozRequestFullScreen ||
+                                docEl.webkitRequestFullScreen ||
+                                docEl.msRequestFullscreen;
+        if (requestFullScreen) {
+            requestFullScreen.call(docEl);
+        }
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+    showMenu();
+}
+
+function togglePaliVisibility() {
+// Get all main Pali divs
+        const paliDivs = document.querySelectorAll('.para > .pali');
+        
+        // Toggle visibility of the ENTIRE Pali div (both text and icons)
+        paliDivs.forEach(paliDiv => {
+            if (paliDiv.style.display === 'none') {
+                paliDiv.style.display = '';  // Show
+            } else {
+                paliDiv.style.display = 'none';  // Hide
+            }
+        });
+        
+        // Also toggle Hindi (existing functionality)
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+            
+    showMenu();
+}
+
+function goBackToIndex() {
+    window.location.href = '../index.html';
+}
+
+let currentSuttaIndex = 0;  // Track which sutta we're viewing
+let suttasInFile = [];      // Array of sutta IDs from TOC
+
+function goPrevSutta() {
+    if (suttasInFile.length === 0) {
+        // No multiple suttas, just go to prev file
+        if (SUTTA_DATA && SUTTA_DATA.prevFileUrl) {
+            window.location.href = SUTTA_DATA.prevFileUrl;
+        }
+        return;
+    }
+    
+    if (currentSuttaIndex > 0) {
+        // Go to previous sutta in same file
+        currentSuttaIndex--;
+        const targetId = suttasInFile[currentSuttaIndex];
+        window.location.hash = targetId;
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        // At first sutta, go to previous file
+        if (SUTTA_DATA && SUTTA_DATA.prevFileUrl) {
+            window.location.href = SUTTA_DATA.prevFileUrl;
+        }
+    }
+}
+
+function goNextSutta() {
+    if (suttasInFile.length === 0) {
+        // No multiple suttas, just go to next file
+        if (SUTTA_DATA && SUTTA_DATA.nextFileUrl) {
+            window.location.href = SUTTA_DATA.nextFileUrl;
+        }
+        return;
+    }
+    
+    if (currentSuttaIndex < suttasInFile.length - 1) {
+        // Go to next sutta in same file
+        currentSuttaIndex++;
+        const targetId = suttasInFile[currentSuttaIndex];
+        window.location.hash = targetId;
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        // At last sutta, go to next file
+        if (SUTTA_DATA && SUTTA_DATA.nextFileUrl) {
+            window.location.href = SUTTA_DATA.nextFileUrl;
+        }
+    }
+}
+
+function updateCurrentSutta() {
+    // Check URL hash to determine which sutta were viewing
+    const hash = window.location.hash.substring(1);
+    if (hash && suttasInFile.length > 0) {
+        const index = suttasInFile.indexOf(hash);
+        if (index !== -1) {
+            currentSuttaIndex = index;
+            
+            // Ensure the element is visible
+            const targetElement = document.getElementById(hash);
+            if (targetElement) {
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    }
+    
+    // Update TOC highlighting
+    document.querySelectorAll('.toc-item').forEach((item, idx) => {
+        if (idx === currentSuttaIndex) {
+            item.style.background = '#e6f0ff';
+        } else {
+            item.style.background = '';
+        }
+    });
+}
+
+// Initialize suttasInFile from TOC
+function initNavigation() {
+    if (SUTTA_DATA && SUTTA_DATA.toc) {
+        suttasInFile = SUTTA_DATA.toc.map(item => item.id);
+    }
+    updateCurrentSutta();
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', updateCurrentSutta);
+}
+
+function showTOC() {
+    const tocPanel = document.getElementById('tocPanel');
+    if (tocPanel) {
+        const isVisible = tocPanel.style.display === 'block';
+        tocPanel.style.display = isVisible ? 'none' : 'block';
+        
+        // Ensure TOC items have proper click handling
+        if (!isVisible) {
+            setTimeout(() => {
+                document.querySelectorAll('.toc-item a').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        // Close TOC after clicking
+                        setTimeout(() => {
+                            tocPanel.style.display = 'none';
+                        }, 100);
+                    });
+                });
+            }, 100);
+        }
+    }
+}
+
+function changeFontSize(delta) {
+    let newSize = currentFontSize + delta;
+    if (newSize < 80) newSize = 80;
+    if (newSize > 150) newSize = 150;
+    currentFontSize = newSize;
+    localStorage.setItem('fontSize', currentFontSize);
+    
+    // Apply to body - this will affect all em-based sizes
+    document.body.style.fontSize = currentFontSize + '%';
+    
+    // Force reflow to ensure changes apply
+    document.body.style.display = 'none';
+    document.body.offsetHeight; // Force reflow
+    document.body.style.display = '';
+    
+    showMenu();
+}
+
+function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    localStorage.setItem('darkMode', isDarkMode);
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+    showMenu(); // Keep menu visible after action
+}
+
+function updateProgressBar() {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) progressBar.style.width = scrolled + '%';
+    
+    // Show/hide scroll to top button
+    const scrollBtn = document.getElementById('scrollTopBtn');
+    if (scrollBtn) {
+        if (winScroll > 300) {
+            scrollBtn.classList.add('visible');
+        } else {
+            scrollBtn.classList.remove('visible');
+        }
+    }
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Save scroll position when leaving
+function saveScrollPosition() {
+    const scrollPos = window.scrollY;
+    const currentPath = window.location.pathname;
+    localStorage.setItem('scrollPos_' + currentPath, scrollPos);
+}
+
+// Restore scroll position on load
+function restoreScrollPosition() {
+    const currentPath = window.location.pathname;
+    const savedPos = localStorage.getItem('scrollPos_' + currentPath);
+    if (savedPos && parseInt(savedPos) > 0) {
+        setTimeout(() => {
+            window.scrollTo(0, parseInt(savedPos));
+        }, 100);
+    }
+}
+
+// ========== PROXIMITY DETECTION ==========
+function handleMouseMove(e) {
+    const bottomRightThreshold = 150;
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+    
+    // Check if mouse is near bottom-right corner
+    if (e.clientY > windowHeight - bottomRightThreshold && 
+        e.clientX > windowWidth - bottomRightThreshold) {
+        showMenu();
+    }
+}
+
+// Double tap detection for mobile
+let lastTap = 0;
+function handleTouchEnd(e) {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    
+    // Check if double tap
+    if (tapLength < 300 && tapLength > 0) {
+        // Get tap position
+        const touch = e.changedTouches[0];
+        const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
+        const bottomRightThreshold = 150;
+        
+        // Check if double tap near bottom-right corner
+        if (touch.clientY > windowHeight - bottomRightThreshold && 
+            touch.clientX > windowWidth - bottomRightThreshold) {
+            e.preventDefault();
+            showMenu();
+        }
+    }
+    lastTap = currentTime;
+}
+
+// ========== INITIALIZATION ==========
+document.addEventListener("DOMContentLoaded", function() {
+    // Highlight words that have dictionary entries
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+    
+    // Apply saved font size
+    document.body.style.fontSize = currentFontSize + '%';
+    
+    // Apply saved dark mode
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    }
+    
+    // Restore scroll position
+    //restoreScrollPosition();
+    
+    // Save scroll position before unload
+    //window.addEventListener('beforeunload', saveScrollPosition);
+    
+    // Progress bar
+    window.addEventListener('scroll', updateProgressBar);
+    updateProgressBar();
+    
+    // Proximity detection for desktop
+    document.addEventListener('mousemove', handleMouseMove);
+    
+    // Double tap detection for mobile
+    document.addEventListener('touchend', handleTouchEnd);
+    
+    // Keyboard shortcut: Ctrl+H for Hindi only mode
+    document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'h') {
+        e.preventDefault();
+        
+        // Get all main Pali divs
+        const paliDivs = document.querySelectorAll('.para > .pali');
+        
+        // Toggle visibility of the ENTIRE Pali div (both text and icons)
+        paliDivs.forEach(paliDiv => {
+            if (paliDiv.style.display === 'none') {
+                paliDiv.style.display = '';  // Show
+            } else {
+                paliDiv.style.display = 'none';  // Hide
+            }
+        });
+        
+        // Also toggle Hindi (existing functionality)
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+    }
+});
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('menuDropdown');
+        const mainBtn = document.getElementById('menuMainBtn');
+        if (dropdown && mainBtn && !mainBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+        
+        const tocPanel = document.getElementById('tocPanel');
+        const tocBtn = document.getElementById('tocBtn');
+        if (tocPanel && tocBtn && !tocBtn.contains(e.target) && !tocPanel.contains(e.target)) {
+            tocPanel.style.display = 'none';
+        }
+    });
+    
+    
+        // Show/hide prev/next buttons based on availability
+   // Show/hide prev/next buttons based on availability
+if (SUTTA_DATA.prevFileUrl) {
+    document.getElementById('prevSuttaBtn').style.display = 'block';
+}
+if (SUTTA_DATA.nextFileUrl) {
+    document.getElementById('nextSuttaBtn').style.display = 'block';
+}
+    
+    // Build TOC
+   // Build TOC
+      // Build TOC
+    // Build TOC with sutta index
+    const tocContent = document.getElementById('tocContent');
+    if (tocContent && SUTTA_DATA && SUTTA_DATA.toc) {
+        tocContent.innerHTML = '';
+        SUTTA_DATA.toc.forEach((item, idx) => {
+            const tocItem = document.createElement('div');
+            tocItem.className = 'toc-item';
+            tocItem.setAttribute('data-sutta-index', idx);
+            
+            const link = document.createElement('a');
+            link.href = `#${item.id}`;
+            link.style.textDecoration = 'none';
+            link.style.color = 'inherit';
+            link.innerHTML = `${idx + 1}. ${item.title}`;
+            tocItem.appendChild(link);
+            
+            if (item.hi) {
+                const span = document.createElement('span');
+                span.style.color = '#888';
+                span.style.fontSize = '0.9em';
+                span.style.marginLeft = '8px';
+                span.innerHTML = ` – ${item.hi}`;
+                tocItem.appendChild(span);
+            }
+            
+            tocItem.onclick = (e) => {
+                if (e.target.tagName !== 'A') {
+                    // Update current index when clicking TOC
+                    currentSuttaIndex = idx;
+                    setTimeout(() => {
+                        document.getElementById('tocPanel').style.display = 'none';
+                    }, 150);
+                }
+            };
+            
+            tocContent.appendChild(tocItem);
+        });
+        
+        // Initialize navigation after TOC is built
+        initNavigation();
+    }
+    
+        // Keyboard shortcut: Ctrl+Left for previous sutta, Ctrl+Right for next sutta
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'ArrowLeft') {
+            e.preventDefault();
+            goPrevSutta();
+        }
+        if (e.ctrlKey && e.key === 'ArrowRight') {
+            e.preventDefault();
+            goNextSutta();
+        }
+    });
+  
+});
+
+// Dictionary popup handler
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+</head>
+<body>
+
+<h1>अत्थापत्तिसमुट्ठानं</h1>
+
+<!-- Progress Bar -->
+<div id="progressBar" class="progress-bar"></div>
+
+<!-- Floating Menu Container -->
+<div id="floatingMenu" class="floating-menu-container">
+    <button id="menuMainBtn" class="menu-main-btn" onclick="toggleMenuDropdown()">⋮</button>
+    <div id="menuDropdown" class="menu-dropdown" style="display: none;">
+        <button onclick="goBackToIndex()">← Back to Index</button>
+        <button onclick="goPrevSutta()" id="prevSuttaBtn" style="display: none;">← Previous Sutta</button>
+        <button onclick="goNextSutta()" id="nextSuttaBtn" style="display: none;">Next Sutta →</button>
+        <button onclick="goFullScreen()">⛶ Fullscreen</button>
+<!--         
+        <button onclick="changeFontSize(-10)">A- Smaller Font</button>
+        <button onclick="changeFontSize(10)">A+ Larger Font</button> 
+-->
+        <button onclick="togglePaliVisibility()">🔤 Toggle Pali Text (Ctrl+H)</button>
+        <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+        <button id="tocBtn" onclick="showTOC()">📑 Table of Contents</button>
+    </div>
+</div>
+
+<!-- TOC Panel -->
+<div id="tocPanel" class="toc-panel" style="display: none;">
+    <div class="toc-header">
+        <strong>अत्थापत्तिसमुट्ठानं</strong>
+        <button onclick="showTOC()" style="float: right;">✕</button>
+    </div>
+    <div id="tocContent" class="toc-content"></div>
+</div>
+
+<!-- Scroll to Top -->
+<button id="scrollTopBtn" class="scroll-top" onclick="scrollToTop()" title="Scroll to top">↑</button>
+
+<h3 id='vin02m4.mul_02428'><span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="pārājikaṃ">पाराजिकं</span></h3>
+<div class='hindi' id='vin02m4.mul_02428_hi'>१. पाराजिकं</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02429_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="470">४७०.</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="acittako">अचित्तको</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="sacittako">सचित्तको</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="sacittako">सचित्तको</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="acittako">अचित्तको</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="acittako">अचित्तको</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="acittako">अचित्तको</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="sacittako">सचित्तको</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="sacittako">सचित्तको</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="kusalacitto">कुसलचित्तो</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="kusalacitto">कुसलचित्तो</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="kusalacitto">कुसलचित्तो</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="akusalacitto">अकुसलचित्तो</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="kusalacitto">कुसलचित्तो</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="abyākatacitto">अब्याकतचित्तो</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="akusalacitto">अकुसलचित्तो</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="kusalacitto">कुसलचित्तो</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="akusalacitto">अकुसलचित्तो</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="akusalacitto">अकुसलचित्तो</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="akusalacitto">अकुसलचित्तो</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="abyākatacitto">अब्याकतचित्तो</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="abyākatacitto">अब्याकतचित्तो</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="kusalacitto">कुसलचित्तो</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="abyākatacitto">अब्याकतचित्तो</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="akusalacitto">अकुसलचित्तो</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span> <span class="paliword" data-word="atthāpatti">अत्थापत्ति</span> <span class="paliword" data-word="abyākatacitto">अब्याकतचित्तो</span> <span class="paliword" data-word="āpajjati">आपज्‍जति,</span> <span class="paliword" data-word="abyākatacitto">अब्याकतचित्तो</span> <span class="paliword" data-word="vuṭṭhāti">वुट्ठाति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02429_hi">
+                ४७०.
+ऐसी आपत्तियाँ हैं जो अनजाने में होती हैं, किंतु सचेत रूप से उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो जानबूझकर होती हैं, किंतु अनजाने में उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो अनजाने में होती हैं और अनजाने में ही उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो जानबूझकर होती हैं और सचेत रूप से ही उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो कुशल चित्त से होती हैं और कुशल चित्त से ही उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो कुशल चित्त से होती हैं, किंतु अकुशल चित्त से उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो कुशल चित्त से होती हैं, किंतु अव्याकृत चित्त से उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो अकुशल चित्त से होती हैं, किंतु कुशल चित्त से उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो अकुशल चित्त से होती हैं और अकुशल चित्त से ही उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो अकुशल चित्त से होती हैं, किंतु अव्याकृत चित्त से उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो अव्याकृत चित्त से होती हैं, किंतु कुशल चित्त से उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो अव्याकृत चित्त से होती हैं, किंतु अकुशल चित्त से उनसे मुक्ति पाई जाती है।
+ऐसी आपत्तियाँ हैं जो अव्याकृत चित्त से होती हैं और अव्याकृत चित्त से ही उनसे मुक्ति पाई जाती है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02430_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="paṭhamaṃ">पठमं</span> <span class="paliword" data-word="pārājikaṃ">पाराजिकं</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="paṭhamaṃ">पठमं</span> <span class="paliword" data-word="pārājikaṃ">पाराजिकं</span> <span class="paliword" data-word="ekena">एकेन</span> <span class="paliword" data-word="samuṭṭhānena">समुट्ठानेन</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति।</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02430_hi">
+                पहले पाराजिक अपराध के कितने उत्थान (मूल कारण) होते हैं? पहला पाराजिक अपराध एक ही उत्थान से उत्पन्न होता है: यह शरीर और चित्त से उत्पन्न होता है, वाणी से नहीं।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02431_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="dutiyaṃ">दुतियं</span> <span class="paliword" data-word="pārājikaṃ">पाराजिकं</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="dutiyaṃ">दुतियं</span> <span class="paliword" data-word="pārājikaṃ">पाराजिकं</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02431_hi">
+                द्वितीय पाराजिक कितने समुत्थानों (उत्पत्ति के कारणों) से उत्पन्न होता है? द्वितीय पाराजिक तीन समुत्थानों से उत्पन्न होता है— कदाचित् काय और चित्त से उत्पन्न होता है, वाणी से नहीं; कदाचित् वाणी और चित्त से उत्पन्न होता है, काय से नहीं; और कदाचित् काय, वाणी तथा चित्त तीनों से उत्पन्न होता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02432_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tatiyaṃ">ततियं</span> <span class="paliword" data-word="pārājikaṃ">पाराजिकं</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="tatiyaṃ">ततियं</span> <span class="paliword" data-word="pārājikaṃ">पाराजिकं</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02432_hi">
+                तीसरा पाराजिक (pārājika) कितने समुत्थानों (samuṭṭhāna) से उत्पन्न होता है? तीसरा पाराजिक तीन समुत्थानों से उत्पन्न होता है—शायद शरीर और चित्त से उत्पन्न होता है, वाणी से नहीं; शायद वाणी और चित्त से उत्पन्न होता है, शरीर से नहीं; शायद शरीर, वाणी और चित्त, तीनों से उत्पन्न होता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02433_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="catutthaṃ">चतुत्थं</span> <span class="paliword" data-word="pārājikaṃ">पाराजिकं</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="catutthaṃ">चतुत्थं</span> <span class="paliword" data-word="pārājikaṃ">पाराजिकं</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02433_hi">
+                चौथी पाराजिका (pārājika) के कितने उद्गम (samuṭṭhāna) हैं? चौथी पाराजिका तीन उद्गमों से उत्पन्न होती है—यह शरीर और चित्त से उत्पन्न होती है, वाणी से नहीं; यह वाणी और चित्त से उत्पन्न होती है, शरीर से नहीं; अथवा यह शरीर, वाणी और चित्त, तीनों से उत्पन्न होती है।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='vin02m4.mul_02435'><span class="paliword" data-word="2">२.</span> <span class="paliword" data-word="saṅghādisesaṃ">सङ्घादिसेसं</span></h3>
+<div class='hindi' id='vin02m4.mul_02435_hi'>२. सङ्घादिसेसं</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02436_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="471">४७१.</span> <span class="paliword" data-word="upakkamitvā">उपक्‍कमित्वा</span> <span class="paliword" data-word="asuciṃ">असुचिं</span> <span class="paliword" data-word="mocentassa">मोचेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="upakkamitvā">उपक्‍कमित्वा</span> <span class="paliword" data-word="asuciṃ">असुचिं</span> <span class="paliword" data-word="mocentassa">मोचेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="ekena">एकेन</span> <span class="paliword" data-word="samuṭṭhānena">समुट्ठानेन</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02436_hi">
+                ४७१. जानबूझकर वीर्यपात (अशुचि) करने वाले के लिए संघातिक अपराध (saṅghādisesa) कितने कारणों से उत्पन्न होता है? जानबूझकर वीर्यपात करने वाले के लिए संघातिक अपराध केवल एक ही कारण से उत्पन्न होता है—यह शरीर और मन से उत्पन्न होता है, वाणी से नहीं।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02437_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="mātugāmena">मातुगामेन</span> <span class="paliword" data-word="saddhiṃ">सद्धिं</span> <span class="paliword" data-word="kāyasaṃsaggaṃ">कायसंसग्गं</span> <span class="paliword" data-word="samāpajjantassa">समापज्‍जन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="mātugāmena">मातुगामेन</span> <span class="paliword" data-word="saddhiṃ">सद्धिं</span> <span class="paliword" data-word="kāyasaṃsaggaṃ">कायसंसग्गं</span> <span class="paliword" data-word="samāpajjantassa">समापज्‍जन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="ekena">एकेन</span> <span class="paliword" data-word="samuṭṭhānena">समुट्ठानेन</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02437_hi">
+                स्त्री के साथ शारीरिक संपर्क करने वाले के लिए संघ-संस्पर्श (सङ्घादिसेस) का अपराध कितनी समुत्थानों (उत्पत्तियों) से उत्पन्न होता है? स्त्री के साथ शारीरिक संपर्क करने वाले के लिए संघ-संस्पर्श का अपराध केवल एक ही समुत्थान से उत्पन्न होता है—यह शरीर और चित्त से उत्पन्न होता है, वाणी से नहीं।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02438_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="mātugāmaṃ">मातुगामं</span> <span class="paliword" data-word="duṭṭhullāhi">दुट्ठुल्‍लाहि</span> <span class="paliword" data-word="vācāhi">वाचाहि</span> <span class="paliword" data-word="obhāsentassa">ओभासेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="mātugāmaṃ">मातुगामं</span> <span class="paliword" data-word="duṭṭhullāhi">दुट्ठुल्‍लाहि</span> <span class="paliword" data-word="vācāhi">वाचाहि</span> <span class="paliword" data-word="obhāsentassa">ओभासेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02438_hi">
+                किसी स्त्री को अश्लील वचनों से संबोधित करने पर होने वाला संघातिक अपराध (saṅghādisesa) कितने कारणों से उत्पन्न होता है? किसी स्त्री को अश्लील वचनों से संबोधित करने पर होने वाला संघातिक अपराध तीन कारणों से उत्पन्न होता है: यह शरीर और चित्त से उत्पन्न हो सकता है, वाणी से नहीं; यह वाणी और चित्त से उत्पन्न हो सकता है, शरीर से नहीं; अथवा यह शरीर, वाणी और चित्त—तीनों के मेल से उत्पन्न हो सकता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02439_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="mātugāmassa">मातुगामस्स</span> <span class="paliword" data-word="santike">सन्तिके</span> <span class="paliword" data-word="attakāmapāricariyāya">अत्तकामपारिचरियाय</span> <span class="paliword" data-word="vaṇṇaṃ">वण्णं</span> <span class="paliword" data-word="bhāsantassa">भासन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="mātugāmassa">मातुगामस्स</span> <span class="paliword" data-word="santike">सन्तिके</span> <span class="paliword" data-word="attakāmapāricariyāya">अत्तकामपारिचरियाय</span> <span class="paliword" data-word="vaṇṇaṃ">वण्णं</span> <span class="paliword" data-word="bhāsantassa">भासन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhātipe॰">समुट्ठाति…पे॰…।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02439_hi">
+                स्त्री के समक्ष अपनी काम-वासना की तृप्ति के लिए प्रशंसा करने वाले भिक्षु को होने वाला सङ्घादिसेस (saṅghādisesa) अपराध कितने कारणों से उत्पन्न होता है? स्त्री के समक्ष अपनी काम-वासना की तृप्ति के लिए प्रशंसा करने वाले भिक्षु को होने वाला सङ्घादिसेस अपराध तीन कारणों से उत्पन्न होता है... इत्यादि...।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02440_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="sañcarittaṃ">सञ्‍चरित्तं</span> <span class="paliword" data-word="samāpajjantassa">समापज्‍जन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="sañcarittaṃ">सञ्‍चरित्तं</span> <span class="paliword" data-word="samāpajjantassa">समापज्‍जन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="chahi">छहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02440_hi">
+                दूत्यकर्म (सञ्चरित्त) करने के कारण होने वाली संघादिशेष (saṅghādisesa) आपत्ति कितने कारणों से उत्पन्न होती है? दूत्यकर्म करने से होने वाली संघादिशेष आपत्ति छह कारणों से उत्पन्न होती है—संभव है कि वह शरीर से उत्पन्न हो, न कि वाणी या मन से; संभव है कि वह वाणी से उत्पन्न हो, न कि शरीर या मन से; संभव है कि वह शरीर और वाणी दोनों से उत्पन्न हो, न कि मन से; संभव है कि वह शरीर और मन दोनों से उत्पन्न हो, न कि वाणी से; संभव है कि वह वाणी और मन दोनों से उत्पन्न हो, न कि शरीर से; और संभव है कि वह शरीर, वाणी और मन—तीनों से उत्पन्न हो।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02441_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="saññācikāya">सञ्‍ञाचिकाय</span> <span class="paliword" data-word="kuṭiṃ">कुटिं</span> <span class="paliword" data-word="kārāpentassa">कारापेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="saññācikāya">सञ्‍ञाचिकाय</span> <span class="paliword" data-word="kuṭiṃ">कुटिं</span> <span class="paliword" data-word="kārāpentassa">कारापेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="chahi">छहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhātipe॰">समुट्ठाति…पे॰…।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02441_hi">
+                स्वयं याचना करके कुटी बनवाने वाले के लिए संघ अवशेष (saṅghādiśeṣa) अपराध कितने समुत्थानों (samuṭṭhāna) से उत्पन्न होता है? स्वयं याचना करके कुटी बनवाने वाले के लिए संघ अवशेष अपराध छह समुत्थानों से उत्पन्न होता है... इत्यादि...।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02442_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="mahallakaṃ">महल्‍लकं</span> <span class="paliword" data-word="vihāraṃ">विहारं</span> <span class="paliword" data-word="kārāpentassa">कारापेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="mahallakaṃ">महल्‍लकं</span> <span class="paliword" data-word="vihāraṃ">विहारं</span> <span class="paliword" data-word="kārāpentassa">कारापेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="chahi">छहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhātipe॰">समुट्ठाति…पे॰…।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02442_hi">
+                एक विशाल विहार का निर्माण करवाने पर होने वाला संघादिशेष (*saṅghādisesa*) अपराध कितने समुत्थानों (मूल कारणों) से उत्पन्न होता है? एक विशाल विहार का निर्माण करवाने पर होने वाला संघादिशेष अपराध छह समुत्थानों से उत्पन्न होता है... इत्यादि।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02443_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="bhikkhuṃ">भिक्खुं</span> <span class="paliword" data-word="amūlakena">अमूलकेन</span> <span class="paliword" data-word="pārājikena">पाराजिकेन</span> <span class="paliword" data-word="dhammena">धम्मेन</span> <span class="paliword" data-word="anuddhaṃsentassa">अनुद्धंसेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="bhikkhuṃ">भिक्खुं</span> <span class="paliword" data-word="amūlakena">अमूलकेन</span> <span class="paliword" data-word="pārājikena">पाराजिकेन</span> <span class="paliword" data-word="dhammena">धम्मेन</span> <span class="paliword" data-word="anuddhaṃsentassa">अनुद्धंसेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhātipe॰">समुट्ठाति…पे॰…।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02443_hi">
+                बिना किसी आधार के एक भिक्षु पर पराजिक (निकासन) के अपराध का झूठा आरोप लगाने वाले भिक्षु को होने वाला संघदिसेंस (निलंबन) अपराध कितने समुत्थानों (मूल कारणों) से उत्पन्न होता है? बिना किसी आधार के एक भिक्षु पर पराजिक के अपराध का झूठा आरोप लगाने वाले भिक्षु को होने वाला संघदिसेंस अपराध तीन समुत्थानों से उत्पन्न होता है... इत्यादि।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02444_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="bhikkhuṃ">भिक्खुं</span> <span class="paliword" data-word="aññabhāgiyassa">अञ्‍ञभागियस्स</span> <span class="paliword" data-word="adhikaraṇassa">अधिकरणस्स</span> <span class="paliword" data-word="kiñci">किञ्‍चि</span> <span class="paliword" data-word="desaṃ">देसं</span> <span class="paliword" data-word="lesamattaṃ">लेसमत्तं</span> <span class="paliword" data-word="upādāya">उपादाय</span> <span class="paliword" data-word="pārājikena">पाराजिकेन</span> <span class="paliword" data-word="dhammena">धम्मेन</span> <span class="paliword" data-word="anuddhaṃsentassa">अनुद्धंसेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="bhikkhuṃ">भिक्खुं</span> <span class="paliword" data-word="aññabhāgiyassa">अञ्‍ञभागियस्स</span> <span class="paliword" data-word="adhikaraṇassa">अधिकरणस्स</span> <span class="paliword" data-word="kiñci">किञ्‍चि</span> <span class="paliword" data-word="desaṃ">देसं</span> <span class="paliword" data-word="lesamattaṃ">लेसमत्तं</span> <span class="paliword" data-word="upādāya">उपादाय</span> <span class="paliword" data-word="pārājikena">पाराजिकेन</span> <span class="paliword" data-word="dhammena">धम्मेन</span> <span class="paliword" data-word="anuddhaṃsentassa">अनुद्धंसेन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhātipe॰">समुट्ठाति…पे॰…।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02444_hi">
+                किसी भिक्षु पर किसी अन्य श्रेणी के कानूनी मामले के कुछ अंशों को आधार बनाकर या मात्र बहाना बनाकर उसे 'पाराजिक' धर्म (संघ से निष्कासन योग्य अपराध) से आरोपित करने पर, जो 'सङ्घादिसेस' (संघ-निलम्बन) का अपराध होता है, वह कितने कारणों से उत्पन्न होता है? किसी भिक्षु पर किसी अन्य श्रेणी के न्यायिक प्रकरण के लेशमात्र आधार पर पाराजिक अपराध का मिथ्या आरोप लगाने से होने वाला सङ्घादिसेस तीन समुत्थानों (उत्पत्ति के कारणों) से उत्पन्न होता है...।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02445_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="saṅghabhedakassa">सङ्घभेदकस्स</span> <span class="paliword" data-word="bhikkhuno">भिक्खुनो</span> <span class="paliword" data-word="yāvatatiyaṃ">यावततियं</span> <span class="paliword" data-word="samanubhāsanāya">समनुभासनाय</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paṭinissajjantassa">पटिनिस्सज्‍जन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="saṅghabhedakassa">सङ्घभेदकस्स</span> <span class="paliword" data-word="bhikkhuno">भिक्खुनो</span> <span class="paliword" data-word="yāvatatiyaṃ">यावततियं</span> <span class="paliword" data-word="samanubhāsanāya">समनुभासनाय</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paṭinissajjantassa">पटिनिस्सज्‍जन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="ekena">एकेन</span> <span class="paliword" data-word="samuṭṭhānena">समुट्ठानेन</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02445_hi">
+                संघ के भीतर फूट डालने वाले उस भिक्षु के लिए, जो तीन बार समझाने पर भी अपनी जिद नहीं छोड़ता, 'संघादिशेष' (निलंबन योग्य अपराध) कितने कारणों से उत्पन्न होता है? संघ में फूट डालने वाले उस भिक्षु के लिए, जो तीसरी बार औपचारिक चेतावनी दिए जाने पर भी अपने कृत्य को नहीं त्यागता, 'संघादिशेष' का अपराध केवल एक ही समुत्थान (उद्गम मार्ग) से उत्पन्न होता है—अर्थात यह काया, वाणी और चित्त, इन तीनों के एक साथ सक्रिय होने से घटित होता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02446_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="bhedakānuvattakānaṃ">भेदकानुवत्तकानं</span> <span class="paliword" data-word="bhikkhūnaṃ">भिक्खूनं</span> <span class="paliword" data-word="yāvatatiyaṃ">यावततियं</span> <span class="paliword" data-word="samanubhāsanāya">समनुभासनाय</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paṭinissajjantānaṃ">पटिनिस्सज्‍जन्तानं</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="bhedakānuvattakānaṃ">भेदकानुवत्तकानं</span> <span class="paliword" data-word="bhikkhūnaṃ">भिक्खूनं</span> <span class="paliword" data-word="yāvatatiyaṃ">यावततियं</span> <span class="paliword" data-word="samanubhāsanāya">समनुभासनाय</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paṭinissajjantānaṃ">पटिनिस्सज्‍जन्तानं</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="ekena">एकेन</span> <span class="paliword" data-word="samuṭṭhānena">समुट्ठानेन</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02446_hi">
+                संघ के भेद की कोशिश करने वाले का साथ देने वाले भिक्षु, जो तीन बार समझाने पर भी अपनी जिद नहीं छोड़ते, उनके द्वारा किया गया 'संघादिशेष' अपराध कितने कारणों से उत्पन्न होता है? संघ का भेद करने वाले का पक्ष लेने वाले भिक्षु, जो तीन बार तक परामर्श दिए जाने पर भी नहीं रुकते, उनका 'संघादिशेष' अपराध एक ही आधार से उत्पन्न होता है—वह काया, वाणी और चित्त के संयुक्त प्रयास से उत्पन्न होता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02447_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="dubbacassa">दुब्बचस्स</span> <span class="paliword" data-word="bhikkhuno">भिक्खुनो</span> <span class="paliword" data-word="yāvatatiyaṃ">यावततियं</span> <span class="paliword" data-word="samanubhāsanāya">समनुभासनाय</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paṭinissajjantassa">पटिनिस्सज्‍जन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="dubbacassa">दुब्बचस्स</span> <span class="paliword" data-word="bhikkhuno">भिक्खुनो</span> <span class="paliword" data-word="yāvatatiyaṃ">यावततियं</span> <span class="paliword" data-word="samanubhāsanāya">समनुभासनाय</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paṭinissajjantassa">पटिनिस्सज्‍जन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="ekena">एकेन</span> <span class="paliword" data-word="samuṭṭhānena">समुट्ठानेन</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02447_hi">
+                दुर्वच भिक्षु, जो तीन बार समझाने पर भी अपनी हठ नहीं छोड़ता, उसके संघदिशेष (saṅghādisesa) अपराध के कितने मूल कारण होते हैं? दुर्वच भिक्षु, जो तीन बार समझाने पर भी अपनी हठ नहीं छोड़ता, उसके संघदिशेष अपराध का एक ही मूल कारण होता है—वह काया, वाणी और चित्त इन तीनों के योग से उत्पन्न होता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02448_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="kuladūsakassa">कुलदूसकस्स</span> <span class="paliword" data-word="bhikkhuno">भिक्खुनो</span> <span class="paliword" data-word="yāvatatiyaṃ">यावततियं</span> <span class="paliword" data-word="samanubhāsanāya">समनुभासनाय</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paṭinissajjantassa">पटिनिस्सज्‍जन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="kuladūsakassa">कुलदूसकस्स</span> <span class="paliword" data-word="bhikkhuno">भिक्खुनो</span> <span class="paliword" data-word="yāvatatiyaṃ">यावततियं</span> <span class="paliword" data-word="samanubhāsanāya">समनुभासनाय</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="paṭinissajjantassa">पटिनिस्सज्‍जन्तस्स</span> <span class="paliword" data-word="saṅghādiseso">सङ्घादिसेसो</span> <span class="paliword" data-word="ekena">एकेन</span> <span class="paliword" data-word="samuṭṭhānena">समुट्ठानेन</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02448_hi">
+                कुल को दूषित करने वाले और तीसरी बार चेतावनी दिए जाने पर भी अपनी बात न छोड़ने वाले भिक्षु के लिए, संघ-नियमों के उल्लंघन (saṅghādisesa) के कितने उद्गम होते हैं? कुल को दूषित करने वाले और तीसरी बार चेतावनी दिए जाने पर भी अपनी बात न छोड़ने वाले भिक्षु के लिए, संघ-नियमों के उल्लंघन का एक ही उद्गम होता है—वह काया, वाणी और चित्त तीनों के संयोग से उत्पन्न होता है।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02450_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="472">४७२.</span> <span class="paliword" data-word="pe॰">…पे॰…</span> <span class="paliword" data-word="anādariyaṃ">अनादरियं</span> <span class="paliword" data-word="paṭicca">पटिच्‍च</span> <span class="paliword" data-word="udake">उदके</span> <span class="paliword" data-word="uccāraṃ">उच्‍चारं</span> <span class="paliword" data-word="vā">वा</span> <span class="paliword" data-word="passāvaṃ">पस्सावं</span> <span class="paliword" data-word="vā">वा</span> <span class="paliword" data-word="kheḻaṃ">खेळं</span> <span class="paliword" data-word="vā">वा</span> <span class="paliword" data-word="karontassa">करोन्तस्स</span> <span class="paliword" data-word="dukkaṭaṃ">दुक्‍कटं</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति?</span> <span class="paliword" data-word="anādariyaṃ">अनादरियं</span> <span class="paliword" data-word="paṭicca">पटिच्‍च</span> <span class="paliword" data-word="udake">उदके</span> <span class="paliword" data-word="uccāraṃ">उच्‍चारं</span> <span class="paliword" data-word="vā">वा</span> <span class="paliword" data-word="passāvaṃ">पस्सावं</span> <span class="paliword" data-word="vā">वा</span> <span class="paliword" data-word="kheḻaṃ">खेळं</span> <span class="paliword" data-word="vā">वा</span> <span class="paliword" data-word="karontassa">करोन्तस्स</span> <span class="paliword" data-word="dukkaṭaṃ">दुक्‍कटं</span> <span class="paliword" data-word="ekena">एकेन</span> <span class="paliword" data-word="samuṭṭhānena">समुट्ठानेन</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhāti">समुट्ठाति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02450_hi">
+                ४७२.
+...पे... अनादर के कारण जल में मल, मूत्र या थूक त्याग करने वाले को होने वाली 'दुष्कृत' (duṣkṛta) आपत्ति कितने उत्थानों (समुत्थानों) से उत्पन्न होती है? अनादर के कारण जल में मल, मूत्र या थूक त्याग करने वाले को होने वाली 'दुष्कृत' आपत्ति एक ही उत्थान से उत्पन्न होती है—वह शरीर और चित्त से उत्पन्न होती है, वाणी से नहीं।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='vin02m4.mul_02452'><span class="paliword" data-word="3">३.</span> <span class="paliword" data-word="pārājikādi">पाराजिकादि</span></h3>
+<div class='hindi' id='vin02m4.mul_02452_hi'>३. पाराजिकादि</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02453_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="473">४७३.</span> <span class="paliword" data-word="cattāro">चत्तारो</span> <span class="paliword" data-word="pārājikā">पाराजिका</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति?</span> <span class="paliword" data-word="cattāro">चत्तारो</span> <span class="paliword" data-word="pārājikā">पाराजिका</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02453_hi">
+                ४७३.
+चार पाराजिक (pārājika) अपराध कितनी उत्पत्ति-विधियों से उत्पन्न होते हैं? चार पाराजिक तीन उत्पत्ति-विधियों से उत्पन्न होते हैं—संभव है कि वे शरीर और मन से उत्पन्न हों, वाणी से नहीं; संभव है कि वे वाणी और मन से उत्पन्न हों, शरीर से नहीं; और संभव है कि वे शरीर, वाणी और मन तीनों से उत्पन्न हों।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02454_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="terasa">तेरस</span> <span class="paliword" data-word="saṅghādisesā">सङ्घादिसेसा</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति?</span> <span class="paliword" data-word="terasa">तेरस</span> <span class="paliword" data-word="saṅghādisesā">सङ्घादिसेसा</span> <span class="paliword" data-word="chahi">छहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02454_hi">
+                तेरह संघदिशेष (saṅghādisesa) अपराध कितने समुत्थानों (samuṭṭhāna) से उत्पन्न होते हैं? तेरह संघदिशेष छह समुत्थानों से उत्पन्न होते हैं: कदाचित् वे शरीर से उत्पन्न होते हैं, न कि वाणी और चित्त से; कदाचित् वे वाणी से उत्पन्न होते हैं, न कि शरीर और चित्त से; कदाचित् वे शरीर और वाणी दोनों से उत्पन्न होते हैं, न कि चित्त से; कदाचित् वे शरीर और चित्त दोनों से उत्पन्न होते हैं, न कि वाणी से; कदाचित् वे वाणी और चित्त दोनों से उत्पन्न होते हैं, न कि शरीर से; और कदाचित् वे शरीर, वाणी और चित्त तीनों से उत्पन्न होते हैं।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02455_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="aniyatā">अनियता</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति?</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="aniyatā">अनियता</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02455_hi">
+                दो अनियत (Aniyata) कितनी समुत्थानों (Samuṭṭhāna) से उत्पन्न होते हैं? दो अनियत तीन समुत्थानों से उत्पन्न होते हैं: कदाचित् वे काय और चित्त से उत्पन्न होते हैं, वाणी से नहीं; कदाचित् वे वाणी और चित्त से उत्पन्न होते हैं, काय से नहीं; और कदाचित् वे काय, वाणी तथा चित्त तीनों से उत्पन्न होते हैं।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02456_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tiṃsa">तिंस</span> <span class="paliword" data-word="nissaggiyā">निस्सग्गिया</span> <span class="paliword" data-word="pācittiyā">पाचित्तिया</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति?</span> <span class="paliword" data-word="tiṃsa">तिंस</span> <span class="paliword" data-word="nissaggiyā">निस्सग्गिया</span> <span class="paliword" data-word="pācittiyā">पाचित्तिया</span> <span class="paliword" data-word="chahi">छहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02456_hi">
+                तीस 'निस्सग्गिय पाचित्तिय' (निसर्गिक प्रायश्चित्तिका) अपराध कितने उत्थानों (कारणों) से उत्पन्न होते हैं? तीस निस्सग्गिय पाचित्तिय अपराध छह उत्थानों से उत्पन्न होते हैं— संभव है कि वे केवल काय (शरीर) से उत्पन्न हों, न कि वाणी या चित्त से; संभव है कि वे केवल वाणी से उत्पन्न हों, न कि काय या चित्त से; संभव है कि वे काय और वाणी दोनों से उत्पन्न हों, पर चित्त से नहीं; संभव है कि वे काय और चित्त दोनों से उत्पन्न हों, पर वाणी से नहीं; संभव है कि वे वाणी और चित्त दोनों से उत्पन्न हों, पर काय से नहीं; और संभव है कि वे काय, वाणी और चित्त तीनों से उत्पन्न हों।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02457_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="dvenavuti">द्वेनवुति</span> <span class="paliword" data-word="pācittiyā">पाचित्तिया</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति?</span> <span class="paliword" data-word="dvenavuti">द्वेनवुति</span> <span class="paliword" data-word="pācittiyā">पाचित्तिया</span> <span class="paliword" data-word="chahi">छहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02457_hi">
+                बानवे पाचित्तिय (प्रायश्चित्तिक) आपत्तियाँ कितने उत्थानों (कारणों) से उत्पन्न होती हैं? बानवे पाचित्तिय आपत्तियाँ छह उत्थानों से उत्पन्न होती हैं: कभी वे केवल काया (शरीर) से उत्पन्न होती हैं, वाणी और चित्त (मन) से नहीं; कभी वे केवल वाणी से उत्पन्न होती हैं, काया और चित्त से नहीं; कभी वे काया और वाणी से उत्पन्न होती हैं, चित्त से नहीं; कभी वे काया और चित्त से उत्पन्न होती हैं, वाणी से नहीं; कभी वे वाणी और चित्त से उत्पन्न होती हैं, काया से नहीं; और कभी वे काया, वाणी और चित्त—इन तीनों से उत्पन्न होती हैं।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02458_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="cattāro">चत्तारो</span> <span class="paliword" data-word="pāṭidesanīyā">पाटिदेसनीया</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति?</span> <span class="paliword" data-word="cattāro">चत्तारो</span> <span class="paliword" data-word="pāṭidesanīyā">पाटिदेसनीया</span> <span class="paliword" data-word="catūhi">चतूहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="cittato">चित्ततो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02458_hi">
+                चारों पाटिदेसनीय (prāṭideśanīya) अपराध कितने उद्गमों से उत्पन्न होते हैं? चारों पाटिदेसनीय अपराध चार उद्गमों से उत्पन्न होते हैं: कदाचित वे शरीर से उत्पन्न होते हैं, न कि वाणी या मन से; कदाचित वे शरीर और वाणी दोनों से उत्पन्न होते हैं, न कि मन से; कदाचित वे शरीर और मन दोनों से उत्पन्न होते हैं, न कि वाणी से; और कदाचित वे शरीर, वाणी और मन तीनों से उत्पन्न होते हैं।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02459_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="pañcasattati">पञ्‍चसत्तति</span> <span class="paliword" data-word="sekhiyā">सेखिया</span> <span class="paliword" data-word="katihi">कतिहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति?</span> <span class="paliword" data-word="pañcasattati">पञ्‍चसत्तति</span> <span class="paliword" data-word="sekhiyā">सेखिया</span> <span class="paliword" data-word="tīhi">तीहि</span> <span class="paliword" data-word="samuṭṭhānehi">समुट्ठानेहि</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति</span> <span class="paliword" data-word="–">–</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vācato">वाचतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="kāyato">कायतो;</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="kāyato">कायतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vācato">वाचतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cittato">चित्ततो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="samuṭṭhanti">समुट्ठन्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02459_hi">
+                पचहत्तर शैक्ष्य (sekhiya) नियम कितने समुत्थानों (origins) से उत्पन्न होते हैं? पचहत्तर शैक्ष्य नियम तीन समुत्थानों से उत्पन्न होते हैं—संभव है कि वे शरीर और चित्त से उत्पन्न हों, वाणी से नहीं; संभव है कि वे वाणी और चित्त से उत्पन्न हों, शरीर से नहीं; और संभव है कि वे शरीर, वाणी और चित्त, तीनों से उत्पन्न हों।
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('vin02m4.mul_02461_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="acittakusalā">अचित्तकुसला</span> <span class="paliword" data-word="ceva">चेव,</span> <span class="paliword" data-word="samuṭṭhānañca">समुट्ठानञ्‍च</span> <span class="paliword" data-word="sabbathā">सब्बथा।</span> <span class="paliword" data-word="yathādhammena">यथाधम्मेन</span> <span class="paliword" data-word="ñāyena">ञायेन,</span> <span class="paliword" data-word="samuṭṭhānaṃ">समुट्ठानं</span> <span class="paliword" data-word="vijānathāti||">विजानथाति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="vin02m4.mul_02461_hi">
+                अचेतन और कुशल, तथा सभी प्रकार के समुत्थान; धर्मसम्मत न्याय के द्वारा, उन समुत्थानों को भली-भाँति जानो।
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

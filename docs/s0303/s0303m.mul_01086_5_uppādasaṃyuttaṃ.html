@@ -1,0 +1,1869 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+   font-size: 100%;  /* Base size - 100% = 16px default */
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 1.2em;  /* Change from 20px to 1.2em */
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+    font-size: 1.2em;  /* Slightly smaller than Pali (1.2em) but larger than body */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Floating Navigation Buttons */
+.floating-nav {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.floating-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.floating-btn:hover {
+    background: rgba(0,0,0,0.8);
+    transform: scale(1.05);
+}
+
+/* Progress Bar */
+.progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: #8B4513;
+    z-index: 9999;
+    transition: width 0.1s;
+}
+
+/* Font Size Controls */
+.font-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 100px;
+    display: flex;
+    gap: 8px;
+    z-index: 9999;
+}
+
+.font-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+    transition: all 0.2s;
+}
+
+.font-btn:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background: #1a1a2e;
+    color: #eee;
+}
+
+body.dark-mode .para {
+    border-bottom-color: #333;
+}
+
+body.dark-mode .pali.subhead {
+    color: #ddd;
+}
+
+body.dark-mode .commentary {
+    border-left-color: #444;
+    color: #ccc;
+}
+
+body.dark-mode .hindi {
+    color: #ccc;
+}
+
+body.dark-mode .paliword.has-dict:hover {
+    background: #2a2a3e;
+}
+
+body.dark-mode .paliword.no-dict:hover {
+    background: #252535;
+}
+
+/* Mobile Touch Improvements */
+@media (max-width: 768px) {
+    .paliword {
+        padding: 2px 0;
+        display: inline-block;
+    }
+    
+    .floating-btn, .font-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+    }
+    
+    .pali {
+        font-size: 1.1em;  /* Slightly smaller on mobile */
+    }
+}
+
+/* Scroll to Top Button */
+.scroll-top {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.scroll-top.visible {
+    display: flex;
+}
+
+/* TOC Panel */
+.toc-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 400px;
+    max-height: 80vh;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 10000;
+    overflow-y: auto;
+    font-family: 'TiroDevanagariHindi', sans-serif;
+}
+
+body.dark-mode .toc-panel {
+    background: #2a2a3e;
+    color: #eee;
+}
+
+.toc-header {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    background: inherit;
+}
+
+.toc-content {
+    padding: 10px;
+}
+
+.toc-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.toc-item:hover {
+    background: #f0f0f0;
+}
+
+body.dark-mode .toc-item:hover {
+    background: #3a3a4e;
+}
+
+/* Menu Dropdown Buttons */
+.menu-dropdown {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: rgba(30,30,40,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 8px 0;
+    min-width: 200px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.menu-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.menu-dropdown button:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Floating Menu Container */
+.floating-menu-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.floating-menu-container.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Main Menu Button */
+.menu-main-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 28px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-main-btn:hover {
+    background: rgba(0,0,0,0.9);
+    transform: scale(1.05);
+}
+</style>
+
+<script>
+const LOCAL_DICT = {"viññāṇassa": "1 <i>nt</i> awareness; consciousness; cognition; mind; fifth of the five aggregates [nt, from vijānāti] ‹ विजानाति (lit. knowing distinctly)<br>2 <i>nt</i> knowing; understanding [nt, act, from vijānāti] ‹ विजानाति (lit. knowing distinctly)<br>3 <i>adj</i> with awareness; having consciousness [adj, in s, from vijānāti] ‹ विजानाति (lit. knowing distinctly)", "yo": "1 <i>pron</i> whoever; whatever; whichever [pron, base]<br>2 <i>lett</i> (gram) letter y; 34th letter of the alphabet; palatal semi-vowel [letter, masc]<br>3 <i>cs</i> (gram) ya; suffix used to form impersonal and passive verbs [cs, masc]<br>4 <i>cs</i> (gram) ya; conjugational sign of group 3 divādigaṇa verbs [cs, masc]<br>5 <i>pron</i> whoever; whatever; whichever [pron, masc nom sg of ya] ‹ ya", "kāyassa": "1 <i>masc</i> body; physical body; physical process [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>2 <i>masc</i> group; host; company; collection; multitude; mass [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>3 <i>masc</i> process; collection [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>4 <i>masc</i> category; class; group (of) [masc, in s, from cināti] ‹ चिनाति (lit. accumulation)<br>5 <i>masc</i> physical existence; material existence [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>6 <i>masc</i> group of beings; class of beings; state of existence [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>7 <i>masc</i> mass; heap; bulk; body [masc, from cināti] ‹ चिनाति (lit. accumulation)<br>8 <i>adj</i> with a body; having (a certain kind of) body; -bodied [adj, from cināti] ‹ चिनाति (lit. accumulation)<br>9 <i>masc</i> embodiment; living manifestation [masc, from cināti] ‹ चिनाति (lit. accumulation)", "paṭhamaṃ": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>ind</i> first; firstly; at first; first of all [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>5 <i>ind</i> before; recently; newly; just [ind, adv, acc sg of paṭhama] ‹ पठम (lit. standing forward)<br>6 <i>fem</i> [fem]", "gandhānaṃ": "1 <i>masc</i> smell; scent; odour [masc] ‹ √घा<br>2 <i>masc</i> perfume; fragrance; scent [masc] ‹ √घा<br>3 <i>nt</i> name of a type of elephant ‹ √घा (lit. fragrant)", "phoṭṭhabbānaṃ": "1 <i>nt</i> touch; physical sensation; tactile sensation [nt, ptp of phusati] ‹ phusati (lit. to be touched)<br>2 <i>ptp</i> [ptp]", "taṇhāsuttaṃ": "1 <i>nt</i> [nt,]<br>2 <i>nt</i> Saṃyutta Nikāya 45.170 (SN45.170) [nt,] (lit. discourse on craving)", "pātubhāvo": "1 <i>masc</i> appearance; manifestation (of) [masc, abstr, , from pātubhavati] ‹ पातुभवति (lit. being in front)", "khandhena": "1 <i>masc</i> mass; heap; pile; volume; aggregation [masc] ‹ √khandh (lit. accumulation)<br>2 <i>masc</i> shoulder; back [masc] ‹ √khandh (lit. accumulation)<br>3 <i>masc</i> aggregate; combination; conglomeration; bundle [masc] ‹ √khandh (lit. accumulation)<br>4 <i>masc</i> (of plant or tree) trunk; stem [masc] ‹ √khandh (lit. accumulation)<br>5 <i>masc</i> group; class; category [masc] ‹ √khandh (lit. accumulation)<br>6 <i>masc</i> [masc] ‹ √khandh (lit. accumulation)<br>7 <i>adj</i> with a back; having shoulders [adj, in s] ‹ √khandh", "sotassa": "1 <i>masc</i> stream; river; current [masc, from savati] ‹ savati<br>2 <i>nt</i> stream; river; current [nt, from savati] ‹ savati<br>3 <i>nt</i> ear [nt, from suṇāti] ‹ सुणाति<br>4 <i>nt</i> opening; aperture; channel; pathway [nt, from savati] ‹ savati (lit. stream)", "samphassasuttaṃ": "1 <i>nt</i> [nt,]", "āpodhātuyā": "1 <i>fem</i> liquids; liquid state; (comm) element of cohesion [fem, abstr,] (lit. water state)<br>2 <i>fem</i> liquid; moisture [fem, abstr,] (lit. water state)<br>3 <i>fem</i> (abhi) element of cohesion [fem, abstr,] (lit. water state)", "cakkhusamphassassa": "1 <i>masc</i> contact with the eye; visual impression; visual experience [masc,]", "nirodho": "1 <i>masc</i> ending; cessation; termination; finishing (of) [masc, from nirundhati] ‹ nirundhati (lit. blocking down)<br>2 <i>aor</i> finished; stopped; ceased [aor of nirujjhati] ‹ nirujjhati (lit. blocked down)", "ghānassa": "1 <i>nt</i> nose [nt, from ghāyati] ‹ घायति (lit. smelling)", "cetanā": "1 <i>adj</i> having the intention; with the will (to) [adj, in s, from ceteti] ‹ ceteti<br>2 <i>fem</i> intending; willing [fem, abstr, act, from ceteti] ‹ ceteti", "dasamaṃ": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "dhammasaññāya": "1 <i>fem</i> recognition of mental activity; perception of mental phenomena [fem, abstr,]", "rūpasañcetanāya": "1 <i>fem</i> thoughts about sights; intention regarding forms [fem,]", "vedanāya": "1 <i>fem</i> (pleasant, unpleasant or neutral) felt experience; feeling; feeling tone; sensation; second of the five aggregates [fem, from vedeti] ‹ vedeti (lit. causing to know)<br>2 <i>fem</i> pain [fem, from vedeti] ‹ vedeti (lit. causing to know)<br>3 <i>adj</i> with felt experience; with a feeling; having a feeling tone [adj, in s, from vedanā] ‹ वेदना (lit. causing to know)", "tejodhātuyā": "1 <i>fem</i> fiery state [fem, abstr,] (lit. fire state)<br>2 <i>fem</i> (abhi) element of heat [fem, abstr,] (lit. fire state)", "atthaṅgamo": "1 <i>masc</i> disappearance; vanishing; settling down; subsiding; passing away (of) [masc, , from atthaṃ gacchati] ‹ अत्थं गच्छति (lit. going home)<br>2 <i>masc</i> (of the sun) setting; going down [masc, , from atthaṃ gacchati] ‹ अत्थं गच्छति", "tatiyaṃ": "1 <i>ordi</i> third (3rd) [ordin of ti] ‹ ti<br>2 <i>masc</i> (gram) third consonant of each vagga; g, j, ḍ, d, b [masc, from ti] ‹ ti<br>3 <i>adj</i> [adj, from tatha] ‹ tatha<br>4 <i>ind</i> for the third time [ind, adv, acc sg of tatiya] ‹ tatiya<br>5 <i>fem</i> [fem]", "sañcetanāsuttaṃ": "1 <i>nt</i> [nt,]", "manoviññāṇassa": "1 <i>nt</i> thinking and knowing; mind consciousness; mental awareness; sentience [nt,] (lit. mind knowing)", "vāyodhātuyā": "1 <i>fem</i> gas; gaseous state [fem, abstr,] (lit. air state)<br>2 <i>fem</i> (abhi) element of motion [fem, abstr,] (lit. air state)", "viññāṇadhātuyā": "1 <i>fem</i> consciousness; awareness; mind element [fem, abstr,] (lit. knowing state)", "catutthaṃ": "1 <i>ordi</i> fourth (4th) [ordin of catu] ‹ catu<br>2 <i>masc</i> (gram) fourth consonant of each vagga; gh, jh, ḍh, dh, bh [masc, from catu] ‹ catu (lit. fourth)<br>3 <i>ind</i> for the fourth time; on the fourth day [ind, adv, acc sg of catuttha] ‹ catuttha", "dhammataṇhāya": "1 <i>fem</i> craving for mental phenomena [fem, abstr,]", "saññā": "1 <i>adj</i> perceiving; having perception; regarding (as) [adj, in s, from saññā] ‹ सञ्ञा (lit. knowing together)<br>2 <i>fem</i> perception; conception; recognition; third of the five aggregates [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>3 <i>fem</i> name; label; concept; idea; notion; impression; representation; symbol [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>4 <i>fem</i> sign; signal; gesture [fem, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>5 <i>fem</i> (gram) grammatical term; technical term; definition [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>6 <i>fem</i> consciousness; awareness [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)", "rūpānaṃ": "1 <i>nt</i> matter; material thing; materiality; experience of material world; physical objects of consciousness; first of the five aggregates [nt] ‹ √रूप् (lit. form)<br>2 <i>nt</i> body; physical body; material bodily [nt] ‹ √रूप् (lit. form)<br>3 <i>nt</i> (object of the eye) form; material form; shape; sight; appearance [nt] ‹ √रूप्<br>4 <i>adj</i> of character; having nature of; of type; of kind; having the quality of; appearing as [adj, in s] ‹ √रूप् (lit. having form of)<br>5 <i>adj</i> as if; like someone [adj, in s] ‹ √रूप् (lit. having form of)<br>6 <i>nt</i> (gram) form of a word [nt] ‹ √रूप्<br>7 <i>nt</i> (gram) sound of a word [nt] ‹ √रूप् (lit. form)<br>8 <i>nt</i> [nt] ‹ √रूप्", "jarāmaraṇassa": "1 <i>nt</i> old age and death; ageing and dying [nt,]", "abhinibbatti": "1 <i>fem</i> birth; becoming; production [fem, abstr, from abhinibbattati] ‹ abhinibbattati", "te": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>card</i> three (3) [card, masc fem & nt pl]<br>4 <i>ve</i> (gram) ti; verbal ending of the present tense 3rd person singular [ve, masc]<br>5 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>6 <i>pron</i> they; those [pron, masc nom pl of ta] ‹ ta<br>7 <i>pron</i> them; those [pron, masc acc pl of ta] ‹ ta<br>8 <i>pron</i> you; to you (object) [pron, 2nd acc sg of tvaṃ] ‹ त्वं<br>9 <i>pron</i> by you [pron, 2nd instr sg of tvaṃ] ‹ त्वं<br>10 <i>pron</i> for you; to you [pron, 2nd dat sg of tvaṃ] ‹ त्वं<br>11 <i>pron</i> your; of you [pron, 2nd gen sg of tvaṃ] ‹ त्वं<br>12 <i>pron</i> when you [pron, 2nd gen sg of tvaṃ, gen abs] ‹ त्वं<br>13 <i>card</i> three (3) [card, in s, from ti] ‹ ti<br>14 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha", "pākaṭameva": "1 <i>pp</i> famous; well known; widespread [pp of pakaroti] ‹ pakaroti<br>2 <i>pp</i> made open; openly revealed [pp of pakāsati] ‹ पकासति<br>3 <i>pp</i> unconcealed; in the open; clearly seen [pp of pakāsati] ‹ पकासति", "phasso": "1 <i>masc</i> sense contact; sense impingement; sense impression; sense experience [masc, from phusati] ‹ phusati (lit. touch)<br>2 <i>masc</i> experience (of); coming into contact (with) [masc, from phusati] ‹ phusati (lit. touch)", "saṅkhārānaṃ": "1 <i>masc</i> intention; volitional formation; choice; karmic activity [masc, from saṅkharoti] ‹ सङ्खरोति (lit. making together)<br>2 <i>masc</i> function; activity; process [masc, in s, from saṅkharoti] ‹ सङ्खरोति (lit. making together)<br>3 <i>masc</i> mental formation; mental activity; thought processes; fourth of the five aggregates [masc, from saṅkharoti] ‹ सङ्खरोति (lit. making together)<br>4 <i>masc</i> condition; conditioned thing; construction; fabrication; concoction [masc, from saṅkharoti] ‹ सङ्खरोति (lit. making together)<br>5 <i>masc</i> constituency; construction; condition; state [masc, in s, from saṅkharoti] ‹ सङ्खरोति (lit. making together)<br>6 <i>adj</i> having intention; with volition; having mental activity [adj, in s, from saṅkharoti] ‹ सङ्खरोति (lit. making together)", "aṭṭhamaṃ": "1 <i>ordi</i> eighth (8th) [ordin of aṭṭha] ‹ अट्ठ<br>2 <i>masc</i> name of a privately awakened Buddha [masc, ordin of aṭṭha] ‹ अट्ठ (lit. eighth)<br>3 <i>ind</i> for the eighth time [ind, adv, acc sg of aṭṭhama] ‹ अट्ठम", "pathavīdhātuyā": "1 <i>fem</i> solids; solid state; earth element [fem, abstr,] (lit. earth state)<br>2 <i>fem</i> earth; soil [fem, abstr,] (lit. earth state)<br>3 <i>fem</i> (abhi) element of extension [fem, abstr,] (lit. earth state)", "rasānaṃ": "1 <i>masc</i> taste; flavour [masc] ‹ √ras<br>2 <i>masc</i> juice; nectar [masc] ‹ √ras<br>3 <i>masc</i> decoction; extract; concentrate [masc] ‹ √ras<br>4 <i>masc</i> essential function [masc] ‹ √ras<br>5 <i>masc</i> nutrients; fertilizer [masc] ‹ √ras<br>6 <i>nt</i> flavour; taste [nt]<br>7 <i>masc</i> [masc] ‹ √ras<br>8 <i>masc</i> taste; flavour [masc, mano group, from rasati] ‹ rasati", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "kho": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "pañcamaṃ": "1 <i>ordi</i> fifth (5th) [ordin of pañca] ‹ पञ्च<br>2 <i>masc</i> fifth of the seven primary musical notes [masc, ordin of pañca] ‹ पञ्च (lit. fifth)", "cakkhu": "1 <i>nt</i> eye [nt] ‹ √cakkh<br>2 <i>nt</i> eyesight; faculty of seeing [nt] ‹ √cakkh<br>3 <i>nt</i> vision; insight; understanding [nt] ‹ √cakkh<br>4 <i>nt</i> spiritual vision; divine eye [nt] ‹ √cakkh", "sabbaṃ": "1 <i>pron</i> all; every [pron, adj]<br>2 <i>pron</i> everything; everyone; all [pron]<br>3 <i>pron</i> whole; entire; complete [pron]<br>4 <i>ind</i> completely; altogether [ind, adv, acc sg of sabba] ‹ sabba", "khandhasuttaṃ": "1 <i>nt</i> [nt,]", "taṇhā": "1 <i>adj</i> with craving; having desire (for) [adj, from taṇhā] ‹ तण्हा (lit. with thirst)<br>2 <i>fem</i> craving; wanting; desire (for) [fem, abstr, from tasati] ‹ tasati (lit. thirst)<br>3 <i>fem</i> attachment (to); love (for) [fem, abstr, from tasati] ‹ tasati (lit. thirst)<br>4 <i>fem</i> name of one of the three daughters of Death [fem, from tasati] ‹ tasati (lit. thirst)<br>5 <i>fem</i> thirst [fem, abstr, from tasati] ‹ tasati", "cakkhussa": "1 <i>nt</i> eye [nt] ‹ √cakkh<br>2 <i>nt</i> eyesight; faculty of seeing [nt] ‹ √cakkh<br>3 <i>nt</i> vision; insight; understanding [nt] ‹ √cakkh<br>4 <i>nt</i> spiritual vision; divine eye [nt] ‹ √cakkh<br>5 <i>adj</i> good looking; easy on the eye; (comm) good for the eyes [adj, from cakkhu] ‹ cakkhu (lit. for the eye)", "sattamaṃ": "1 <i>ordi</i> seventh (7th) [ordin of satta] ‹ satta<br>2 <i>adj</i> best; most excellent; highest [adj, superl of santa] ‹ santa", "cakkhusamphassajāya": "1 <i>adj</i> caused by eye contact; produced by a visual impression; born from eye experience [adj,] (lit. born from eye touch)", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "saññāya": "1 <i>adj</i> perceiving; having perception; regarding (as) [adj, in s, from saññā] ‹ सञ्ञा (lit. knowing together)<br>2 <i>fem</i> perception; conception; recognition; third of the five aggregates [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>3 <i>fem</i> name; label; concept; idea; notion; impression; representation; symbol [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>4 <i>fem</i> sign; signal; gesture [fem, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>5 <i>fem</i> (gram) grammatical term; technical term; definition [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>6 <i>fem</i> consciousness; awareness [fem, abstr, from sañjānāti] ‹ सञ्जानाति (lit. knowing together)<br>7 <i>ger</i> knowing; perceiving [ger of sañjānāti] ‹ सञ्जानाति (lit. known together)", "dhammānaṃ": "1 <i>masc</i> nature; character [masc, from dharati] ‹ dharati<br>2 <i>masc</i> quality; characteristic; trait; inherent quality [masc, from dharati] ‹ dharati<br>3 <i>masc</i> teaching; discourse; doctrine [masc, from dharati] ‹ dharati<br>4 <i>masc</i> mental phenomena; thoughts [masc, normally pl dhammā, from dharati] ‹ dharati<br>5 <i>masc</i> mental states [masc, normally pl dhammā, from dharati] ‹ dharati<br>6 <i>masc</i> matter; thing; phenomenon [masc, from dharati] ‹ dharati<br>7 <i>masc</i> truth; reality; principle; truth behind the teaching [masc, from dharati] ‹ dharati<br>8 <i>masc</i> virtue; moral behaviour [masc, from dharati] ‹ dharati<br>9 <i>masc</i> law; case; rule; legal process [masc, from dharati] ‹ dharati<br>10 <i>adj</i> of such nature; liable (to); prone (to); destined (for) [adj, from dharati] ‹ dharati<br>11 <i>masc</i> name of king Mahāsudassana's palace [masc, from dharati] ‹ dharati<br>12 <i>nt</i> teaching; discourse; doctrine [nt, from dharati, irreg] ‹ dharati<br>13 <i>masc</i> religion [masc, from dharati] ‹ dharati<br>14 <i>masc</i> act; practice [masc, from dharati] ‹ dharati<br>15 <i>masc</i> duty; obligation [masc, from dharati] ‹ dharati<br>16 <i>adj</i> having a bow [adj, in s, from dhanu] ‹ dhanu<br>17 <i>fem</i> name of an arahant nun [fem, from dhamma] ‹ dhamma", "jivhāya": "1 <i>adj</i> with a tongue; having a tongue [adj, in s, from jivhā] ‹ जिव्हा<br>2 <i>fem</i> tongue [fem]", "manosamphassassa": "1 <i>masc</i> contact with the mind; mental impression; mental experience [masc,]", "uppādasaṃyutte": "1 <i>nt</i> [nt,] (lit. connected with )", "viññāṇaṃ": "1 <i>nt</i> awareness; consciousness; cognition; mind; fifth of the five aggregates [nt, from vijānāti] ‹ विजानाति (lit. knowing distinctly)<br>2 <i>nt</i> knowing; understanding [nt, act, from vijānāti] ‹ विजानाति (lit. knowing distinctly)<br>3 <i>adj</i> with awareness; having consciousness [adj, in s, from vijānāti] ‹ विजानाति (lit. knowing distinctly)", "samphassajasuttaṃ": "1 <i>nt</i> [nt,]", "saddānaṃ": "1 <i>masc</i> sound; noise [masc] ‹ √sadd<br>2 <i>masc</i> word [masc] ‹ √sadd (lit. sound)<br>3 <i>masc</i> report; reputation; good estimation [masc] ‹ √sadd (lit. sound)<br>4 <i>masc</i> (gram) word; part of a word; the word ' ' [masc] ‹ √sadd (lit. sound)<br>5 <i>nt</i> sound; noise [nt] ‹ √sadd<br>6 <i>masc</i> voice [masc] ‹ √sadd (lit. sound)<br>7 <i>masc</i> (gram) nominal stem [masc] ‹ √sadd (lit. sound)", "niṭṭhitā": "1 <i>pp</i> finished; completed; accomplished [pp of niṭṭhāti] ‹ निट्ठाति (lit. stood down)<br>2 <i>pp</i> (of food) ready; prepared [pp of niṭṭhāti] ‹ निट्ठाति (lit. stood down)", "sāvatthinidānaṃ": "1 <i>nt</i> (this) occurred at Sāvatthī [nt,] (lit. Sāvatthī (is the) source)", "atthaṅgamoti": "1 <i>masc</i> disappearance; vanishing; settling down; subsiding; passing away (of) [masc, , from atthaṃ gacchati] ‹ अत्थं गच्छति (lit. going home)<br>2 <i>masc</i> (of the sun) setting; going down [masc, , from atthaṃ gacchati] ‹ अत्थं गच्छति", "dutiyaṃ": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>ind</i> second time [ind, adv, acc sg of dutiya] ‹ dutiya<br>5 <i>fem</i> second woman; another woman; female companion [fem, from dvi] ‹ dvi<br>6 <i>fem</i> [fem]<br>7 <i>fem</i> [fem, from dūta] ‹ दूत<br>8 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "ṭhiti": "1 <i>fem</i> stability; constancy; continuity; endurance; persistence; longevity [fem, abstr, from tiṭṭhati] ‹ तिट्ठति (lit. standing)<br>2 <i>fem</i> state; station; support [fem, abstr, from tiṭṭhati] ‹ तिट्ठति (lit. standing)<br>3 <i>fem</i> [fem]<br>4 <i>fem</i> existence; happening; occurrence [fem, abstr, from tiṭṭhati] ‹ तिट्ठति (lit. standing)", "rūpasuttaṃ": "1 <i>nt</i> [nt,]", "ākāsadhātuyā": "1 <i>fem</i> space; space element [fem, abstr,] (lit. space state)", "navamaṃ": "1 <i>ordi</i> ninth (9th) [ordin of nava] ‹ nava", "rūpasaññāya": "1 <i>fem</i> recognition of form; perception of matter; concept of materiality; (comm) existence in the realm of form [fem, abstr,]", "manassa": "1 <i>adj</i> having such a mind; -minded; -hearted [adj, in s, from maññati] ‹ मञ्ञति<br>2 <i>masc</i> mind; mental faculty; intellect [masc, mano group, from maññati] ‹ मञ्ञति", "dhammasañcetanāya": "1 <i>fem</i> thoughts about mental phenomena; intention regarding thoughts [fem,]", "rūpañca": "1 <i>nt</i> matter; material thing; materiality; experience of material world; physical objects of consciousness; first of the five aggregates [nt] ‹ √रूप् (lit. form)<br>2 <i>nt</i> body; physical body; material bodily [nt] ‹ √रूप् (lit. form)<br>3 <i>nt</i> (object of the eye) form; material form; shape; sight; appearance [nt] ‹ √रूप्<br>4 <i>adj</i> of character; having nature of; of type; of kind; having the quality of; appearing as [adj, in s] ‹ √रूप् (lit. having form of)<br>5 <i>adj</i> as if; like someone [adj, in s] ‹ √रूप् (lit. having form of)<br>6 <i>nt</i> (gram) form of a word [nt] ‹ √रूप्<br>7 <i>nt</i> (gram) sound of a word [nt] ‹ √रूप् (lit. form)<br>8 <i>nt</i> [nt] ‹ √रूप्", "uppādo": "1 <i>masc</i> arising; appearance; coming into being (of) [masc, from uppajjati] ‹ uppajjati (lit. going up)<br>2 <i>masc</i> sudden event; strange occurrence; comet; meteor; disaster [masc, from uppatati] ‹ uppatati (lit. fall up)", "tassuddānaṃ": "1 <i>sand</i> summary; a short verse given at the end of each vagga listing the titles or topics of the relevant suttas [sandhi, pron + nt] (lit. tying up of that)", "chaṭṭhaṃ": "1 <i>ordi</i> sixth (6th) [ordin of cha] ‹ cha", "rogānaṃ": "1 <i>masc</i> disease; illness; sickness [masc, from rujati] ‹ rujati", "dhātu": "1 <i>masc</i> [masc, agent, from dhāreti] ‹ धारेति<br>2 <i>fem</i> state; property; condition; element [fem, abstr, from dadhāti] ‹ दधाति<br>3 <i>fem</i> state of being; realm of existence [fem, abstr, from dadhāti] ‹ दधाति<br>4 <i>fem</i> (of the Buddha or arahant) relic [fem, abstr, from dadhāti] ‹ दधाति<br>5 <i>fem</i> fact; state (of) [fem, abstr, from dadhāti] ‹ दधाति<br>6 <i>fem</i> (gram) verbal root [fem, abstr, from dadhāti] ‹ दधाति<br>7 <i>fem</i> metal ore [fem, from dadhāti] ‹ दधाति<br>8 <i>fem</i> one of the eighteen components of perceptual experience, corresponding to the six sense organs, their associated external field and corresponding consciousness [fem, abstr, from dadhāti] ‹ दधाति<br>9 <i>masc</i> supporter; bearer, carrier; upholder [masc, agent, from dhāreti] ‹ धारेति (lit. who causes to carry)<br>10 <i>masc</i> (gram) verbal root [masc, abstr, from dadhāti] ‹ दधाति<br>11 <i>fem</i> in reference to MN140 Dhātuvibhaṅgasutta [fem, from dadhāti] ‹ दधाति (lit. state)", "rūpassa": "1 <i>nt</i> matter; material thing; materiality; experience of material world; physical objects of consciousness; first of the five aggregates [nt] ‹ √रूप् (lit. form)<br>2 <i>nt</i> body; physical body; material bodily [nt] ‹ √रूप् (lit. form)<br>3 <i>nt</i> (object of the eye) form; material form; shape; sight; appearance [nt] ‹ √रूप्<br>4 <i>adj</i> of character; having nature of; of type; of kind; having the quality of; appearing as [adj, in s] ‹ √रूप् (lit. having form of)<br>5 <i>adj</i> as if; like someone [adj, in s] ‹ √रूप् (lit. having form of)<br>6 <i>nt</i> (gram) form of a word [nt] ‹ √रूप्<br>7 <i>nt</i> (gram) sound of a word [nt] ‹ √रूप् (lit. form)<br>8 <i>nt</i> [nt] ‹ √रूप्", "viññāṇasuttaṃ": "1 <i>nt</i> Saṃyutta Nikāya 12.59 (SN12.59) [nt,] (lit. discourse on consciousness)<br>2 <i>nt</i> Saṃyutta Nikāya 18.3 (SN18.3) [nt,] (lit. discourse on consciousness)<br>3 <i>nt</i> [nt,] (lit. discourse on consciousness)", "saññāsuttaṃ": "1 <i>nt</i> [nt,]", "manosamphassajāya": "1 <i>adj</i> caused by mental contact; produced by mental impression; born from mental experience [adj,] (lit. born from mind touch)", "dhātusuttaṃ": "1 <i>nt</i> [nt,]", "rūpataṇhāya": "1 <i>fem</i> craving for material form [fem, abstr,]", "vūpasamo": "1 <i>masc</i> peace; calming; subsiding; settling (of) [masc, from vūpasammati] ‹ वूपसम्मति<br>2 <i>masc</i> (vinaya) settling; appeasement; conciliation (of) [masc, from vūpasammati] ‹ वूपसम्मति<br>3 <i>aor</i> subsided; settled; calmed down [aor of vūpasammati] ‹ वूपसम्मति", "cakkhusuttaṃ": "1 <i>nt</i> [nt,]", "cakkhuviññāṇassa": "1 <i>nt</i> seeing; eye consciousness; visual awareness [nt,] (lit. eye knowing)"};
+const SUTTA_DATA = {"toc": [{"id": "s0303m.mul_01087", "title": "१. चक्खुसुत्तं", "hi": "१. चक्षु सूत्र (चक्खु सुत्त)"}, {"id": "s0303m.mul_01089", "title": "२. रूपसुत्तं", "hi": "२. रूप सूत्र"}, {"id": "s0303m.mul_01091", "title": "३. विञ्‍ञाणसुत्तं", "hi": "३. विज्ञान सूत्र"}, {"id": "s0303m.mul_01093", "title": "४. सम्फस्ससुत्तं", "hi": "४. संस्पर्श सूत्र (सम्पस्सत सुत्त)"}, {"id": "s0303m.mul_01095", "title": "५. सम्फस्सजसुत्तं", "hi": "५. स्पर्शज सूत्र"}, {"id": "s0303m.mul_01098", "title": "६. सञ्‍ञासुत्तं", "hi": "६. संज्ञा सूत्र"}, {"id": "s0303m.mul_01100", "title": "७. सञ्‍चेतनासुत्तं", "hi": "७. सञ्चेतना सूत्र (सचेतनता विषयक सूत्र)"}, {"id": "s0303m.mul_01102", "title": "८. तण्हासुत्तं", "hi": "८. तृष्णा सूत्र (Taṇhā-sutta)"}, {"id": "s0303m.mul_01104", "title": "९. धातुसुत्तं", "hi": "९. धातु सूत्र"}, {"id": "s0303m.mul_01106", "title": "१०. खन्धसुत्तं", "hi": "१०. स्कन्ध-सूत्र (समूहों का प्रवचन)"}], "totalSuttasInFile": 10, "currentIndex": 5, "totalSuttas": 13, "prevFileUrl": "s0303m.mul_01060_4_okkantasaṃyuttaṃ.html", "nextFileUrl": "s0303m.mul_01110_6_kilesasaṃyuttaṃ.html"};
+
+
+// ========== GLOBAL VARIABLES ==========
+let currentFontSize = localStorage.getItem('fontSize') || '100';
+let isDarkMode = localStorage.getItem('darkMode') === 'true';
+let menuHideTimer = null;
+let isMenuVisible = false;
+
+// ========== DICTIONARY FUNCTIONS (unchanged) ==========
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+// ========== TOGGLE FUNCTIONS ==========
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+// ========== MIDDLE CLICK (PRESERVED) ==========
+document.addEventListener('auxclick', function(e) {
+    // Check for middle button (button === 1)
+    if (e.button === 1) {
+        // Find the closest pali div
+        const paliDiv = e.target.closest('.pali');
+        if (paliDiv) {
+            e.preventDefault(); // Prevent default middle-click behavior
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) {
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+});
+
+// Prevent default middle-click scrolling
+document.addEventListener('mousedown', function(e) {
+    if (e.button === 1) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+
+// ========== TOUCH GESTURES ==========
+document.addEventListener('touchstart', function(e) { 
+    if (e.touches.length === 2) { 
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const paliDiv = element?.closest('.pali');
+        
+        if (paliDiv) { 
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) { 
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+    else if (e.touches.length === 3) { 
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const paliDiv = element?.closest('.pali');
+        
+        if (paliDiv) { 
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleCommentary"]');
+            if (toggleIcon && toggleIcon.onclick) { 
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+}, { passive: false });
+
+
+// ========== FLOATING MENU FUNCTIONS ==========
+function showMenu() {
+    const menu = document.getElementById('floatingMenu');
+    if (menu) {
+        menu.classList.add('visible');
+        isMenuVisible = true;
+        
+        // Clear existing timer
+        if (menuHideTimer) clearTimeout(menuHideTimer);
+        
+        // Hide after 3 seconds of inactivity
+        menuHideTimer = setTimeout(() => {
+            menu.classList.remove('visible');
+            isMenuVisible = false;
+        }, 3000);
+    }
+}
+
+function toggleMenuDropdown() {
+    const dropdown = document.getElementById('menuDropdown');
+    if (dropdown) {
+        const isVisible = dropdown.style.display === 'block';
+        dropdown.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+function goFullScreen() {
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        var docEl = document.documentElement;
+        var requestFullScreen = docEl.requestFullscreen ||
+                                docEl.mozRequestFullScreen ||
+                                docEl.webkitRequestFullScreen ||
+                                docEl.msRequestFullscreen;
+        if (requestFullScreen) {
+            requestFullScreen.call(docEl);
+        }
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+    showMenu();
+}
+
+function togglePaliVisibility() {
+// Get all main Pali divs
+        const paliDivs = document.querySelectorAll('.para > .pali');
+        
+        // Toggle visibility of the ENTIRE Pali div (both text and icons)
+        paliDivs.forEach(paliDiv => {
+            if (paliDiv.style.display === 'none') {
+                paliDiv.style.display = '';  // Show
+            } else {
+                paliDiv.style.display = 'none';  // Hide
+            }
+        });
+        
+        // Also toggle Hindi (existing functionality)
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+            
+    showMenu();
+}
+
+function goBackToIndex() {
+    window.location.href = '../index.html';
+}
+
+let currentSuttaIndex = 0;  // Track which sutta we're viewing
+let suttasInFile = [];      // Array of sutta IDs from TOC
+
+function goPrevSutta() {
+    if (suttasInFile.length === 0) {
+        // No multiple suttas, just go to prev file
+        if (SUTTA_DATA && SUTTA_DATA.prevFileUrl) {
+            window.location.href = SUTTA_DATA.prevFileUrl;
+        }
+        return;
+    }
+    
+    if (currentSuttaIndex > 0) {
+        // Go to previous sutta in same file
+        currentSuttaIndex--;
+        const targetId = suttasInFile[currentSuttaIndex];
+        window.location.hash = targetId;
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        // At first sutta, go to previous file
+        if (SUTTA_DATA && SUTTA_DATA.prevFileUrl) {
+            window.location.href = SUTTA_DATA.prevFileUrl;
+        }
+    }
+}
+
+function goNextSutta() {
+    if (suttasInFile.length === 0) {
+        // No multiple suttas, just go to next file
+        if (SUTTA_DATA && SUTTA_DATA.nextFileUrl) {
+            window.location.href = SUTTA_DATA.nextFileUrl;
+        }
+        return;
+    }
+    
+    if (currentSuttaIndex < suttasInFile.length - 1) {
+        // Go to next sutta in same file
+        currentSuttaIndex++;
+        const targetId = suttasInFile[currentSuttaIndex];
+        window.location.hash = targetId;
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        // At last sutta, go to next file
+        if (SUTTA_DATA && SUTTA_DATA.nextFileUrl) {
+            window.location.href = SUTTA_DATA.nextFileUrl;
+        }
+    }
+}
+
+function updateCurrentSutta() {
+    // Check URL hash to determine which sutta were viewing
+    const hash = window.location.hash.substring(1);
+    if (hash && suttasInFile.length > 0) {
+        const index = suttasInFile.indexOf(hash);
+        if (index !== -1) {
+            currentSuttaIndex = index;
+            
+            // Ensure the element is visible
+            const targetElement = document.getElementById(hash);
+            if (targetElement) {
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    }
+    
+    // Update TOC highlighting
+    document.querySelectorAll('.toc-item').forEach((item, idx) => {
+        if (idx === currentSuttaIndex) {
+            item.style.background = '#e6f0ff';
+        } else {
+            item.style.background = '';
+        }
+    });
+}
+
+// Initialize suttasInFile from TOC
+function initNavigation() {
+    if (SUTTA_DATA && SUTTA_DATA.toc) {
+        suttasInFile = SUTTA_DATA.toc.map(item => item.id);
+    }
+    updateCurrentSutta();
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', updateCurrentSutta);
+}
+
+function showTOC() {
+    const tocPanel = document.getElementById('tocPanel');
+    if (tocPanel) {
+        const isVisible = tocPanel.style.display === 'block';
+        tocPanel.style.display = isVisible ? 'none' : 'block';
+        
+        // Ensure TOC items have proper click handling
+        if (!isVisible) {
+            setTimeout(() => {
+                document.querySelectorAll('.toc-item a').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        // Close TOC after clicking
+                        setTimeout(() => {
+                            tocPanel.style.display = 'none';
+                        }, 100);
+                    });
+                });
+            }, 100);
+        }
+    }
+}
+
+function changeFontSize(delta) {
+    let newSize = currentFontSize + delta;
+    if (newSize < 80) newSize = 80;
+    if (newSize > 150) newSize = 150;
+    currentFontSize = newSize;
+    localStorage.setItem('fontSize', currentFontSize);
+    
+    // Apply to body - this will affect all em-based sizes
+    document.body.style.fontSize = currentFontSize + '%';
+    
+    // Force reflow to ensure changes apply
+    document.body.style.display = 'none';
+    document.body.offsetHeight; // Force reflow
+    document.body.style.display = '';
+    
+    showMenu();
+}
+
+function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    localStorage.setItem('darkMode', isDarkMode);
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+    showMenu(); // Keep menu visible after action
+}
+
+function updateProgressBar() {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) progressBar.style.width = scrolled + '%';
+    
+    // Show/hide scroll to top button
+    const scrollBtn = document.getElementById('scrollTopBtn');
+    if (scrollBtn) {
+        if (winScroll > 300) {
+            scrollBtn.classList.add('visible');
+        } else {
+            scrollBtn.classList.remove('visible');
+        }
+    }
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Save scroll position when leaving
+function saveScrollPosition() {
+    const scrollPos = window.scrollY;
+    const currentPath = window.location.pathname;
+    localStorage.setItem('scrollPos_' + currentPath, scrollPos);
+}
+
+// Restore scroll position on load
+function restoreScrollPosition() {
+    const currentPath = window.location.pathname;
+    const savedPos = localStorage.getItem('scrollPos_' + currentPath);
+    if (savedPos && parseInt(savedPos) > 0) {
+        setTimeout(() => {
+            window.scrollTo(0, parseInt(savedPos));
+        }, 100);
+    }
+}
+
+// ========== PROXIMITY DETECTION ==========
+function handleMouseMove(e) {
+    const bottomRightThreshold = 150;
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+    
+    // Check if mouse is near bottom-right corner
+    if (e.clientY > windowHeight - bottomRightThreshold && 
+        e.clientX > windowWidth - bottomRightThreshold) {
+        showMenu();
+    }
+}
+
+// Double tap detection for mobile
+let lastTap = 0;
+function handleTouchEnd(e) {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    
+    // Check if double tap
+    if (tapLength < 300 && tapLength > 0) {
+        // Get tap position
+        const touch = e.changedTouches[0];
+        const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
+        const bottomRightThreshold = 150;
+        
+        // Check if double tap near bottom-right corner
+        if (touch.clientY > windowHeight - bottomRightThreshold && 
+            touch.clientX > windowWidth - bottomRightThreshold) {
+            e.preventDefault();
+            showMenu();
+        }
+    }
+    lastTap = currentTime;
+}
+
+// ========== INITIALIZATION ==========
+document.addEventListener("DOMContentLoaded", function() {
+    // Highlight words that have dictionary entries
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+    
+    // Apply saved font size
+    document.body.style.fontSize = currentFontSize + '%';
+    
+    // Apply saved dark mode
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    }
+    
+    // Restore scroll position
+    //restoreScrollPosition();
+    
+    // Save scroll position before unload
+    //window.addEventListener('beforeunload', saveScrollPosition);
+    
+    // Progress bar
+    window.addEventListener('scroll', updateProgressBar);
+    updateProgressBar();
+    
+    // Proximity detection for desktop
+    document.addEventListener('mousemove', handleMouseMove);
+    
+    // Double tap detection for mobile
+    document.addEventListener('touchend', handleTouchEnd);
+    
+    // Keyboard shortcut: Ctrl+H for Hindi only mode
+    document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'h') {
+        e.preventDefault();
+        
+        // Get all main Pali divs
+        const paliDivs = document.querySelectorAll('.para > .pali');
+        
+        // Toggle visibility of the ENTIRE Pali div (both text and icons)
+        paliDivs.forEach(paliDiv => {
+            if (paliDiv.style.display === 'none') {
+                paliDiv.style.display = '';  // Show
+            } else {
+                paliDiv.style.display = 'none';  // Hide
+            }
+        });
+        
+        // Also toggle Hindi (existing functionality)
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+    }
+});
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('menuDropdown');
+        const mainBtn = document.getElementById('menuMainBtn');
+        if (dropdown && mainBtn && !mainBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+        
+        const tocPanel = document.getElementById('tocPanel');
+        const tocBtn = document.getElementById('tocBtn');
+        if (tocPanel && tocBtn && !tocBtn.contains(e.target) && !tocPanel.contains(e.target)) {
+            tocPanel.style.display = 'none';
+        }
+    });
+    
+    
+        // Show/hide prev/next buttons based on availability
+   // Show/hide prev/next buttons based on availability
+if (SUTTA_DATA.prevFileUrl) {
+    document.getElementById('prevSuttaBtn').style.display = 'block';
+}
+if (SUTTA_DATA.nextFileUrl) {
+    document.getElementById('nextSuttaBtn').style.display = 'block';
+}
+    
+    // Build TOC
+   // Build TOC
+      // Build TOC
+    // Build TOC with sutta index
+    const tocContent = document.getElementById('tocContent');
+    if (tocContent && SUTTA_DATA && SUTTA_DATA.toc) {
+        tocContent.innerHTML = '';
+        SUTTA_DATA.toc.forEach((item, idx) => {
+            const tocItem = document.createElement('div');
+            tocItem.className = 'toc-item';
+            tocItem.setAttribute('data-sutta-index', idx);
+            
+            const link = document.createElement('a');
+            link.href = `#${item.id}`;
+            link.style.textDecoration = 'none';
+            link.style.color = 'inherit';
+            link.innerHTML = `${idx + 1}. ${item.title}`;
+            tocItem.appendChild(link);
+            
+            if (item.hi) {
+                const span = document.createElement('span');
+                span.style.color = '#888';
+                span.style.fontSize = '0.9em';
+                span.style.marginLeft = '8px';
+                span.innerHTML = ` – ${item.hi}`;
+                tocItem.appendChild(span);
+            }
+            
+            tocItem.onclick = (e) => {
+                if (e.target.tagName !== 'A') {
+                    // Update current index when clicking TOC
+                    currentSuttaIndex = idx;
+                    setTimeout(() => {
+                        document.getElementById('tocPanel').style.display = 'none';
+                    }, 150);
+                }
+            };
+            
+            tocContent.appendChild(tocItem);
+        });
+        
+        // Initialize navigation after TOC is built
+        initNavigation();
+    }
+    
+        // Keyboard shortcut: Ctrl+Left for previous sutta, Ctrl+Right for next sutta
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'ArrowLeft') {
+            e.preventDefault();
+            goPrevSutta();
+        }
+        if (e.ctrlKey && e.key === 'ArrowRight') {
+            e.preventDefault();
+            goNextSutta();
+        }
+    });
+  
+});
+
+// Dictionary popup handler
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+</head>
+<body>
+
+<h1>५. उप्पादसंयुत्तं</h1>
+
+<!-- Progress Bar -->
+<div id="progressBar" class="progress-bar"></div>
+
+<!-- Floating Menu Container -->
+<div id="floatingMenu" class="floating-menu-container">
+    <button id="menuMainBtn" class="menu-main-btn" onclick="toggleMenuDropdown()">⋮</button>
+    <div id="menuDropdown" class="menu-dropdown" style="display: none;">
+        <button onclick="goBackToIndex()">← Back to Index</button>
+        <button onclick="goPrevSutta()" id="prevSuttaBtn" style="display: none;">← Previous Sutta</button>
+        <button onclick="goNextSutta()" id="nextSuttaBtn" style="display: none;">Next Sutta →</button>
+        <button onclick="goFullScreen()">⛶ Fullscreen</button>
+<!--         
+        <button onclick="changeFontSize(-10)">A- Smaller Font</button>
+        <button onclick="changeFontSize(10)">A+ Larger Font</button> 
+-->
+        <button onclick="togglePaliVisibility()">🔤 Toggle Pali Text (Ctrl+H)</button>
+        <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+        <button id="tocBtn" onclick="showTOC()">📑 Table of Contents</button>
+    </div>
+</div>
+
+<!-- TOC Panel -->
+<div id="tocPanel" class="toc-panel" style="display: none;">
+    <div class="toc-header">
+        <strong>५. उप्पादसंयुत्तं</strong>
+        <button onclick="showTOC()" style="float: right;">✕</button>
+    </div>
+    <div id="tocContent" class="toc-content"></div>
+</div>
+
+<!-- Scroll to Top -->
+<button id="scrollTopBtn" class="scroll-top" onclick="scrollToTop()" title="Scroll to top">↑</button>
+
+<h3 id='s0303m.mul_01087'><span class="paliword" data-word="1">१.</span> <span class="paliword" data-word="cakkhusuttaṃ">चक्खुसुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01087_hi'>१. चक्षु सूत्र (चक्खु सुत्त)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01088_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01088_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="312">३१२.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="yo">‘‘यो</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="cakkhussa">चक्खुस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvo">पातुभावो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="uppādo">उप्पादो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="ṭhiti">ठिति,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="sotassa">सोतस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhitipe॰">ठिति…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ghānassa">घानस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="jivhāya">जिव्हाय</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="manassa">मनस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvo">पातुभावो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="uppādo">उप्पादो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="ṭhiti">ठिति,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ca">च,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="cakkhussa">चक्खुस्स</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="sotassa">सोतस्स</span> <span class="paliword" data-word="nirodhope॰">निरोधो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ghānassa">घानस्स</span> <span class="paliword" data-word="nirodho">निरोधो…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="jivhāya">जिव्हाय</span> <span class="paliword" data-word="nirodho">निरोधो…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="kāyassa">कायस्स</span> <span class="paliword" data-word="nirodho">निरोधो…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="manassa">मनस्स</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamoti">अत्थङ्गमो’’ति।</span> <span class="paliword" data-word="paṭhamaṃ">पठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01088_hi">
+                ३१२.
+श्रावस्ती (Śrāvastī) का निदान।
+“भिक्षुओं, चक्षु (आँख) का जो उत्पाद, स्थिति, पुनर्जन्म और प्रादुर्भाव है, वह दुःख का उत्पाद है, रोगों की स्थिति है और जरामरण (बुढ़ापा और मृत्यु) का प्रादुर्भाव है।
+श्रोत्र (कान) का जो उत्पाद है... नासिका का जो उत्पाद है... जिह्वा का जो उत्पाद है... काय (शरीर) का जो उत्पाद है... मन का जो उत्पाद, स्थिति, पुनर्जन्म और प्रादुर्भाव है, वह दुःख का उत्पाद है, रोगों की स्थिति है और जरामरण का प्रादुर्भाव है।
+परंतु भिक्षुओं, चक्षु का जो निरोध, व्युपशम (शान्ति) और अस्त होना है, वह दुःख का निरोध है, रोगों का व्युपशम है और जरामरण का अस्त होना है।
+श्रोत्र का जो निरोध है... नासिका का जो निरोध है... जिह्वा का जो निरोध है... काय का जो निरोध है... मन का जो निरोध, व्युपशम और अस्त होना है, वह दुःख का निरोध है, रोगों का व्युपशम है और जरामरण का अस्त होना है।”
+प्रथम।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01088_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="312-321">३१२-३२१.</span> <span class="paliword" data-word="uppādasaṃyutte">उप्पादसंयुत्ते</span> <span class="paliword" data-word="sabbaṃ">सब्बं</span> <span class="paliword" data-word="pākaṭameva">पाकटमेव।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00426_p312_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00426_p312_hi">
+                            उत्पत्ति-संयुक्त में सब कुछ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="uppādasaṃyuttavaṇṇanā">उप्पादसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00427_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00427_hi">
+                            उत्पाद-संयुत्त की व्याख्या यहाँ समाप्त हुई।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="kilesasaṃyuttavaṇṇanā">किलेससंयुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00428_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00428_hi">
+                            ६. क्लेश-संयुक्त (संयुत्त) की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01089'><span class="paliword" data-word="2">२.</span> <span class="paliword" data-word="rūpasuttaṃ">रूपसुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01089_hi'>२. रूप सूत्र</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01090_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01090_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="313">३१३.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="yo">‘‘यो</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rūpānaṃ">रूपानं</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvo">पातुभावो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="uppādo">उप्पादो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="ṭhiti">ठिति,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="saddānaṃ">सद्दानं…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="gandhānaṃ">गन्धानं…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="rasānaṃ">रसानं…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="phoṭṭhabbānaṃ">फोट्ठब्बानं…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvo">पातुभावो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="uppādo">उप्पादो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="ṭhiti">ठिति,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rūpānaṃ">रूपानं</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="saddānaṃ">सद्दानं…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="gandhānaṃ">गन्धानं…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="rasānaṃ">रसानं…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="phoṭṭhabbānaṃ">फोट्ठब्बानं…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="dhammānaṃ">धम्मानं</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamoti">अत्थङ्गमो’’ति।</span> <span class="paliword" data-word="dutiyaṃ">दुतियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01090_hi">
+                ३१३.
+श्रावस्ती में (सावत्थिनिदानं)।
+
+"हे भिक्षुओं, जो रूपों (rūpa) की उत्पत्ति, स्थिति, पुनर्जन्म और प्राकट्य है, वह दुःख की उत्पत्ति है, रोगों की स्थिति है, और जरा-मरण का प्राकट्य है।
+
+जो शब्दों की... जो गंधों की... जो रसों की... जो स्पर्शों की... जो धर्मों (धम्म) की उत्पत्ति, स्थिति, पुनर्जन्म और प्राकट्य है, वह दुःख की उत्पत्ति है, रोगों की स्थिति है, और जरा-मरण का प्राकट्य है।
+
+परंतु हे भिक्षुओं, जो रूपों का निरोध, उपशम और अस्त होना है, वह दुःख का निरोध है, रोगों का उपशम है, और जरा-मरण का अस्त होना है।
+
+जो शब्दों का... जो गंधों का... जो रसों का... जो स्पर्शों का... जो धर्मों का निरोध, उपशम और अस्त होना है, वह दुःख का निरोध है, रोगों का उपशम है, और जरा-मरण का अस्त होना है।"
+
+द्वितीय।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01090_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="312-321">३१२-३२१.</span> <span class="paliword" data-word="uppādasaṃyutte">उप्पादसंयुत्ते</span> <span class="paliword" data-word="sabbaṃ">सब्बं</span> <span class="paliword" data-word="pākaṭameva">पाकटमेव।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00426_p313_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00426_p313_hi">
+                            उत्पत्ति-संयुक्त में सब कुछ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="uppādasaṃyuttavaṇṇanā">उप्पादसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00427_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00427_hi">
+                            उत्पाद-संयुत्त की व्याख्या यहाँ समाप्त हुई।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="kilesasaṃyuttavaṇṇanā">किलेससंयुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00428_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00428_hi">
+                            ६. क्लेश-संयुक्त (संयुत्त) की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01091'><span class="paliword" data-word="3">३.</span> <span class="paliword" data-word="viññāṇasuttaṃ">विञ्‍ञाणसुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01091_hi'>३. विज्ञान सूत्र</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01092_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01092_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="314">३१४.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="yo">‘‘यो</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="cakkhuviññāṇassa">चक्खुविञ्‍ञाणस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhitipe॰">ठिति…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvope॰">पातुभावो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="manoviññāṇassa">मनोविञ्‍ञाणस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhitipe॰">ठिति…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="cakkhuviññāṇassa">चक्खुविञ्‍ञाणस्स</span> <span class="paliword" data-word="nirodhope॰">निरोधो…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamope॰">अत्थङ्गमो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="manoviññāṇassa">मनोविञ्‍ञाणस्स</span> <span class="paliword" data-word="nirodhope॰">निरोधो…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamoti">अत्थङ्गमो’’ति।</span> <span class="paliword" data-word="tatiyaṃ">ततियं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01092_hi">
+                ३१४. श्रावस्ती में निदान।
+
+"भिक्षुओं, चक्षु-विज्ञान (आँख की चेतना) की जो उत्पत्ति, स्थिति... तथा बुढ़ापे और मृत्यु का प्राकट्य है... और जो मनोविज्ञान (मन की चेतना) की उत्पत्ति, स्थिति... तथा बुढ़ापे और मृत्यु का प्राकट्य है।
+
+किन्तु भिक्षुओं, चक्षु-विज्ञान का जो निरोध (समाप्ति)... तथा बुढ़ापे और मृत्यु का अस्त होना है... और जो मनोविज्ञान का निरोध... तथा बुढ़ापे और मृत्यु का अस्त होना है।"
+
+तीसरा।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01092_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="312-321">३१२-३२१.</span> <span class="paliword" data-word="uppādasaṃyutte">उप्पादसंयुत्ते</span> <span class="paliword" data-word="sabbaṃ">सब्बं</span> <span class="paliword" data-word="pākaṭameva">पाकटमेव।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00426_p314_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00426_p314_hi">
+                            उत्पत्ति-संयुक्त में सब कुछ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="uppādasaṃyuttavaṇṇanā">उप्पादसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00427_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00427_hi">
+                            उत्पाद-संयुत्त की व्याख्या यहाँ समाप्त हुई।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="kilesasaṃyuttavaṇṇanā">किलेससंयुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00428_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00428_hi">
+                            ६. क्लेश-संयुक्त (संयुत्त) की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01093'><span class="paliword" data-word="4">४.</span> <span class="paliword" data-word="samphassasuttaṃ">सम्फस्ससुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01093_hi'>४. संस्पर्श सूत्र (सम्पस्सत सुत्त)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01094_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01094_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="315">३१५.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="yo">‘‘यो</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="cakkhusamphassassa">चक्खुसम्फस्सस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhitipe॰">ठिति…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvope॰">पातुभावो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="manosamphassassa">मनोसम्फस्सस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhitipe॰">ठिति…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="cakkhusamphassassa">चक्खुसम्फस्सस्स</span> <span class="paliword" data-word="nirodhope॰">निरोधो…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamope॰">अत्थङ्गमो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="manosamphassassa">मनोसम्फस्सस्स</span> <span class="paliword" data-word="nirodhope॰">निरोधो…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamoti">अत्थङ्गमो’’ति।</span> <span class="paliword" data-word="catutthaṃ">चतुत्थं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01094_hi">
+                ३१५.
+श्रावस्ती-निदान।
+“भिक्षुओं, जो चक्षु-संस्पर्श (cakṣusaṃsparśa) की उत्पत्ति, स्थिति... और जरामरण का प्रादुर्भाव है... और जो मन-संस्पर्श (manasasaṃsparśa) की उत्पत्ति, स्थिति... और जरामरण का प्रादुर्भाव है।
+और भिक्षुओं, जो चक्षु-संस्पर्श का निरोध... और जरामरण का अस्त (विनाश) है... और जो मन-संस्पर्श का निरोध... और जरामरण का अस्त है।”
+चतुर्थ।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01094_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="312-321">३१२-३२१.</span> <span class="paliword" data-word="uppādasaṃyutte">उप्पादसंयुत्ते</span> <span class="paliword" data-word="sabbaṃ">सब्बं</span> <span class="paliword" data-word="pākaṭameva">पाकटमेव।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00426_p315_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00426_p315_hi">
+                            उत्पत्ति-संयुक्त में सब कुछ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="uppādasaṃyuttavaṇṇanā">उप्पादसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00427_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00427_hi">
+                            उत्पाद-संयुत्त की व्याख्या यहाँ समाप्त हुई।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="kilesasaṃyuttavaṇṇanā">किलेससंयुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00428_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00428_hi">
+                            ६. क्लेश-संयुक्त (संयुत्त) की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01095'><span class="paliword" data-word="5">५.</span> <span class="paliword" data-word="samphassajasuttaṃ">सम्फस्सजसुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01095_hi'>५. स्पर्शज सूत्र</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01096_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01096_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="316">३१६.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="yo">‘‘यो</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="cakkhusamphassajāya">चक्खुसम्फस्सजाय</span> <span class="paliword" data-word="vedanāya">वेदनाय</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhitipe॰">ठिति…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvope॰">पातुभावो…पे॰…।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01096_hi">
+                ३१६.
+श्रावस्ती में दिया गया उपदेश।
+“हे भिक्षुओं, चक्षु-स्पर्श (आँखों के स्पर्श) से उत्पन्न होने वाली वेदना का जो उत्पाद और स्थिति है... विस्तार... जो जरामरण (बुढ़ापा और मृत्यु) का प्रादुर्भाव है... विस्तार...।”
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01096_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="312-321">३१२-३२१.</span> <span class="paliword" data-word="uppādasaṃyutte">उप्पादसंयुत्ते</span> <span class="paliword" data-word="sabbaṃ">सब्बं</span> <span class="paliword" data-word="pākaṭameva">पाकटमेव।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00426_p316_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00426_p316_hi">
+                            उत्पत्ति-संयुक्त में सब कुछ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="uppādasaṃyuttavaṇṇanā">उप्पादसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00427_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00427_hi">
+                            उत्पाद-संयुत्त की व्याख्या यहाँ समाप्त हुई।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="kilesasaṃyuttavaṇṇanā">किलेससंयुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00428_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00428_hi">
+                            ६. क्लेश-संयुक्त (संयुत्त) की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01097_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="manosamphassajāya">मनोसम्फस्सजाय</span> <span class="paliword" data-word="vedanāya">वेदनाय</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhitipe॰">ठिति…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="cakkhusamphassajāya">चक्खुसम्फस्सजाय</span> <span class="paliword" data-word="vedanāya">वेदनाय</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamope॰">वूपसमो…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamope॰">अत्थङ्गमो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="manosamphassajāya">मनोसम्फस्सजाय</span> <span class="paliword" data-word="vedanāya">वेदनाय</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamoti">अत्थङ्गमो’’ति।</span> <span class="paliword" data-word="pañcamaṃ">पञ्‍चमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01097_hi">
+                जो मन-संपर्क (मनोसम्फस्स) से उत्पन्न वेदना की उत्पत्ति और स्थिति है... इत्यादि... वह जरावस्था और मृत्यु का प्राकट्य है।
+
+हे भिक्षुओं, चक्षु-संपर्क (चक्खुसम्फस्स) से उत्पन्न वेदना का जो निरोध और उपशम है... इत्यादि... वह जरावस्था और मृत्यु का अस्त होना है... इत्यादि... मन-संपर्क से उत्पन्न वेदना का जो निरोध, उपशम और अस्त होना है, वही दुःख का निरोध है, रोगों का उपशम है और जरावस्था एवं मृत्यु का अंत है।
+
+पाँचवाँ।
+            </div>
+            
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01098'><span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="saññāsuttaṃ">सञ्‍ञासुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01098_hi'>६. संज्ञा सूत्र</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01099_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01099_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="317">३१७.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="yo">‘‘यो</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rūpasaññāya">रूपसञ्‍ञाय</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhitipe॰">ठिति…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvope॰">पातुभावो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="dhammasaññāya">धम्मसञ्‍ञाय</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvo">पातुभावो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="uppādo">उप्पादो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="ṭhiti">ठिति,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rūpasaññāya">रूपसञ्‍ञाय</span> <span class="paliword" data-word="nirodhope॰">निरोधो…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamope॰">अत्थङ्गमो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="dhammasaññāya">धम्मसञ्‍ञाय</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamoti">अत्थङ्गमो’’ति।</span> <span class="paliword" data-word="chaṭṭhaṃ">छट्ठं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01099_hi">
+                ३१७.
+श्रावस्ती में निदान।
+“भिक्षुओं, रूप-संज्ञा की जो उत्पत्ति और स्थिति है... (एवं) ...जरा-मरण का प्रादुर्भाव है... (एवं) ...धर्म-संज्ञा की जो उत्पत्ति, स्थिति, जन्म और प्रादुर्भाव है, वह दुःख की उत्पत्ति, रोगों की स्थिति और जरा-मरण का प्रादुर्भाव है।
+परन्तु भिक्षुओं, रूप-संज्ञा का जो निरोध है... (एवं) ...जरा-मरण का अस्त होना है... (एवं) ...धर्म-संज्ञा का जो निरोध, उपशम और अस्त होना है, वह दुःख का निरोध, रोगों का उपशम और जरा-मरण का अस्त होना है।”
+छठा (सूत्र) समाप्त।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01099_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="312-321">३१२-३२१.</span> <span class="paliword" data-word="uppādasaṃyutte">उप्पादसंयुत्ते</span> <span class="paliword" data-word="sabbaṃ">सब्बं</span> <span class="paliword" data-word="pākaṭameva">पाकटमेव।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00426_p317_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00426_p317_hi">
+                            उत्पत्ति-संयुक्त में सब कुछ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="uppādasaṃyuttavaṇṇanā">उप्पादसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00427_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00427_hi">
+                            उत्पाद-संयुत्त की व्याख्या यहाँ समाप्त हुई।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="kilesasaṃyuttavaṇṇanā">किलेससंयुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00428_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00428_hi">
+                            ६. क्लेश-संयुक्त (संयुत्त) की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01100'><span class="paliword" data-word="7">७.</span> <span class="paliword" data-word="sañcetanāsuttaṃ">सञ्‍चेतनासुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01100_hi'>७. सञ्चेतना सूत्र (सचेतनता विषयक सूत्र)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01101_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01101_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="318">३१८.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="yo">‘‘यो</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rūpasañcetanāya">रूपसञ्‍चेतनाय</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhitipe॰">ठिति…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvope॰">पातुभावो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="dhammasañcetanāya">धम्मसञ्‍चेतनाय</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvo">पातुभावो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="uppādo">उप्पादो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="ṭhiti">ठिति,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rūpasañcetanāya">रूपसञ्‍चेतनाय</span> <span class="paliword" data-word="nirodhope॰">निरोधो…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamope॰">अत्थङ्गमो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="dhammasañcetanāya">धम्मसञ्‍चेतनाय</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamoti">अत्थङ्गमो’’ति।</span> <span class="paliword" data-word="sattamaṃ">सत्तमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01101_hi">
+                ३१८.
+श्रावस्ती में निदान।
+“भिक्षुओं, रूप-संकेतना (रूप के प्रति संकल्प) का जो उत्पाद, स्थिति... और जरामरण का प्रादुर्भाव है, वह दुःख का उत्पाद, रोगों की स्थिति और जरामरण का प्रादुर्भाव है। इसी प्रकार... धर्म-संकेतना का जो उत्पाद, स्थिति, अभिनिर्वृत्ति और प्रादुर्भाव है, वह दुःख का उत्पाद, रोगों की स्थिति और जरामरण का प्रादुर्भाव है।
+
+किन्तु भिक्षुओं, रूप-संकेतना का जो निरोध... और जरामरण का अस्तगमन है, वह दुःख का निरोध, रोगों का व्युपशम और जरामरण का अस्तगमन है। इसी प्रकार... धर्म-संकेतना का जो निरोध, व्युपशम और अस्तगमन है, वह दुःख का निरोध, रोगों का व्युपशम और जरामरण का अस्तगमन है।”
+
+सातवाँ सूत्र।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01101_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="312-321">३१२-३२१.</span> <span class="paliword" data-word="uppādasaṃyutte">उप्पादसंयुत्ते</span> <span class="paliword" data-word="sabbaṃ">सब्बं</span> <span class="paliword" data-word="pākaṭameva">पाकटमेव।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00426_p318_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00426_p318_hi">
+                            उत्पत्ति-संयुक्त में सब कुछ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="uppādasaṃyuttavaṇṇanā">उप्पादसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00427_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00427_hi">
+                            उत्पाद-संयुत्त की व्याख्या यहाँ समाप्त हुई।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="kilesasaṃyuttavaṇṇanā">किलेससंयुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00428_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00428_hi">
+                            ६. क्लेश-संयुक्त (संयुत्त) की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01102'><span class="paliword" data-word="8">८.</span> <span class="paliword" data-word="taṇhāsuttaṃ">तण्हासुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01102_hi'>८. तृष्णा सूत्र (Taṇhā-sutta)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01103_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01103_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="319">३१९.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="yo">‘‘यो</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rūpataṇhāya">रूपतण्हाय</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhitipe॰">ठिति…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvope॰">पातुभावो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="dhammataṇhāya">धम्मतण्हाय</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvo">पातुभावो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="uppādo">उप्पादो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="ṭhiti">ठिति,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rūpataṇhāya">रूपतण्हाय</span> <span class="paliword" data-word="nirodhope॰">निरोधो…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamope॰">अत्थङ्गमो…पे॰…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="dhammataṇhāya">धम्मतण्हाय</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamoti">अत्थङ्गमो’’ति।</span> <span class="paliword" data-word="aṭṭhamaṃ">अट्ठमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01103_hi">
+                ३१९.
+श्रावस्ती का निदान।
+"हे भिक्षुओं, रूप-तृष्णा (rūpa-taṇhā) की जो उत्पत्ति, स्थिति... और... जरामरण का प्रादुर्भाव है... तथा धर्म-तृष्णा (dhamma-taṇhā) की जो उत्पत्ति, स्थिति, अभिनिवृत्ति और प्रादुर्भाव है, वह दुःख की उत्पत्ति, रोगों की स्थिति और जरामरण का प्रादुर्भाव है।
+परंतु हे भिक्षुओं, रूप-तृष्णा का जो निरोध... और... जरामरण का अस्त होना है... तथा धर्म-तृष्णा का जो निरोध, व्युपशम और अस्त होना है, वह दुःख का निरोध, रोगों का व्युपशम और जरामरण का अस्त होना है।"
+आठवाँ (सुत्त समाप्त)।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01103_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="312-321">३१२-३२१.</span> <span class="paliword" data-word="uppādasaṃyutte">उप्पादसंयुत्ते</span> <span class="paliword" data-word="sabbaṃ">सब्बं</span> <span class="paliword" data-word="pākaṭameva">पाकटमेव।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00426_p319_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00426_p319_hi">
+                            उत्पत्ति-संयुक्त में सब कुछ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="uppādasaṃyuttavaṇṇanā">उप्पादसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00427_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00427_hi">
+                            उत्पाद-संयुत्त की व्याख्या यहाँ समाप्त हुई।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="kilesasaṃyuttavaṇṇanā">किलेससंयुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00428_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00428_hi">
+                            ६. क्लेश-संयुक्त (संयुत्त) की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01104'><span class="paliword" data-word="9">९.</span> <span class="paliword" data-word="dhātusuttaṃ">धातुसुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01104_hi'>९. धातु सूत्र</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01105_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01105_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="320">३२०.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="yo">‘‘यो</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pathavīdhātuyā">पथवीधातुया</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvope॰">पातुभावो…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो;</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="āpodhātuyā">आपोधातुया…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="tejodhātuyā">तेजोधातुया…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="vāyodhātuyā">वायोधातुया…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ākāsadhātuyā">आकासधातुया…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="viññāṇadhātuyā">विञ्‍ञाणधातुया</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvo">पातुभावो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="uppādo">उप्पादो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="ṭhiti">ठिति,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="pathavīdhātuyā">पथवीधातुया</span> <span class="paliword" data-word="nirodhope॰">निरोधो…पे॰…</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो;</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="āpodhātuyā">आपोधातुया</span> <span class="paliword" data-word="nirodho">निरोधो…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="tejodhātuyā">तेजोधातुया</span> <span class="paliword" data-word="nirodho">निरोधो…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="vāyodhātuyā">वायोधातुया</span> <span class="paliword" data-word="nirodho">निरोधो…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ākāsadhātuyā">आकासधातुया</span> <span class="paliword" data-word="nirodho">निरोधो…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="viññāṇadhātuyā">विञ्‍ञाणधातुया</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamoti">अत्थङ्गमो’’ति।</span> <span class="paliword" data-word="navamaṃ">नवमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01105_hi">
+                ३२०.
+सावत्थी में।
+“हे भिक्षुओं, पृथ्वी-धातु की जो उत्पत्ति, स्थिति, पुनर्जन्म और प्रादुर्भाव है... (तथा) बुढ़ापे और मृत्यु का जो प्रादुर्भाव है; जल-धातु की जो... अग्नि-धातु की जो... वायु-धातु की जो... आकाश-धातु की जो... विज्ञान-धातु की जो उत्पत्ति, स्थिति, पुनर्जन्म और प्रादुर्भाव है—वह दुःख की उत्पत्ति, रोगों की स्थिति और बुढ़ापे-मृत्यु का प्रादुर्भाव है।
+
+और हे भिक्षुओं, पृथ्वी-धातु का जो निरोध... बुढ़ापे और मृत्यु का जो अस्त होना है; जल-धातु का जो निरोध... अग्नि-धातु का जो निरोध... वायु-धातु का जो निरोध... आकाश-धातु का जो निरोध... विज्ञान-धातु का जो निरोध, उपशम और अस्त होना है—वह दुःख का निरोध, रोगों का उपशम और बुढ़ापे-मृत्यु का अस्त होना है।”
+
+नौवाँ (सूत्र)।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01105_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="312-321">३१२-३२१.</span> <span class="paliword" data-word="uppādasaṃyutte">उप्पादसंयुत्ते</span> <span class="paliword" data-word="sabbaṃ">सब्बं</span> <span class="paliword" data-word="pākaṭameva">पाकटमेव।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00426_p320_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00426_p320_hi">
+                            उत्पत्ति-संयुक्त में सब कुछ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="uppādasaṃyuttavaṇṇanā">उप्पादसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00427_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00427_hi">
+                            उत्पाद-संयुत्त की व्याख्या यहाँ समाप्त हुई।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="kilesasaṃyuttavaṇṇanā">किलेससंयुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00428_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00428_hi">
+                            ६. क्लेश-संयुक्त (संयुत्त) की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+<h3 id='s0303m.mul_01106'><span class="paliword" data-word="10">१०.</span> <span class="paliword" data-word="khandhasuttaṃ">खन्धसुत्तं</span></h3>
+<div class='hindi' id='s0303m.mul_01106_hi'>१०. स्कन्ध-सूत्र (समूहों का प्रवचन)</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01107_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0303m.mul_01107_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="321">३२१.</span> <span class="paliword" data-word="sāvatthinidānaṃ">सावत्थिनिदानं।</span> <span class="paliword" data-word="yo">‘‘यो</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rūpassa">रूपस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvo">पातुभावो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="uppādo">उप्पादो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="ṭhiti">ठिति,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="vedanāya">वेदनाय…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="saññāya">सञ्‍ञाय…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="saṅkhārānaṃ">सङ्खारानं…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="viññāṇassa">विञ्‍ञाणस्स</span> <span class="paliword" data-word="uppādo">उप्पादो</span> <span class="paliword" data-word="ṭhiti">ठिति</span> <span class="paliword" data-word="abhinibbatti">अभिनिब्बत्ति</span> <span class="paliword" data-word="pātubhāvo">पातुभावो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="uppādo">उप्पादो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="ṭhiti">ठिति,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="pātubhāvo">पातुभावो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="rūpassa">रूपस्स</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो।</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="vedanāya">वेदनाय…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="saññāya">सञ्‍ञाय…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="saṅkhārānaṃ">सङ्खारानं…</span> <span class="paliword" data-word="yo">यो</span> <span class="paliword" data-word="viññāṇassa">विञ्‍ञाणस्स</span> <span class="paliword" data-word="nirodho">निरोधो</span> <span class="paliword" data-word="vūpasamo">वूपसमो</span> <span class="paliword" data-word="atthaṅgamo">अत्थङ्गमो,</span> <span class="paliword" data-word="dukkhasseso">दुक्खस्सेसो</span> <span class="paliword" data-word="nirodho">निरोधो,</span> <span class="paliword" data-word="rogānaṃ">रोगानं</span> <span class="paliword" data-word="vūpasamo">वूपसमो,</span> <span class="paliword" data-word="jarāmaraṇassa">जरामरणस्स</span> <span class="paliword" data-word="atthaṅgamoti">अत्थङ्गमो’’ति।</span> <span class="paliword" data-word="dasamaṃ">दसमं।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01107_hi">
+                ३२१.
+श्रावस्ती में यह उपदेश दिया गया।
+"हे भिक्षुओं, रूप (rūpa) की जो उत्पत्ति, स्थिति, पुनर्जन्म और प्रकटीकरण है, वह वास्तव में दुःख की उत्पत्ति, रोगों की स्थिति और जरामरण (वृद्धावस्था और मृत्यु) का प्रकटीकरण है।
+वेदना की... संज्ञा की... संस्कारों की... विज्ञान (vijñāna) की जो उत्पत्ति, स्थिति, पुनर्जन्म और प्रकटीकरण है, वह वास्तव में दुःख की उत्पत्ति, रोगों की स्थिति और जरामरण का प्रकटीकरण है।
+परंतु हे भिक्षुओं, रूप का जो निरोध, उपशम और अस्त होना है, वह वास्तव में दुःख का निरोध, रोगों का उपशम और जरामरण का अंत है।
+वेदना का... संज्ञा का... संस्कारों का... विज्ञान का जो निरोध, उपशम और अस्त होना है, वह वास्तव में दुःख का निरोध, रोगों का उपशम और जरामरण का अंत है।"
+दसवां सूत्र समाप्त।
+            </div>
+            
+
+            <div class="commentary" id="s0303m.mul_01107_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="312-321">३१२-३२१.</span> <span class="paliword" data-word="uppādasaṃyutte">उप्पादसंयुत्ते</span> <span class="paliword" data-word="sabbaṃ">सब्बं</span> <span class="paliword" data-word="pākaṭameva">पाकटमेव।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00426_p321_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00426_p321_hi">
+                            उत्पत्ति-संयुक्त में सब कुछ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="uppādasaṃyuttavaṇṇanā">उप्पादसंयुत्तवण्णना</span> <span class="paliword" data-word="niṭṭhitā">निट्ठिता।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00427_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00427_hi">
+                            उत्पाद-संयुत्त की व्याख्या यहाँ समाप्त हुई।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="kilesasaṃyuttavaṇṇanā">किलेससंयुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0303a.att_00428_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0303a.att_00428_hi">
+                            ६. क्लेश-संयुक्त (संयुत्त) की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01108_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="tassuddānaṃ">तस्सुद्दानं</span> <span class="paliword" data-word="–">–</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01108_hi">
+                इसका सारांश इस प्रकार है:
+            </div>
+            
+</div>
+</div>
+</div>
+
+            <div class="pali gatha">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0303m.mul_01109_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span class="paliword" data-word="cakkhu">चक्खु</span> <span class="paliword" data-word="rūpañca">रूपञ्‍च</span> <span class="paliword" data-word="viññāṇaṃ">विञ्‍ञाणं,</span> <span class="paliword" data-word="phasso">फस्सो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="vedanāya">वेदनाय</span> <span class="paliword" data-word="ca">च।</span> <span class="paliword" data-word="saññā">सञ्‍ञा</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="cetanā">चेतना</span> <span class="paliword" data-word="taṇhā">तण्हा,</span> <span class="paliword" data-word="dhātu">धातु</span> <span class="paliword" data-word="khandhena">खन्धेन</span> <span class="paliword" data-word="te">ते</span> <span class="paliword" data-word="dasāti||">दसाति॥</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0303m.mul_01109_hi">
+                चक्षु, रूप और विज्ञान; स्पर्श और वेदना;
+संज्ञा, चेतना और तृष्णा; ये दस धातु और स्कन्ध के द्वारा (निर्धारित) हैं।
+            </div>
+            
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>

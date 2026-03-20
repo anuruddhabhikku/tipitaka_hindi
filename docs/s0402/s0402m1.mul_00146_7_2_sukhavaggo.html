@@ -1,0 +1,1727 @@
+
+<html>
+<head>
+<meta charset="utf8"/>
+
+<style>
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevaSanskrit';
+    src: url('../assets/fonts/TiroDevaSanskrit-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'TiroDevanagari';
+    src: url('../assets/fonts/TiroDevanagari-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TiroDevanagariHindi';
+    src: url('../assets/fonts/TiroDevanagariHindi-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+body {
+   font-size: 100%;  /* Base size - 100% = 16px default */
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    line-height: 1.7;
+    background: #fafafa;
+}
+
+.para {
+    border-bottom: 1px solid #eee;
+    padding: 15px 5px;
+}
+
+.pali.gatha {
+    font-style: italic;
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    color: #444;
+}
+
+.pali.subhead {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+    border-bottom: 1px dotted #999;
+    padding-bottom: 3px;
+}
+
+.subsection-link {
+    color: #666;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+.subsection-link:hover {
+    color: #0066cc;
+    text-decoration: underline;
+}
+.paliword {
+    cursor:pointer;
+        transition: background-color 0.2s;
+
+}
+
+.paliword.no-dict {
+    text-decoration: underline dotted #cccccc;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    opacity: 0.8;
+}
+
+.paliword.has-dict:hover {
+    background: #e6f0ff;
+}
+.paliword.no-dict:hover {
+    background: #f5f5f5;
+}
+
+.paliword:hover {
+    background:#f0f0f0;
+}
+
+
+.pali {
+    font-size: 1.2em;  /* Change from 20px to 1.2em */
+    padding: 6px 0;
+    font-family: 'TiroDevaSanskrit', serif;
+}
+
+.pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.pali span[cursor="pointer"]:hover {
+    opacity: 1;
+}
+.hindi {
+    display:none;
+    color:#444;
+    margin-left:25px;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+    font-size: 1.2em;  /* Slightly smaller than Pali (1.2em) but larger than body */
+
+}
+
+.commentary {
+    margin-left:25px;
+    border-left:3px solid #eee;
+    padding-left:15px;
+    color:#666;
+    font-family: 'TiroDevanagariHindi', 'TiroDevanagari', serif;  /* Hindi uses Hindi font */
+}
+
+.commentary .pali {
+    font-family: 'TiroDevaSanskrit', serif;  /* Commentary Pali also uses Sanskrit font */
+    min-height: 1.5em;  /* Maintain consistent height even when hidden */
+}
+
+.commentary-pali {
+    display: none;  /* Hidden by default */
+}
+
+.commentary-pali.visible {
+    display: inline;  /* Show when toggled on */
+}
+
+/* Optional: Style for the toggle icons */
+.commentary .pali span[cursor="pointer"] {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-size: 1.2em;
+    padding: 0 2px;
+}
+
+.commentary .pali span[cursor="pointer"]:hover {
+    opacity: 1;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Optional: Style for the fullscreen button */
+.fullscreen-btn {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 5px;
+    user-select: none; /* Prevents accidental text selection */
+}
+.fullscreen-btn:hover {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+/* Floating Navigation Buttons */
+.floating-nav {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.floating-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.floating-btn:hover {
+    background: rgba(0,0,0,0.8);
+    transform: scale(1.05);
+}
+
+/* Progress Bar */
+.progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: #8B4513;
+    z-index: 9999;
+    transition: width 0.1s;
+}
+
+/* Font Size Controls */
+.font-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 100px;
+    display: flex;
+    gap: 8px;
+    z-index: 9999;
+}
+
+.font-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+    transition: all 0.2s;
+}
+
+.font-btn:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background: #1a1a2e;
+    color: #eee;
+}
+
+body.dark-mode .para {
+    border-bottom-color: #333;
+}
+
+body.dark-mode .pali.subhead {
+    color: #ddd;
+}
+
+body.dark-mode .commentary {
+    border-left-color: #444;
+    color: #ccc;
+}
+
+body.dark-mode .hindi {
+    color: #ccc;
+}
+
+body.dark-mode .paliword.has-dict:hover {
+    background: #2a2a3e;
+}
+
+body.dark-mode .paliword.no-dict:hover {
+    background: #252535;
+}
+
+/* Mobile Touch Improvements */
+@media (max-width: 768px) {
+    .paliword {
+        padding: 2px 0;
+        display: inline-block;
+    }
+    
+    .floating-btn, .font-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 22px;
+    }
+    
+    .pali {
+        font-size: 1.1em;  /* Slightly smaller on mobile */
+    }
+}
+
+/* Scroll to Top Button */
+.scroll-top {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.scroll-top.visible {
+    display: flex;
+}
+
+/* TOC Panel */
+.toc-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 400px;
+    max-height: 80vh;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 10000;
+    overflow-y: auto;
+    font-family: 'TiroDevanagariHindi', sans-serif;
+}
+
+body.dark-mode .toc-panel {
+    background: #2a2a3e;
+    color: #eee;
+}
+
+.toc-header {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    background: inherit;
+}
+
+.toc-content {
+    padding: 10px;
+}
+
+.toc-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.toc-item:hover {
+    background: #f0f0f0;
+}
+
+body.dark-mode .toc-item:hover {
+    background: #3a3a4e;
+}
+
+/* Menu Dropdown Buttons */
+.menu-dropdown {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: rgba(30,30,40,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 8px 0;
+    min-width: 200px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.menu-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.menu-dropdown button:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* Floating Menu Container */
+.floating-menu-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.floating-menu-container.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Main Menu Button */
+.menu-main-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 28px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-main-btn:hover {
+    background: rgba(0,0,0,0.9);
+    transform: scale(1.05);
+}
+</style>
+
+<script>
+const LOCAL_DICT = {"nirupadhisukhanti": "1 <i>nt</i> pleasure of no possession; happiness not based on attachment [nt,]", "catutthajjhānasukhaṃ": "1 <i>nt</i> pleasure of the fourth stage of meditation [nt, abstr,]", "agganti": "1 <i>adj</i> highest; topmost; foremost; supreme; ultimate [adj]<br>2 <i>adj</i> most; very; extremely; superbly [adj]<br>3 <i>nt</i> tip; top; peak [nt]<br>4 <i>nt</i> chief (among); best (of); highest (of); ultimate [nt]<br>5 <i>nt</i> outcome; conclusion; result [nt, in s]<br>6 <i>nt</i> hall; room; place; position [nt, in s]", "dve": "1 <i>card</i> two (2) [card, x pl]<br>2 <i>masc</i> couple; pair [masc, irreg]", "vā": "1 <i>lett</i> (gram) letter v; 37th letter of the alphabet; dento-labial semi-vowel [letter, masc]<br>2 <i>ind</i> or; either or [ind]<br>3 <i>ind</i> (gram) or; in some cases; not always; alternatively; optionally [ind]<br>4 <i>ind</i> exact; very; precise [ind, emph]<br>5 <i>ind</i> and; as well as [ind, conj]", "catunnaṃ": "1 <i>card</i> four (4) [card, masc fem & nt pl]<br>2 <i>card</i> for four; to four [card, masc & nt dat pl of catu] ‹ catu<br>3 <i>card</i> of four [card, masc & nt gen pl of catu] ‹ catu", "anariyasukhanti": "1 <i>nt</i> ignoble pleasure; vulgar happiness [nt, abstr,]", "imināva": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> with this; by this [pron, masc & nt instr sg of ima] ‹ ima", "siyāti": "1 <i>opt</i> could be; may be; might be; should be [opt of atthi, irreg] ‹ atthi<br>2 <i>opt</i> there could be [opt of atthi, irreg] ‹ atthi", "tīsu": "1 <i>card</i> three (3) [card, masc fem & nt pl]<br>2 <i>ve</i> (gram) ti; verbal ending of the present tense 3rd person singular [ve, masc]<br>3 <i>card</i> in three; among three [card, masc fem nt loc pl of ti] ‹ ti", "samādhisukhanti": "1 <i>nt</i> pleasure of meditative composure; happiness of perfect peace of mind [nt,]", "sappītikanti": "1 <i>adj</i> with delight; with heartfelt joy [adj, from pīti] ‹ पीति", "uppajjanakaṃ": "1 <i>adj</i> arising; appearing; coming into being [adj, from uppajjana] ‹ uppajjana (lit. going up)", "vīsatiyā": "1 <i>card</i> twenty (20) [card, fem sg,]", "katamāni": "1 <i>pron</i> what?; which (of the many)? [pron, interr, from ka] ‹ ka", "āpodhātuyā": "1 <i>fem</i> liquids; liquid state; (comm) element of cohesion [fem, abstr,] (lit. water state)<br>2 <i>fem</i> liquid; moisture [fem, abstr,] (lit. water state)<br>3 <i>fem</i> (abhi) element of cohesion [fem, abstr,] (lit. water state)", "tesaṃ": "1 <i>pron</i> that [pron, base]<br>2 <i>pron</i> for them; to them; to those [pron, masc & nt dat pl of ta] ‹ ta<br>3 <i>pron</i> their; of these; of them; of those [pron, masc & nt gen pl of ta] ‹ ta<br>4 <i>pron</i> when they; when these [pron, masc & nt gen pl of ta, gen abs] ‹ ta", "imesaṃ": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> for these; for them; for those [pron, masc & nt dat pl of ima] ‹ ima<br>3 <i>pron</i> of these; their [pron, masc & nt gen pl of ima] ‹ ima", "sappītikaṃ": "1 <i>adj</i> with delight; with heartfelt joy [adj, from pīti] ‹ पीति", "pana": "1 <i>ind</i> moreover; and so; but; or; however [ind]", "kāyikanti": "1 <i>adj</i> bodily; physical; related to the body [adj, from kāya] ‹ काय<br>2 <i>adj</i> belonging to a body; part of a group; one of the host (of) [adj, in s, from kāya] ‹ काय<br>3 <i>ind</i> related to the body; physically [ind, adv, acc sg of kāyika] ‹ कायिक", "sukhānaṃ": "1 <i>adj</i> easy (on); comfortable (for); pleasant (for); good (for); contented [adj] ‹ √sukh<br>2 <i>nt</i> ease; comfort; happiness; pleasure; contentment [nt, abstr] ‹ √sukh<br>3 <i>adj</i> (of water) tepid [adj] ‹ √sukh<br>4 <i>adj</i> (of weather) fine; mild; pleasant [adj] ‹ √sukh", "sappītikañca": "1 <i>adj</i> with delight; with heartfelt joy [adj, from pīti] ‹ पीति", "brahmāpi": "1 <i>masc</i> God; creator god [masc, atta group, irreg] ‹ √brah<br>2 <i>masc</i> Brahman; holy man [masc, atta group, irreg] ‹ √brah<br>3 <i>adj</i> long; extended; fully grown [adj] ‹ √brah<br>4 <i>adj</i> divine; holy; (comm) highest; distinguished [adj] ‹ √brah<br>5 <i>masc</i> divine being; holy one; lord [masc, voc sg of brahma, irreg] ‹ brahma<br>6 <i>masc</i> epithet of the Buddha [masc, atta group, irreg] ‹ √brah (lit. god)", "dutiyassa": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "upadhisukhanti": "1 <i>nt</i> pleasure of possession; happiness based on attachment [nt,]", "nirupadhisukhañca": "1 <i>nt</i> pleasure of no possession; happiness not based on attachment [nt,]", "dvemāni": "1 <i>sand</i> these two [sandhi, card + pron]", "catūsu": "1 <i>card</i> four (4) [card, masc fem & nt pl]<br>2 <i>card</i> in four; among four [card, masc fem & nt loc pl of catu] ‹ catu", "sātasukhanti": "1 <i>nt</i> pleasure of happiness; happiness of pleasure; (comm) pleasure of the first three jhānas [nt,]", "evaṃ": "1 <i>ind</i> thus; this; like this; similarly; in the same manner; just as; such [ind, adv]<br>2 <i>ind</i> yes!; that is right!; correct! [ind, excl]", "mahābhūtānaṃ": "1 <i>nt</i> four great elements [nt,] (lit. great become)<br>2 <i>masc</i> primary states; great elements; earth, water, fire and wind [masc pl,]<br>3 <i>nt</i> primary states; great elements; earth, water, fire and wind [nt pl,]", "kāyikañca": "1 <i>adj</i> bodily; physical; related to the body [adj, from kāya] ‹ काय<br>2 <i>adj</i> belonging to a body; part of a group; one of the host (of) [adj, in s, from kāya] ‹ काय<br>3 <i>ind</i> related to the body; physically [ind, adv, acc sg of kāyika] ‹ कायिक", "kathitaṃ": "1 <i>pp</i> said; spoken about; related; mentioned [pp of katheti] ‹ katheti<br>2 <i>pp</i> (of a question) answered [pp of katheti] ‹ katheti<br>3 <i>pp</i> [pp of katheti] ‹ katheti", "tejodhātuyā": "1 <i>fem</i> fiery state [fem, abstr,] (lit. fire state)<br>2 <i>fem</i> (abhi) element of heat [fem, abstr,] (lit. fire state)", "tadeva": "1 <i>pron</i> that [pron, base]<br>2 <i>pron</i> that thing (subject or object) [pron, in s, nt nom & acc sg of ta] ‹ ta<br>3 <i>sand</i> just that; the same thing; that very thing; that itself [sandhi, pron + ind]", "dasseti": "1 <i>pr</i> points out; shows; exhibits; presents [pr, caus of passati] ‹ passati (lit. causes to see)", "chaṭṭhe": "1 <i>ordi</i> sixth (6th) [ordin of cha] ‹ cha", "upadhisukhañca": "1 <i>nt</i> pleasure of possession; happiness based on attachment [nt,]", "sāsavasukhañca": "1 <i>nt</i> polluted pleasure; tainted happiness [nt,]", "puthujjanasukhaṃ": "1 <i>nt</i> ordinary pleasure; comfort of the common man [nt,]", "paṭhame": "1 <i>ordi</i> first (1st); prime [ordin, from pa] ‹ pa<br>2 <i>adj</i> (gram) 3rd (person); he; she; it; they [adj, from pa] ‹ pa (lit. first)<br>3 <i>masc</i> (gram) first consonant of each vagga; k, c, ṭ, t, p [masc, from pa] ‹ pa (lit. first)<br>4 <i>fem</i> [fem]", "koṭṭhāsesu": "1 <i>masc</i> internal organ [masc,]<br>2 <i>masc</i> part; portion; component (of) [masc,]<br>3 <i>masc</i> subdivision; category (of) [masc,]", "vāyodhātuyā": "1 <i>fem</i> gas; gaseous state [fem, abstr,] (lit. air state)<br>2 <i>fem</i> (abhi) element of motion [fem, abstr,] (lit. air state)", "upekkhāsukhañca": "1 <i>nt</i> comfort and mental poise; ease and equanimity [nt,]<br>2 <i>nt</i> ease of equipoise; comfort of non-reactivity; (comm) pleasure of the fourth jhāna [nt,]", "āsavānaṃ": "1 <i>masc</i> discharge from a sore; suppuration from a wound [masc, from āsavati] ‹ आसवति<br>2 <i>masc</i> discharge; suppuration; outflow; effluent; (comm) defilement [masc, from āsavati] ‹ आसवति<br>3 <i>nt</i> discharge; suppuration; outflow; effluent [nt, from āsavati] ‹ आसवति<br>4 <i>masc</i> extract; liquor; spirit [masc, from āsavati] ‹ आसवति", "gihisukhanti": "1 <i>nt</i> lay pleasure; happiness of householders [nt, abstr,]", "devopi": "1 <i>masc</i> deity; god [masc, from dibbati] ‹ dibbati<br>2 <i>masc</i> king; lord [masc, from dibbati] ‹ dibbati<br>3 <i>masc</i> rain god; rain cloud [masc, from dibbati] ‹ dibbati (lit. god; i.e. Indra, god of the heavens)<br>4 <i>masc</i> sky; heavens [masc, from dibbati] ‹ dibbati (lit. god; i.e. Indra, god of the heavens)", "nekkhammasukhanti": "1 <i>nt</i> ascetic pleasure; happiness of renunciation; pleasure of giving up sensual pleasure [nt,]", "aññathattanti": "1 <i>nt</i> change; alteration [nt, abstr, from aññathā] ‹ अञ्ञथा (lit. otherwise state)<br>2 <i>nt</i> change of mind; change of mental state; change of opinion [nt, abstr, from aññathā] ‹ अञ्ञथा (lit. otherwise state)", "hoti": "1 <i>pr</i> is; becomes [pr]<br>2 <i>pr</i> exists (for) [pr]<br>3 <i>pr</i> stays; remains; continues to be [pr] (lit. is)", "manusso": "1 <i>masc</i> human being; man; person [masc, from manu] ‹ manu", "rūpārammaṇanti": "1 <i>adj</i> based on form; founded on the material [adj,]<br>2 <i>nt</i> visible object; field of form; realm of sight [nt,]", "cetasikañca": "1 <i>adj</i> mental; related to mind [adj, from cetas] ‹ cetas<br>2 <i>nt</i> mood; mental state [nt, from cetas] ‹ cetas<br>3 <i>nt</i> mental property; mental concomitant [nt, from cetas] ‹ cetas", "attho": "1 <i>masc</i> meaning; sense; significance [masc] ‹ √ar<br>2 <i>masc</i> benefit; profit; good; welfare [masc] ‹ √ar<br>3 <i>masc</i> purpose; use; function; goal [masc] ‹ √ar<br>4 <i>masc</i> matter; affair; legal case; lawsuit [masc] ‹ √ar<br>5 <i>adj</i> for the purpose; for the sake; for the benefit (of) [adj, in s] ‹ √ar<br>6 <i>masc</i> need; want (for) [masc]<br>7 <i>adj</i> needing; wanting; seeking [adj, in s, from atthayati] ‹ atthayati<br>8 <i>masc</i> home; rest; shelter [masc]<br>9 <i>masc</i> death; end; annihilation; destruction [masc]<br>10 <i>masc</i> western mountain (behind which the sun sets) [masc]", "anariyasukhañca": "1 <i>nt</i> ignoble pleasure; vulgar happiness [nt, abstr,]", "aṭṭhame": "1 <i>ordi</i> eighth (8th) [ordin of aṭṭha] ‹ अट्ठ<br>2 <i>masc</i> name of a privately awakened Buddha [masc, ordin of aṭṭha] ‹ अट्ठ (lit. eighth)", "nippītikanti": "1 <i>adj</i> without delight; not connected with joy [adj, from pīti] ‹ पीति", "chasu": "1 <i>card</i> six (6) [card, x pl]<br>2 <i>card</i> in six [card, loc pl of cha] ‹ cha", "aññathattaṃ": "1 <i>nt</i> change; alteration [nt, abstr, from aññathā] ‹ अञ्ञथा (lit. otherwise state)<br>2 <i>nt</i> change of mind; change of mental state; change of opinion [nt, abstr, from aññathā] ‹ अञ्ञथा (lit. otherwise state)", "pāpuṇāti": "1 <i>pr</i> reaches; arrives (at); comes (to) [pr]<br>2 <i>pr</i> attains; experiences [pr] (lit. reaches)<br>3 <i>pr</i> (gram) becomes; changes into [pr] (lit. reaches)", "sesamettha": "1 <i>sand</i> the rest here; everything else here [sandhi, masc + adv]", "rūpaṃ": "1 <i>nt</i> matter; material thing; materiality; experience of material world; physical objects of consciousness; first of the five aggregates [nt] ‹ √रूप् (lit. form)<br>2 <i>nt</i> body; physical body; material bodily [nt] ‹ √रूप् (lit. form)<br>3 <i>nt</i> (object of the eye) form; material form; shape; sight; appearance [nt] ‹ √रूप्<br>4 <i>adj</i> of character; having nature of; of type; of kind; having the quality of; appearing as [adj, in s] ‹ √रूप् (lit. having form of)<br>5 <i>adj</i> as if; like someone [adj, in s] ‹ √रूप् (lit. having form of)<br>6 <i>nt</i> (gram) form of a word [nt] ‹ √रूप्<br>7 <i>nt</i> (gram) sound of a word [nt] ‹ √रूप् (lit. form)<br>8 <i>nt</i> [nt] ‹ √रूप्", "sappītikārammaṇañca": "1 <i>adj</i> based on delight; founded on heartfelt joy [adj,]", "dassento": "1 <i>prp</i> pointing out; showing; exhibiting; presenting [prp of dasseti] ‹ dasseti (lit. causing to see)", "dvinnaṃ": "1 <i>card</i> two (2) [card, x pl]<br>2 <i>card</i> of two [card, x gen pl of dvi] ‹ dvi<br>3 <i>card</i> when two [card, x gen pl of dvi, loc abs] ‹ dvi", "etadaggaṃ": "1 <i>adj</i> this is the best; this is the highest [adj,]<br>2 <i>sand</i> this is the greatest; this is the best; this is the highest (of) [sandhi, pron + adj]", "samādhisukhañca": "1 <i>nt</i> pleasure of meditative composure; happiness of perfect peace of mind [nt,]", "ñātīti": "1 <i>masc</i> family; relative; kinsman [masc, from jānāti] ‹ जानाति (lit. known)", "nippītikaṃ": "1 <i>adj</i> without delight; not connected with joy [adj, from pīti] ‹ पीति", "abhinditvā": "1 <i>abs</i> having not broken; having not shattered; having not split up [abs of na bhindati] ‹ bhindati", "tatridaṃ": "1 <i>sand</i> in this case this [sandhi, adv + pron] (lit. there this)", "uttānatthamevāti": "1 <i>sand</i> the meaning is clear just as it is [sandhi, adj + masc + ind + ind]", "saṃkilesaṃ": "1 <i>masc</i> dirt; defilement; impurity; corruption (of) [masc, in s, from saṃkilissati] ‹ संकिलिस्सति<br>2 <i>masc</i> (of the sun, a star or a planet) darkening [masc, in s, from saṃkilissati] ‹ संकिलिस्सति (lit. defilement)", "sukhāni": "1 <i>adj</i> easy (on); comfortable (for); pleasant (for); good (for); contented [adj] ‹ √sukh<br>2 <i>nt</i> ease; comfort; happiness; pleasure; contentment [nt, abstr] ‹ √sukh<br>3 <i>adj</i> (of water) tepid [adj] ‹ √sukh<br>4 <i>adj</i> (of weather) fine; mild; pleasant [adj] ‹ √sukh", "pathavīdhātuyā": "1 <i>fem</i> solids; solid state; earth element [fem, abstr,] (lit. earth state)<br>2 <i>fem</i> earth; soil [fem, abstr,] (lit. earth state)<br>3 <i>fem</i> (abhi) element of extension [fem, abstr,] (lit. earth state)", "ariyasukhañca": "1 <i>nt</i> noble pleasure; supra-mundane happiness [nt, abstr,]", "sāmisanti": "1 <i>adj</i> fleshly; carnal; physical; worldly; of the flesh [adj, from āmisa] ‹ आमिस (lit. with fleshly)<br>2 <i>adj</i> soiled; dirty [adj, from āmisa] ‹ आमिस (lit. with fleshly)", "dvādasamepi": "1 <i>ordi</i> twelfth (12th) [ordin of dvādasa,] ‹ द्वादस", "ca": "1 <i>ind</i> and; both [ind, conj]<br>2 <i>ind</i> but; although; and if [ind, conj]<br>3 <i>ind</i> (gram) and; as well as; but; terms and conditions apply to a rule [ind]<br>4 <i>lett</i> (gram) letter c; 14th letter of the alphabet; palatal consonant [letter, masc]<br>5 <i>ind</i> 6th item in a numerical list [ind] (lit. letter c)", "kho": "1 <i>ind</i> indeed; surely; certainly; truly [ind, emph]", "pabbajitasukhanti": "1 <i>nt</i> monastic pleasure; happiness of renunciants [nt,]", "anāsavasukhanti": "1 <i>nt</i> unpolluted pleasure; untainted happiness [nt, abstr,]", "sappītikārammaṇanti": "1 <i>adj</i> based on delight; founded on heartfelt joy [adj,]", "vivaṭṭasukhaṃ": "1 <i>nt</i> happiness of the ending of cyclical existence; pleasure of Nibbāna [nt,]", "jānitvā": "1 <i>abs</i> having known; having found out; having understood [abs of jānāti] ‹ जानाति", "nekkhammaṃ": "1 <i>nt</i> renunciation; rejection of sensual pleasure [nt, abstr, from nikkhamati] ‹ nikkhamati (lit. going out state)", "nekkhammasukhañca": "1 <i>nt</i> ascetic pleasure; happiness of renunciation; pleasure of giving up sensual pleasure [nt,]", "gihisukhañca": "1 <i>nt</i> lay pleasure; happiness of householders [nt, abstr,]", "nippītikārammaṇañca": "1 <i>adj</i> based on no delight; founded on the absence of heartfelt joy [adj,]", "ariyasāvakassa": "1 <i>masc</i> disciple of the noble ones; a noble disciple [masc, agent,]", "satthāpi": "1 <i>masc</i> caravan; travel party; convoy [masc, from attha] ‹ attha (lit. with purpose)<br>2 <i>nt</i> weapon; knife; sword [nt] ‹ √sas<br>3 <i>nt</i> scalpel; razor [nt] ‹ √sas<br>4 <i>nt</i> words in retaliation; (comm) physical misconduct [nt] ‹ √sas (lit. weapon)<br>5 <i>nt</i> science; art [nt, from sāsati] ‹ सासति<br>6 <i>nt</i> [nt]<br>7 <i>masc</i> master; teacher [masc, agent, from sāsati] ‹ सासति<br>8 <i>masc</i> name of a privately awakened Buddha [masc, agent, from sāsati] ‹ सासति (lit. teacher)<br>9 <i>masc</i> teacher; master; the Buddha [masc, agent, nom sg of satthar] ‹ satthar<br>10 <i>nt</i> thigh [nt]<br>11 <i>fem</i> instruction; order; command [fem, abstr, from sāsati] ‹ सासति<br>12 <i>masc</i> [masc, dat sg of satthar] ‹ satthar<br>13 <i>masc</i> of a teacher; master's; of the Buddha [masc, gen sg of satthar] ‹ satthar<br>14 <i>aor</i> [aor of sāsati] ‹ सासति<br>15 <i>masc</i> when the teacher; when the master [masc, gen sg of satthar, gen abs] ‹ satthar<br>16 <i>nt</i> breath; life [nt, pp of sasati] ‹ sasati (lit. breathed)", "hi": "1 <i>ind</i> indeed; certainly; truly; definitely [ind, emph]<br>2 <i>ind</i> because; for [ind]<br>3 <i>ve</i> (gram) hi; verbal ending of imperative 2nd person singular [ve, masc]", "tatiye": "1 <i>ordi</i> third (3rd) [ordin of ti] ‹ ti<br>2 <i>masc</i> (gram) third consonant of each vagga; g, j, ḍ, d, b [masc, from ti] ‹ ti<br>3 <i>adj</i> [adj, from tatha] ‹ tatha<br>4 <i>fem</i> [fem]<br>5 <i>ind</i> in the third case; in the third way [ind, adv, loc sg of tatiya] ‹ tatiya", "ekādasame": "1 <i>ordi</i> eleventh (11th) [ordin of ekādasa,] ‹ एकादस", "bhikkhave": "1 <i>masc</i> monks [masc, voc pl of bhikkhu] ‹ bhikkhu<br>2 <i>masc</i> monk; monastic; mendicant; fully ordained monk [masc, from bhikkhati] ‹ bhikkhati (lit. beggar)", "cetasikaṃ": "1 <i>adj</i> mental; related to mind [adj, from cetas] ‹ cetas<br>2 <i>nt</i> mood; mental state [nt, from cetas] ‹ cetas<br>3 <i>nt</i> mental property; mental concomitant [nt, from cetas] ‹ cetas", "siyā": "1 <i>opt</i> could be; may be; might be; should be [opt of atthi, irreg] ‹ atthi<br>2 <i>opt</i> there could be [opt of atthi, irreg] ‹ atthi", "upekkhāsukhanti": "1 <i>nt</i> comfort and mental poise; ease and equanimity [nt,]<br>2 <i>nt</i> ease of equipoise; comfort of non-reactivity; (comm) pleasure of the fourth jhāna [nt,]", "guṇe": "1 <i>masc</i> quality; virtue; characteristic [masc]<br>2 <i>masc</i> -times; -fold [masc, in s] ‹ √गुण्<br>3 <i>masc</i> tuning; pitch; tone [masc] (lit. string)<br>4 <i>masc</i> subdivision; section; category; stage [masc]<br>5 <i>masc</i> string; thread; tie [masc]<br>6 <i>masc</i> [masc] ‹ √गुण्<br>7 <i>masc</i> [masc]<br>8 <i>nt</i> cord; rope; bond [nt]<br>9 <i>masc</i> with qualities; with virtues; with characteristics [masc, instr pl of guṇa] ‹ गुण<br>10 <i>nt</i> [nt]<br>11 <i>nt</i> quality; virtue; characteristic [nt]", "arūpārammaṇaṃ": "1 <i>adj</i> based on the formless; founded on the immaterial [adj,]", "yadidaṃ": "1 <i>sand</i> namely; that is [sandhi, pron + pron] (lit. which this)", "dasame": "1 <i>ordi</i> tenth (10th) [ordin of dasa] ‹ dasa<br>2 <i>masc</i> name of a householder [masc, from dasa] ‹ dasa (lit. tenth)", "jhānesu": "1 <i>nt</i> state of deep meditative calm [nt, from jhāyati] ‹ झायति (lit. meditating)<br>2 <i>nt</i> meditation; stage of meditation [nt, from jhāyati] ‹ झायति (lit. meditating)<br>3 <i>adj</i> having meditation; related to meditation [adj, from jhāyati] ‹ झायति<br>4 <i>nt</i> thinking about; contemplating [nt, act, from jhāyati] ‹ झायति (lit. meditating)", "sukhanti": "1 <i>adj</i> easy (on); comfortable (for); pleasant (for); good (for); contented [adj] ‹ √sukh<br>2 <i>nt</i> ease; comfort; happiness; pleasure; contentment [nt, abstr] ‹ √sukh<br>3 <i>adj</i> (of water) tepid [adj] ‹ √sukh<br>4 <i>ind</i> easily; comfortably; pleasantly; happily [ind, adv, acc sg of sukha] ‹ sukha<br>5 <i>adj</i> (of weather) fine; mild; pleasant [adj] ‹ √sukh", "appanaṃ": "1 <i>fem</i> mental fixing; absorption; trance [fem, abstr, act, from appeti] ‹ appeti (lit. causing to attain)<br>2 <i>fem</i> concluding; ending [fem, abstr, act, from appeti] ‹ appeti", "sātasukhañca": "1 <i>nt</i> pleasure of happiness; happiness of pleasure; (comm) pleasure of the first three jhānas [nt,]", "sāmisañca": "1 <i>adj</i> fleshly; carnal; physical; worldly; of the flesh [adj, from āmisa] ‹ आमिस (lit. with fleshly)<br>2 <i>adj</i> soiled; dirty [adj, from āmisa] ‹ आमिस (lit. with fleshly)", "suhajjā": "1 <i>masc</i> friend; well-wisher; companion [masc, from hajja] ‹ hajja (lit. good heart)<br>2 <i>adj</i> dearly loved; beloved [adj, from hada] ‹ hada (lit. good heart)<br>3 <i>nt</i> [nt, from hajja] ‹ hajja", "ettha": "1 <i>ind</i> here; in this place; in this case; in this regard [ind, adv, from ima] ‹ ima<br>2 <i>ind</i> (gram) in this grammatical rule [ind, adv, from ima] ‹ ima", "nippītikārammaṇepi": "1 <i>adj</i> based on no delight; founded on the absence of heartfelt joy [adj,]", "sattame": "1 <i>ordi</i> seventh (7th) [ordin of satta] ‹ satta<br>2 <i>adj</i> best; most excellent; highest [adj, superl of santa] ‹ santa", "bhummantaraṃ": "1 <i>nt</i> [nt,]", "aveccappasādeti": "1 <i>masc</i> faith founded in understanding; epithet of stream entry [masc,]", "anāsavasukhañca": "1 <i>nt</i> unpolluted pleasure; untainted happiness [nt, abstr,]", "sātārammaṇañca": "1 <i>adj</i> based on pleasure (of jhāna); founded on happiness (of meditation) [adj,]", "taṃ": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> it; that [pron, nt nom sg of ta] ‹ ta<br>4 <i>pron</i> him; her; one; that person; that thing [pron, masc fem & nt acc sg of ta] ‹ ta<br>5 <i>pron</i> you (object) [pron, 2nd acc sg of tvaṃ] ‹ त्वं<br>6 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>7 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha", "avecca": "1 <i>ind</i> perfectly; absolutely; (comm) having gone deeply with wisdom [ind, adv, ger of ava √i] ‹ ava √i (lit. going down)<br>2 <i>ind</i> knowing; understanding; discerning [ind, adv, ger of aveti] ‹ aveti (lit. going down)", "paccayabhūtaṃ": "1 <i>adj</i> become the cause (for) [adj,] (lit. cause become)", "tattha": "1 <i>ind</i> there; in that place [ind, adv, from ta] ‹ ta<br>2 <i>ind</i> in that regard; in that case; regarding that matter [ind, adv, from ta] ‹ ta", "nippītikārammaṇaṃ": "1 <i>adj</i> based on no delight; founded on the absence of heartfelt joy [adj,]", "na": "1 <i>ind</i> no; not; neither; nor [ind]<br>2 <i>ind</i> (adds a question mark) surely?; does one not? [ind, interr]<br>3 <i>pref</i> not [prefix, in s]<br>4 <i>masc</i> (gram) negative prefix na [masc, prefix]", "bhavantarepi": "1 <i>nt</i> [nt,]", "vuccati": "1 <i>pr</i> is said to be; is called [pr, pass of vacati] ‹ vacati", "kāme": "1 <i>adj</i> wishing; wanting; would be delighted (to) [adj, in s, from kāmeti] ‹ कामेति<br>2 <i>adj</i> enjoying; fond (of); who likes; who loves [adj, in s, from kāmeti] ‹ कामेति<br>3 <i>masc</i> sense desire; sensual pleasure (of) [masc, from kāmeti] ‹ कामेति<br>4 <i>masc</i> (objects of) pleasure; sensual pleasure; sexual pleasure; sensual tempation [masc, from kāmeti] ‹ कामेति<br>5 <i>pr</i> desires; longs (for); is in love (with) [pr]", "upacāraṃ": "1 <i>masc</i> vicinity; neighbourhood (of); area surrounding; precinct [masc, from upacarati] ‹ upacarati (lit. approach)<br>2 <i>masc</i> [masc, from upacarati] ‹ upacarati<br>3 <i>masc</i> (gram) figure of speech; metaphor [masc, from upacarati] ‹ upacarati (lit. walking near)<br>4 <i>masc</i> [masc]", "imāni": "1 <i>pron</i> this [pron, base]<br>2 <i>pron</i> these [pron, nt nom & acc pl of ima] ‹ ima", "terasame": "1 <i>ordi</i> thirteenth (13th) [ordin of terasa,] ‹ terasa", "pabbajitānaṃ": "1 <i>masc</i> monk; monastic; renunciant; renunciate [masc, pp of pabbajati] ‹ pabbajati (lit. went forth)<br>2 <i>pp</i> ordained; renounced (from) [pp of pabbajati] ‹ pabbajati (lit. went forth)<br>3 <i>fem</i> nun; female monastic; woman renunciant [fem, from pabbajita] ‹ pabbajita (lit. went forth)", "upekkhārammaṇañca": "1 <i>adj</i> based on equipoise; founded on non-reactivity [adj,]", "lokiyalokuttaramissakaṃ": "1 <i>adj</i> [adj,]", "ariyasāvako": "1 <i>masc</i> disciple of the noble ones; a noble disciple [masc, agent,]", "tadubhayaṃ": "1 <i>adj</i> both of those [adj,]", "sāsavasukhanti": "1 <i>nt</i> polluted pleasure; tainted happiness [nt,]", "panassa": "1 <i>sand</i> and for him; and his [sandhi, ind + pron]<br>2 <i>pr</i> is lost; is destroyed; perishes; is ruined [pr]<br>3 <i>aor</i> was lost; disappeared; went to ruin [aor of panassati] ‹ panassati", "ariyasukhanti": "1 <i>nt</i> noble pleasure; supra-mundane happiness [nt, abstr,]", "veditabbo": "1 <i>ptp</i> can be known; should be understood (by) [ptp of vedeti] ‹ vedeti (lit. to be known)<br>2 <i>ptp</i> to be experienced (by) [ptp of vedeti] ‹ vedeti (lit. to be known)", "cetasikanti": "1 <i>adj</i> mental; related to mind [adj, from cetas] ‹ cetas<br>2 <i>nt</i> mood; mental state [nt, from cetas] ‹ cetas<br>3 <i>nt</i> mental property; mental concomitant [nt, from cetas] ‹ cetas", "gihīnaṃ": "1 <i>masc</i> householder; layperson [masc, from geha] ‹ geha", "vāti": "1 <i>lett</i> (gram) letter v; 37th letter of the alphabet; dento-labial semi-vowel [letter, masc]<br>2 <i>ind</i> or; either or [ind]<br>3 <i>ind</i> (gram) or; in some cases; not always; alternatively; optionally [ind]<br>4 <i>ind</i> exact; very; precise [ind, emph]<br>5 <i>pr</i> blows (among); wafts (to); diffuses (among) [pr]<br>6 <i>sand</i> or' [sandhi, ind + ind]<br>7 <i>ind</i> and; as well as [ind, conj]", "hutvā": "1 <i>abs</i> having been [abs of hoti] ‹ hoti<br>2 <i>abs</i> having become [abs of hoti] ‹ hoti", "dutiye": "1 <i>ordi</i> second (2nd) [ordin of dvi] ‹ dvi<br>2 <i>adj</i> as a companion; as a partner [adj, in s, from dvi] ‹ dvi (lit. second person)<br>3 <i>masc</i> (gram) second consonant of each vagga; kh, ch, ṭh, th, ph [masc, from dvi] ‹ dvi (lit. second)<br>4 <i>fem</i> second woman; another woman; female companion [fem, from dvi] ‹ dvi<br>5 <i>fem</i> [fem]<br>6 <i>ind</i> in the second case; in the second way [ind, adv, loc sg of dutiya] ‹ dutiya<br>7 <i>masc</i> second man; another man; male companion [masc, from dvi] ‹ dvi (lit. second)", "nirāmisanti": "1 <i>adj</i> not worldly; spiritual; not of the flesh; (comm) free from defilements [adj, from āmisa] ‹ आमिस (lit. not fleshly)<br>2 <i>adj</i> free from worldly ties; free from sensual engagement [adj, from āmisa] ‹ आमिस (lit. not fleshly)<br>3 <i>adj</i> [adj, from āmisa] ‹ आमिस", "ārabbha": "1 <i>ger</i> bringing forth; arousing; initiating [ger of ārabhati] ‹ आरभति (lit. beginning with)<br>2 <i>ind</i> concerning; referring (to); regarding; at the expense (of); owing to [ind, prep, ger of ārabhati] ‹ आरभति (lit. beginning with)<br>3 <i>pr</i> begins; starts; initiates; undertakes; rouses oneself [pr]<br>4 <i>masc</i> [masc, from ārabhati] ‹ masc", "kāmasukhañca": "1 <i>nt</i> comfort of sense pleasures; enjoyment of sense desire [nt, abstr,]", "tassa": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>pron</i> to him; for him; to that; for that [pron, masc & nt dat sg of ta] ‹ ta<br>4 <i>pron</i> of that; his; its [pron, masc & nt gen sg of ta] ‹ ta<br>5 <i>pron</i> when he; when it [pron, masc & nt gen sg of ta, gen abs] ‹ ta (lit. of that)<br>6 <i>ind</i> therefore; thus; so; because of that; regarding that [ind, adv, masc & nt gen sg of ta] ‹ ta (lit. of that)", "uppannasukhaṃ": "1 <i>nt</i> arisen pleasure; pleasure arisen from [nt,]", "eseva": "1 <i>pron</i> this [pron, base]<br>2 <i>aor</i> [aor of esati] ‹ esati<br>3 <i>sand</i> just this; exactly the same [sandhi, pron + ind]<br>4 <i>pron</i> this; this thing; this person; he; it [pron, masc nom sg of eta] ‹ eta", "sālohitāti": "1 <i>masc</i> blood relative [masc,] (lit. with blood)", "arūpaṃ": "1 <i>adj</i> formless; immaterial; insubstantial [adj, from na rūpa] ‹ रूप<br>2 <i>masc</i> formless state; formless phenomenon; formless attainment [masc, from na rūpa] ‹ रूप", "vigacchati": "1 <i>pr</i> disappears; is lost; is going to waste [pr]", "nirāmisañca": "1 <i>adj</i> not worldly; spiritual; not of the flesh; (comm) free from defilements [adj, from āmisa] ‹ आमिस (lit. not fleshly)<br>2 <i>adj</i> free from worldly ties; free from sensual engagement [adj, from āmisa] ‹ आमिस (lit. not fleshly)<br>3 <i>adj</i> [adj, from āmisa] ‹ आमिस", "nippītikañca": "1 <i>adj</i> without delight; not connected with joy [adj, from pīti] ‹ पीति", "tañhi": "1 <i>pron</i> that [pron, base]<br>2 <i>lett</i> (gram) letter t; 24th letter of the alphabet; dental sibilant [letter, masc]<br>3 <i>sand</i> that truly; that most certainly; that indeed [sandhi, pron + ind]<br>4 <i>pron</i> it; that [pron, nt nom sg of ta] ‹ ta<br>5 <i>pron</i> him; her; one; that person; that thing [pron, masc fem & nt acc sg of ta] ‹ ta<br>6 <i>pron</i> you (object) [pron, 2nd acc sg of tvaṃ] ‹ त्वं<br>7 <i>pron</i> you [pron, base of tvaṃ] ‹ त्वं<br>8 <i>pron</i> you (subject) [pron, 2nd nom sg of tumha] ‹ tumha", "navame": "1 <i>ordi</i> ninth (9th) [ordin of nava] ‹ nava", "catutthe": "1 <i>ordi</i> fourth (4th) [ordin of catu] ‹ catu<br>2 <i>masc</i> (gram) fourth consonant of each vagga; gh, jh, ḍh, dh, bh [masc, from catu] ‹ catu (lit. fourth)<br>3 <i>ind</i> in the fourth case; in the fourth way [ind, adv, loc sg of catuttha] ‹ catuttha", "rūpārammaṇañca": "1 <i>adj</i> based on form; founded on the material [adj,]<br>2 <i>nt</i> visible object; field of form; realm of sight [nt,]", "nirāmisaṃ": "1 <i>adj</i> not worldly; spiritual; not of the flesh; (comm) free from defilements [adj, from āmisa] ‹ आमिस (lit. not fleshly)<br>2 <i>adj</i> free from worldly ties; free from sensual engagement [adj, from āmisa] ‹ आमिस (lit. not fleshly)<br>3 <i>adj</i> [adj, from āmisa] ‹ आमिस", "pañcame": "1 <i>ordi</i> fifth (5th) [ordin of pañca] ‹ पञ्च<br>2 <i>masc</i> fifth of the seven primary musical notes [masc, ordin of pañca] ‹ पञ्च (lit. fifth)", "nikkilesaṃ": "1 <i>adj</i> [adj]", "asamādhisukhanti": "1 <i>nt</i> pleasure unrelated to meditative composure; happiness without perfect peace of mind [nt, abstr,]", "uppanne": "1 <i>pp</i> arisen; appeared; come into being (in) [pp of uppajjati] ‹ uppajjati (lit. gone up)<br>2 <i>pp</i> born (in) [pp of uppajjati] ‹ uppajjati (lit. gone up (from))", "tveva": "1 <i>ind</i> thus; like this; this is; and so [ind, adv]<br>2 <i>ind</i> however; but; rather; rather than [ind]<br>3 <i>ve</i> (gram) tu; verbal ending of the imperative 3rd person singular [ve, masc]<br>4 <i>sand</i> however; but; rather; rather than [sandhi, ind + ind]<br>5 <i>sand</i> just as [sandhi, ind + ind]<br>6 <i>sand</i> but even then [sandhi, ind + ind]<br>7 <i>sand</i> (end of direct speech) just as; merely as [sandhi, ind + ind]", "pasādo": "1 <i>masc</i> inspiration; faith; trust; confidence (in) [masc, from pasīdati] ‹ पसीदति (lit. settling forward)<br>2 <i>masc</i> brightness; clarity; calmness; tranquillity (of) [masc, abstr, from pasīdati] ‹ पसीदति (lit. settling forward)<br>3 <i>masc</i> sense faculty; sensitivity [masc, from pasīdati] ‹ पसीदति (lit. settling forward)<br>4 <i>masc</i> makeup; facial beauty products [masc, from pasīdati] ‹ पसीदति (lit. settling forward)", "sukhaṃ": "1 <i>adj</i> easy (on); comfortable (for); pleasant (for); good (for); contented [adj] ‹ √sukh<br>2 <i>nt</i> ease; comfort; happiness; pleasure; contentment [nt, abstr] ‹ √sukh<br>3 <i>adj</i> (of water) tepid [adj] ‹ √sukh<br>4 <i>ind</i> easily; comfortably; pleasantly; happily [ind, adv, acc sg of sukha] ‹ sukha<br>5 <i>adj</i> (of weather) fine; mild; pleasant [adj] ‹ √sukh", "nayo": "1 <i>masc</i> inference; conclusion [masc, from nayati] ‹ nayati<br>2 <i>masc</i> meaning; sense; context [masc, from nayati] ‹ nayati (lit. leading)<br>3 <i>masc</i> method; mode; manner; approach [masc, from nayati] ‹ nayati (lit. leading)<br>4 <i>masc</i> (gram) inferential method [masc, from nayati] ‹ nayati (lit. leading)<br>5 <i>masc</i> [masc, from nayati] ‹ nayati (lit. leading)<br>6 <i>aor</i> led; guided; took (someone to) [aor of nayati] ‹ nayati", "asamādhisukhañca": "1 <i>nt</i> pleasure unrelated to meditative composure; happiness without perfect peace of mind [nt, abstr,]", "pabbajjā": "1 <i>fem</i> (vinaya) novice ordination; renunciation; becoming a monastic [fem, from pabbajati] ‹ pabbajati (lit. going forth)<br>2 <i>fem</i> banishment; exile [fem, from pabbajati] ‹ pabbajati (lit. going forth)", "kāmasukhanti": "1 <i>nt</i> comfort of sense pleasures; enjoyment of sense desire [nt, abstr,]", "upekkhārammaṇaṃ": "1 <i>adj</i> based on equipoise; founded on non-reactivity [adj,]", "arūpārammaṇanti": "1 <i>adj</i> based on the formless; founded on the immaterial [adj,]", "arūpārammaṇañca": "1 <i>adj</i> based on the formless; founded on the immaterial [adj,]", "upāyena": "1 <i>masc</i> means; method; way [masc, from upeti] ‹ upeti<br>2 <i>masc</i> attraction (to); interest (in); engagement (with); attachment (to) [masc, from upeti] ‹ upeti (lit. going near)<br>3 <i>masc</i> [masc, from upeti] ‹ upeti<br>4 <i>ind</i> [ind, adv, instr of] ‹ उपाय", "dvādasasu": "1 <i>card</i> twelve (12) [card, x pl,]", "pabbajitasukhañca": "1 <i>nt</i> monastic pleasure; happiness of renunciants [nt,]", "amaccāti": "1 <i>masc</i> councillor; consul; advisor [masc, from āma] ‹ आम<br>2 <i>masc</i> colleague; co-worker; associate [masc, from āma] ‹ आम<br>3 <i>masc</i> minister; royal official [masc, from amā] ‹ अमा", "paccavekkhantassa": "1 <i>prp</i> reviewing; reflecting (on); contemplating; thinking (about) [prp of paccavekkhati] ‹ paccavekkhati (lit. looking back down)", "yaṃkiñci": "1 <i>pron</i> whatever; any whatsoever; everything; all [pron,]<br>2 <i>pron</i> whatever; any whatsoever; everything; all [pron, , nt nom sg of yaṃkaci] ‹ यंकचि"};
+const SUTTA_DATA = {"toc": [], "totalSuttasInFile": 0, "currentIndex": 7, "totalSuttas": 65, "prevFileUrl": "s0402m1.mul_00131_6_1_puggalavaggo.html", "nextFileUrl": "s0402m1.mul_00160_8_3_sanimittavaggo.html"};
+
+
+// ========== GLOBAL VARIABLES ==========
+let currentFontSize = localStorage.getItem('fontSize') || '100';
+let isDarkMode = localStorage.getItem('darkMode') === 'true';
+let menuHideTimer = null;
+let isMenuVisible = false;
+
+// ========== DICTIONARY FUNCTIONS (unchanged) ==========
+function normalizePali(word){
+    if(!word) return "";
+    return word.toLowerCase().trim();
+}
+
+function lookupWord(word){
+    word = normalizePali(word);
+    return LOCAL_DICT[word] || null;
+}
+
+function showDictionary(word, event){
+    let result = lookupWord(word);
+    let popup = document.getElementById("dictPopup");
+
+    if(!popup) return;
+
+    if(!result){
+        popup.style.display = "none";
+        return;
+    }
+
+    popup.innerHTML = result;
+    popup.style.display = "block";
+
+    let x = event.clientX + window.scrollX;
+    let y = event.clientY + window.scrollY;
+
+    popup.style.left = Math.min(x, window.innerWidth - 400) + "px";
+    popup.style.top = y + "px";
+}
+
+// ========== TOGGLE FUNCTIONS ==========
+function toggleHindi(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+function toggleCommentary(id, event){
+    if(event) event.stopPropagation();
+    let el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+// ========== MIDDLE CLICK (PRESERVED) ==========
+document.addEventListener('auxclick', function(e) {
+    // Check for middle button (button === 1)
+    if (e.button === 1) {
+        // Find the closest pali div
+        const paliDiv = e.target.closest('.pali');
+        if (paliDiv) {
+            e.preventDefault(); // Prevent default middle-click behavior
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) {
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+});
+
+// Prevent default middle-click scrolling
+document.addEventListener('mousedown', function(e) {
+    if (e.button === 1) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+
+// ========== TOUCH GESTURES ==========
+document.addEventListener('touchstart', function(e) { 
+    if (e.touches.length === 2) { 
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const paliDiv = element?.closest('.pali');
+        
+        if (paliDiv) { 
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleHindi"]');
+            if (toggleIcon && toggleIcon.onclick) { 
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+    else if (e.touches.length === 3) { 
+        e.preventDefault();
+        const touch = e.touches[0];
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const paliDiv = element?.closest('.pali');
+        
+        if (paliDiv) { 
+            const toggleIcon = paliDiv.querySelector('span[onclick*="toggleCommentary"]');
+            if (toggleIcon && toggleIcon.onclick) { 
+                toggleIcon.onclick(e);
+            }
+        }
+    }
+}, { passive: false });
+
+
+// ========== FLOATING MENU FUNCTIONS ==========
+function showMenu() {
+    const menu = document.getElementById('floatingMenu');
+    if (menu) {
+        menu.classList.add('visible');
+        isMenuVisible = true;
+        
+        // Clear existing timer
+        if (menuHideTimer) clearTimeout(menuHideTimer);
+        
+        // Hide after 3 seconds of inactivity
+        menuHideTimer = setTimeout(() => {
+            menu.classList.remove('visible');
+            isMenuVisible = false;
+        }, 3000);
+    }
+}
+
+function toggleMenuDropdown() {
+    const dropdown = document.getElementById('menuDropdown');
+    if (dropdown) {
+        const isVisible = dropdown.style.display === 'block';
+        dropdown.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+function goFullScreen() {
+    if (!document.fullscreenElement) {
+        // Enter fullscreen
+        var docEl = document.documentElement;
+        var requestFullScreen = docEl.requestFullscreen ||
+                                docEl.mozRequestFullScreen ||
+                                docEl.webkitRequestFullScreen ||
+                                docEl.msRequestFullscreen;
+        if (requestFullScreen) {
+            requestFullScreen.call(docEl);
+        }
+    } else {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+    showMenu();
+}
+
+function togglePaliVisibility() {
+// Get all main Pali divs
+        const paliDivs = document.querySelectorAll('.para > .pali');
+        
+        // Toggle visibility of the ENTIRE Pali div (both text and icons)
+        paliDivs.forEach(paliDiv => {
+            if (paliDiv.style.display === 'none') {
+                paliDiv.style.display = '';  // Show
+            } else {
+                paliDiv.style.display = 'none';  // Hide
+            }
+        });
+        
+        // Also toggle Hindi (existing functionality)
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+            
+    showMenu();
+}
+
+function goBackToIndex() {
+    window.location.href = '../index.html';
+}
+
+let currentSuttaIndex = 0;  // Track which sutta we're viewing
+let suttasInFile = [];      // Array of sutta IDs from TOC
+
+function goPrevSutta() {
+    if (suttasInFile.length === 0) {
+        // No multiple suttas, just go to prev file
+        if (SUTTA_DATA && SUTTA_DATA.prevFileUrl) {
+            window.location.href = SUTTA_DATA.prevFileUrl;
+        }
+        return;
+    }
+    
+    if (currentSuttaIndex > 0) {
+        // Go to previous sutta in same file
+        currentSuttaIndex--;
+        const targetId = suttasInFile[currentSuttaIndex];
+        window.location.hash = targetId;
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        // At first sutta, go to previous file
+        if (SUTTA_DATA && SUTTA_DATA.prevFileUrl) {
+            window.location.href = SUTTA_DATA.prevFileUrl;
+        }
+    }
+}
+
+function goNextSutta() {
+    if (suttasInFile.length === 0) {
+        // No multiple suttas, just go to next file
+        if (SUTTA_DATA && SUTTA_DATA.nextFileUrl) {
+            window.location.href = SUTTA_DATA.nextFileUrl;
+        }
+        return;
+    }
+    
+    if (currentSuttaIndex < suttasInFile.length - 1) {
+        // Go to next sutta in same file
+        currentSuttaIndex++;
+        const targetId = suttasInFile[currentSuttaIndex];
+        window.location.hash = targetId;
+        document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        // At last sutta, go to next file
+        if (SUTTA_DATA && SUTTA_DATA.nextFileUrl) {
+            window.location.href = SUTTA_DATA.nextFileUrl;
+        }
+    }
+}
+
+function updateCurrentSutta() {
+    // Check URL hash to determine which sutta were viewing
+    const hash = window.location.hash.substring(1);
+    if (hash && suttasInFile.length > 0) {
+        const index = suttasInFile.indexOf(hash);
+        if (index !== -1) {
+            currentSuttaIndex = index;
+            
+            // Ensure the element is visible
+            const targetElement = document.getElementById(hash);
+            if (targetElement) {
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    }
+    
+    // Update TOC highlighting
+    document.querySelectorAll('.toc-item').forEach((item, idx) => {
+        if (idx === currentSuttaIndex) {
+            item.style.background = '#e6f0ff';
+        } else {
+            item.style.background = '';
+        }
+    });
+}
+
+// Initialize suttasInFile from TOC
+function initNavigation() {
+    if (SUTTA_DATA && SUTTA_DATA.toc) {
+        suttasInFile = SUTTA_DATA.toc.map(item => item.id);
+    }
+    updateCurrentSutta();
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', updateCurrentSutta);
+}
+
+function showTOC() {
+    const tocPanel = document.getElementById('tocPanel');
+    if (tocPanel) {
+        const isVisible = tocPanel.style.display === 'block';
+        tocPanel.style.display = isVisible ? 'none' : 'block';
+        
+        // Ensure TOC items have proper click handling
+        if (!isVisible) {
+            setTimeout(() => {
+                document.querySelectorAll('.toc-item a').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        // Close TOC after clicking
+                        setTimeout(() => {
+                            tocPanel.style.display = 'none';
+                        }, 100);
+                    });
+                });
+            }, 100);
+        }
+    }
+}
+
+function changeFontSize(delta) {
+    let newSize = currentFontSize + delta;
+    if (newSize < 80) newSize = 80;
+    if (newSize > 150) newSize = 150;
+    currentFontSize = newSize;
+    localStorage.setItem('fontSize', currentFontSize);
+    
+    // Apply to body - this will affect all em-based sizes
+    document.body.style.fontSize = currentFontSize + '%';
+    
+    // Force reflow to ensure changes apply
+    document.body.style.display = 'none';
+    document.body.offsetHeight; // Force reflow
+    document.body.style.display = '';
+    
+    showMenu();
+}
+
+function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    localStorage.setItem('darkMode', isDarkMode);
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+    showMenu(); // Keep menu visible after action
+}
+
+function updateProgressBar() {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) progressBar.style.width = scrolled + '%';
+    
+    // Show/hide scroll to top button
+    const scrollBtn = document.getElementById('scrollTopBtn');
+    if (scrollBtn) {
+        if (winScroll > 300) {
+            scrollBtn.classList.add('visible');
+        } else {
+            scrollBtn.classList.remove('visible');
+        }
+    }
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Save scroll position when leaving
+function saveScrollPosition() {
+    const scrollPos = window.scrollY;
+    const currentPath = window.location.pathname;
+    localStorage.setItem('scrollPos_' + currentPath, scrollPos);
+}
+
+// Restore scroll position on load
+function restoreScrollPosition() {
+    const currentPath = window.location.pathname;
+    const savedPos = localStorage.getItem('scrollPos_' + currentPath);
+    if (savedPos && parseInt(savedPos) > 0) {
+        setTimeout(() => {
+            window.scrollTo(0, parseInt(savedPos));
+        }, 100);
+    }
+}
+
+// ========== PROXIMITY DETECTION ==========
+function handleMouseMove(e) {
+    const bottomRightThreshold = 150;
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
+    
+    // Check if mouse is near bottom-right corner
+    if (e.clientY > windowHeight - bottomRightThreshold && 
+        e.clientX > windowWidth - bottomRightThreshold) {
+        showMenu();
+    }
+}
+
+// Double tap detection for mobile
+let lastTap = 0;
+function handleTouchEnd(e) {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    
+    // Check if double tap
+    if (tapLength < 300 && tapLength > 0) {
+        // Get tap position
+        const touch = e.changedTouches[0];
+        const windowHeight = window.innerHeight;
+        const windowWidth = window.innerWidth;
+        const bottomRightThreshold = 150;
+        
+        // Check if double tap near bottom-right corner
+        if (touch.clientY > windowHeight - bottomRightThreshold && 
+            touch.clientX > windowWidth - bottomRightThreshold) {
+            e.preventDefault();
+            showMenu();
+        }
+    }
+    lastTap = currentTime;
+}
+
+// ========== INITIALIZATION ==========
+document.addEventListener("DOMContentLoaded", function() {
+    // Highlight words that have dictionary entries
+    document.querySelectorAll('.paliword').forEach(function(el) {
+        let word = el.dataset.word;
+        if (word) {
+            if (LOCAL_DICT[word]) {
+                el.classList.add('has-dict');
+            } else {
+                el.classList.add('no-dict');
+            }
+        }
+    });
+    
+    // Apply saved font size
+    document.body.style.fontSize = currentFontSize + '%';
+    
+    // Apply saved dark mode
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+    }
+    
+    // Restore scroll position
+    //restoreScrollPosition();
+    
+    // Save scroll position before unload
+    //window.addEventListener('beforeunload', saveScrollPosition);
+    
+    // Progress bar
+    window.addEventListener('scroll', updateProgressBar);
+    updateProgressBar();
+    
+    // Proximity detection for desktop
+    document.addEventListener('mousemove', handleMouseMove);
+    
+    // Double tap detection for mobile
+    document.addEventListener('touchend', handleTouchEnd);
+    
+    // Keyboard shortcut: Ctrl+H for Hindi only mode
+    document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'h') {
+        e.preventDefault();
+        
+        // Get all main Pali divs
+        const paliDivs = document.querySelectorAll('.para > .pali');
+        
+        // Toggle visibility of the ENTIRE Pali div (both text and icons)
+        paliDivs.forEach(paliDiv => {
+            if (paliDiv.style.display === 'none') {
+                paliDiv.style.display = '';  // Show
+            } else {
+                paliDiv.style.display = 'none';  // Hide
+            }
+        });
+        
+        // Also toggle Hindi (existing functionality)
+        document.querySelectorAll('.pali > span[onclick*="toggleHindi"]').forEach(icon => icon.click());
+    }
+});
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('menuDropdown');
+        const mainBtn = document.getElementById('menuMainBtn');
+        if (dropdown && mainBtn && !mainBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+        
+        const tocPanel = document.getElementById('tocPanel');
+        const tocBtn = document.getElementById('tocBtn');
+        if (tocPanel && tocBtn && !tocBtn.contains(e.target) && !tocPanel.contains(e.target)) {
+            tocPanel.style.display = 'none';
+        }
+    });
+    
+    
+        // Show/hide prev/next buttons based on availability
+   // Show/hide prev/next buttons based on availability
+if (SUTTA_DATA.prevFileUrl) {
+    document.getElementById('prevSuttaBtn').style.display = 'block';
+}
+if (SUTTA_DATA.nextFileUrl) {
+    document.getElementById('nextSuttaBtn').style.display = 'block';
+}
+    
+    // Build TOC
+   // Build TOC
+      // Build TOC
+    // Build TOC with sutta index
+    const tocContent = document.getElementById('tocContent');
+    if (tocContent && SUTTA_DATA && SUTTA_DATA.toc) {
+        tocContent.innerHTML = '';
+        SUTTA_DATA.toc.forEach((item, idx) => {
+            const tocItem = document.createElement('div');
+            tocItem.className = 'toc-item';
+            tocItem.setAttribute('data-sutta-index', idx);
+            
+            const link = document.createElement('a');
+            link.href = `#${item.id}`;
+            link.style.textDecoration = 'none';
+            link.style.color = 'inherit';
+            link.innerHTML = `${idx + 1}. ${item.title}`;
+            tocItem.appendChild(link);
+            
+            if (item.hi) {
+                const span = document.createElement('span');
+                span.style.color = '#888';
+                span.style.fontSize = '0.9em';
+                span.style.marginLeft = '8px';
+                span.innerHTML = ` – ${item.hi}`;
+                tocItem.appendChild(span);
+            }
+            
+            tocItem.onclick = (e) => {
+                if (e.target.tagName !== 'A') {
+                    // Update current index when clicking TOC
+                    currentSuttaIndex = idx;
+                    setTimeout(() => {
+                        document.getElementById('tocPanel').style.display = 'none';
+                    }, 150);
+                }
+            };
+            
+            tocContent.appendChild(tocItem);
+        });
+        
+        // Initialize navigation after TOC is built
+        initNavigation();
+    }
+    
+        // Keyboard shortcut: Ctrl+Left for previous sutta, Ctrl+Right for next sutta
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'ArrowLeft') {
+            e.preventDefault();
+            goPrevSutta();
+        }
+        if (e.ctrlKey && e.key === 'ArrowRight') {
+            e.preventDefault();
+            goNextSutta();
+        }
+    });
+  
+});
+
+// Dictionary popup handler
+document.addEventListener("click", function(e){
+    if(e.target.classList.contains("paliword")){
+        showDictionary(e.target.dataset.word, e);
+    }
+    else{
+        let popup = document.getElementById("dictPopup");
+        if(popup) popup.style.display = "none";
+    }
+});
+</script>
+</head>
+<body>
+
+<h1>(७) २. सुखवग्गो</h1>
+
+<!-- Progress Bar -->
+<div id="progressBar" class="progress-bar"></div>
+
+<!-- Floating Menu Container -->
+<div id="floatingMenu" class="floating-menu-container">
+    <button id="menuMainBtn" class="menu-main-btn" onclick="toggleMenuDropdown()">⋮</button>
+    <div id="menuDropdown" class="menu-dropdown" style="display: none;">
+        <button onclick="goBackToIndex()">← Back to Index</button>
+        <button onclick="goPrevSutta()" id="prevSuttaBtn" style="display: none;">← Previous Sutta</button>
+        <button onclick="goNextSutta()" id="nextSuttaBtn" style="display: none;">Next Sutta →</button>
+        <button onclick="goFullScreen()">⛶ Fullscreen</button>
+<!--         
+        <button onclick="changeFontSize(-10)">A- Smaller Font</button>
+        <button onclick="changeFontSize(10)">A+ Larger Font</button> 
+-->
+        <button onclick="togglePaliVisibility()">🔤 Toggle Pali Text (Ctrl+H)</button>
+        <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+        <button id="tocBtn" onclick="showTOC()">📑 Table of Contents</button>
+    </div>
+</div>
+
+<!-- TOC Panel -->
+<div id="tocPanel" class="toc-panel" style="display: none;">
+    <div class="toc-header">
+        <strong>(७) २. सुखवग्गो</strong>
+        <button onclick="showTOC()" style="float: right;">✕</button>
+    </div>
+    <div id="tocContent" class="toc-content"></div>
+</div>
+
+<!-- Scroll to Top -->
+<button id="scrollTopBtn" class="scroll-top" onclick="scrollToTop()" title="Scroll to top">↑</button>
+
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00147_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00147_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="65">६५.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="gihisukhañca">गिहिसुखञ्‍च</span> <span class="paliword" data-word="pabbajitasukhañca">पब्बजितसुखञ्‍च।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="pabbajitasukhanti">पब्बजितसुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00147_hi">
+                ६५.
+“भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? गृहस्थ का सुख और प्रव्रजित (संन्यासी) का सुख।
+भिक्षुओं, ये ही वे दो सुख हैं।
+भिक्षुओं, इन दोनों सुखों में से प्रव्रजित का सुख ही सर्वश्रेष्ठ है।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00147_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="65">६५.</span> <span class="paliword" data-word="dutiyassa">दुतियस्स</span> <span class="paliword" data-word="paṭhame">पठमे</span> <span class="paliword" data-word="gihisukhanti">गिहिसुखन्ति</span> <span class="paliword" data-word="gihīnaṃ">गिहीनं</span> <span class="paliword" data-word="sabbakāmanipphattimūlakaṃ">सब्बकामनिप्फत्तिमूलकं</span> <span class="paliword" data-word="sukhaṃ">सुखं।</span> <span class="paliword" data-word="pabbajitasukhanti">पब्बजितसुखन्ति</span> <span class="paliword" data-word="pabbajitānaṃ">पब्बजितानं</span> <span class="paliword" data-word="pabbajjāmūlakaṃ">पब्बज्‍जामूलकं</span> <span class="paliword" data-word="sukhaṃ">सुखं।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00200_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00200_hi">
+                            ६५. दूसरे वर्ग के पहले सूत्र में, "गृहस्थ सुख" (gihisukha) का अर्थ है गृहस्थों का वह सुख जो समस्त कामनाओं की सिद्धि पर आधारित होता है।
+"प्रव्रजित सुख" (pabbajitasukha) का अर्थ है उन लोगों का सुख जो प्रव्रज्या (संन्यास) के मार्ग पर स्थित हैं और जिसका मूल आधार संन्यास ही है।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00148_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00148_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="66">६६.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="kāmasukhañca">कामसुखञ्‍च</span> <span class="paliword" data-word="nekkhammasukhañca">नेक्खम्मसुखञ्‍च।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="nekkhammasukhanti">नेक्खम्मसुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00148_hi">
+                ६६.
+‘‘भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? काम-सुख और नैष्क्रम्य-सुख (संन्यास का सुख)।
+भिक्षुओं, वास्तव में ये ही दो सुख हैं।
+हे भिक्षुओं, इन दोनों सुखों में नैष्क्रम्य-सुख ही सर्वश्रेष्ठ है।’’
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00148_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="66">६६.</span> <span class="paliword" data-word="dutiye">दुतिये</span> <span class="paliword" data-word="kāmasukhanti">कामसुखन्ति</span> <span class="paliword" data-word="kāme">कामे</span> <span class="paliword" data-word="ārabbha">आरब्भ</span> <span class="paliword" data-word="uppajjanakasukhaṃ">उप्पज्‍जनकसुखं।</span> <span class="paliword" data-word="nekkhammasukhanti">नेक्खम्मसुखन्ति</span> <span class="paliword" data-word="nekkhammaṃ">नेक्खम्मं</span> <span class="paliword" data-word="vuccati">वुच्‍चति</span> <span class="paliword" data-word="pabbajjā">पब्बज्‍जा,</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="ārabbha">आरब्भ</span> <span class="paliword" data-word="uppajjanakasukhaṃ">उप्पज्‍जनकसुखं।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00201_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00201_hi">
+                            ६६.
+दूसरी बात यह है कि 'काम-सुख' का अर्थ उन काम-वासनाओं के संबंध में उत्पन्न होने वाला सुख है।
+'नैष्कर्म्य-सुख' के विषय में कहा जाता है कि प्रव्रज्या (संन्यास) ही नैष्कर्म्य है, और उस प्रव्रज्या के संबंध में उत्पन्न होने वाला सुख ही नैष्कर्म्य-सुख है।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00149_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00149_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="67">६७.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="upadhisukhañca">उपधिसुखञ्‍च</span> <span class="paliword" data-word="nirupadhisukhañca">निरुपधिसुखञ्‍च।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="nirupadhisukhanti">निरुपधिसुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00149_hi">
+                ६७.
+‘‘भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? सोपाधि सुख (सांसारिक सुख) और निरुपधि सुख (सांसारिक बंधनों से मुक्त सुख)।
+भिक्षुओं, यही दो सुख हैं।
+भिक्षुओं, इन दो सुखों में निरुपधि सुख ही सर्वश्रेष्ठ है।’’
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00149_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="67">६७.</span> <span class="paliword" data-word="tatiye">ततिये</span> <span class="paliword" data-word="upadhisukhanti">उपधिसुखन्ति</span> <span class="paliword" data-word="tebhūmakasukhaṃ">तेभूमकसुखं।</span> <span class="paliword" data-word="nirupadhisukhanti">निरुपधिसुखन्ति</span> <span class="paliword" data-word="lokuttarasukhaṃ">लोकुत्तरसुखं।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00202_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00202_hi">
+                            ६७.
+तृतीय में, उपधिसुख (upadhisukha) का अर्थ तीनों लोकों का सांसारिक सुख है।
+निरुपधिसुख (nirupadhisukha) का अर्थ लोकोत्तर या आध्यात्मिक सुख है।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00150_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00150_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="68">६८.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="sāsavasukhañca">सासवसुखञ्‍च</span> <span class="paliword" data-word="anāsavasukhañca">अनासवसुखञ्‍च।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="anāsavasukhanti">अनासवसुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00150_hi">
+                ६८.
+"भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? सासव सुख (आस्रव सहित सुख) और अनासव सुख (आस्रव रहित सुख)।
+भिक्षुओं, यही वे दो सुख हैं।
+भिक्षुओं, इन दोनों सुखों में अनासव सुख ही सर्वश्रेष्ठ है।"
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00150_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="68">६८.</span> <span class="paliword" data-word="catutthe">चतुत्थे</span> <span class="paliword" data-word="sāsavasukhanti">सासवसुखन्ति</span> <span class="paliword" data-word="āsavānaṃ">आसवानं</span> <span class="paliword" data-word="paccayabhūtaṃ">पच्‍चयभूतं</span> <span class="paliword" data-word="vaṭṭasukhaṃ">वट्टसुखं।</span> <span class="paliword" data-word="anāsavasukhanti">अनासवसुखन्ति</span> <span class="paliword" data-word="tesaṃ">तेसं</span> <span class="paliword" data-word="apaccayabhūtaṃ">अपच्‍चयभूतं</span> <span class="paliword" data-word="vivaṭṭasukhaṃ">विवट्टसुखं।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00203_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00203_hi">
+                            ६८.
+चौथी अवस्था में ‘सासव सुख’ (आस्रव-युक्त सुख) का अर्थ है—आस्रवों का प्रत्यय (कारण) बनने वाला संसार का सुख।
+‘अनास्रव सुख’ का अर्थ है—उन आस्रवों का अप्रत्यय (अकारण) होने वाला निर्वाण (विवर्त) का सुख।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00151_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00151_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="69">६९.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="sāmisañca">सामिसञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं</span> <span class="paliword" data-word="nirāmisañca">निरामिसञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="nirāmisaṃ">निरामिसं</span> <span class="paliword" data-word="sukhanti">सुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00151_hi">
+                ६९.
+“भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? सांसारिक सुख और आध्यात्मिक सुख।
+भिक्षुओं, यही वे दो सुख हैं।
+हे भिक्षुओं, इन दोनों सुखों में से आध्यात्मिक सुख ही सर्वश्रेष्ठ है।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00151_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="69">६९.</span> <span class="paliword" data-word="pañcame">पञ्‍चमे</span> <span class="paliword" data-word="sāmisanti">सामिसन्ति</span> <span class="paliword" data-word="saṃkilesaṃ">संकिलेसं</span> <span class="paliword" data-word="vaṭṭagāmisukhaṃ">वट्टगामिसुखं।</span> <span class="paliword" data-word="nirāmisanti">निरामिसन्ति</span> <span class="paliword" data-word="nikkilesaṃ">निक्‍किलेसं</span> <span class="paliword" data-word="vivaṭṭagāmisukhaṃ">विवट्टगामिसुखं।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00204_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00204_hi">
+                            ६९.
+पाँचवें में, 'सामिष' का अर्थ है संक्लेश और संसार-चक्र की ओर ले जाने वाला सुख।
+'निरामिष' का अर्थ है क्लेश-रहित और संसार-चक्र से मुक्ति की ओर ले जाने वाला सुख।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00152_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00152_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="70">७०.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="ariyasukhañca">अरियसुखञ्‍च</span> <span class="paliword" data-word="anariyasukhañca">अनरियसुखञ्‍च।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="ariyasukhanti">अरियसुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00152_hi">
+                ७०.
+“भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? आर्य सुख और अनार्य सुख।
+भिक्षुओं, यही वे दो सुख हैं।
+हे भिक्षुओं, इन दोनों सुखों में से यह जो आर्य सुख है, वही सर्वश्रेष्ठ है।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00152_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="70">७०.</span> <span class="paliword" data-word="chaṭṭhe">छट्ठे</span> <span class="paliword" data-word="ariyasukhanti">अरियसुखन्ति</span> <span class="paliword" data-word="aputhujjanasukhaṃ">अपुथुज्‍जनसुखं।</span> <span class="paliword" data-word="anariyasukhanti">अनरियसुखन्ति</span> <span class="paliword" data-word="puthujjanasukhaṃ">पुथुज्‍जनसुखं।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00205_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00205_hi">
+                            ७०.
+छठे में, 'आर्य सुख' (ariyasukha) का अर्थ है वह सुख जो साधारण जन का नहीं है।
+'अनार्य सुख' (anariyasukha) का अर्थ है वह सुख जो साधारण जन का है।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00153_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00153_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="71">७१.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="kāyikañca">कायिकञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं</span> <span class="paliword" data-word="cetasikañca">चेतसिकञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="cetasikaṃ">चेतसिकं</span> <span class="paliword" data-word="sukhanti">सुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00153_hi">
+                ७१.
+‘‘भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? शारीरिक सुख और मानसिक सुख।
+भिक्षुओं, निश्चित ही ये दो सुख हैं।
+भिक्षुओं, इन दोनों सुखों में मानसिक सुख ही श्रेष्ठ है।’’
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00153_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="71">७१.</span> <span class="paliword" data-word="sattame">सत्तमे</span> <span class="paliword" data-word="kāyikanti">कायिकन्ति</span> <span class="paliword" data-word="kāyaviññāṇasahajātaṃ">कायविञ्‍ञाणसहजातं।</span> <span class="paliword" data-word="cetasikanti">चेतसिकन्ति</span> <span class="paliword" data-word="manodvārikasukhaṃ">मनोद्वारिकसुखं।</span> <span class="paliword" data-word="taṃ">तं</span> <span class="paliword" data-word="lokiyalokuttaramissakaṃ">लोकियलोकुत्तरमिस्सकं</span> <span class="paliword" data-word="kathitaṃ">कथितं।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00206_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00206_hi">
+                            ७१.
+सातवें (पद) में, ‘कायिक’ का अर्थ है—जो शरीर-विज्ञान (काय-विज्ञान) के साथ उत्पन्न हुआ हो।
+‘चैतसिक’ का अर्थ है—मनो-द्वार से उत्पन्न होने वाला सुख।
+वह लौकिक और लोकोत्तर के मिश्रण के रूप में कहा गया है।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00154_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00154_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="72">७२.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="sappītikañca">सप्पीतिकञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं</span> <span class="paliword" data-word="nippītikañca">निप्पीतिकञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="nippītikaṃ">निप्पीतिकं</span> <span class="paliword" data-word="sukhanti">सुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00154_hi">
+                ७२.
+“भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? वह सुख जो प्रीति (हर्ष) के साथ है और वह सुख जो प्रीति से रहित है।
+भिक्षुओं, वास्तव में ये ही दो सुख हैं।
+हे भिक्षुओं, इन दोनों सुखों में से यह श्रेष्ठ है: वह जो प्रीति से रहित सुख है।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00154_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="72">७२.</span> <span class="paliword" data-word="aṭṭhame">अट्ठमे</span> <span class="paliword" data-word="sappītikanti">सप्पीतिकन्ति</span> <span class="paliword" data-word="paṭhamadutiyajjhānasukhaṃ">पठमदुतियज्झानसुखं।</span> <span class="paliword" data-word="nippītikanti">निप्पीतिकन्ति</span> <span class="paliword" data-word="tatiyacatutthajjhānasukhaṃ">ततियचतुत्थज्झानसुखं।</span> <span class="paliword" data-word="tattha">तत्थ</span> <span class="paliword" data-word="lokiyasappītikato">लोकियसप्पीतिकतो</span> <span class="paliword" data-word="lokiyanippītikaṃ">लोकियनिप्पीतिकं,</span> <span class="paliword" data-word="lokuttarasappītikato">लोकुत्तरसप्पीतिकतो</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="lokuttaranippītikaṃ">लोकुत्तरनिप्पीतिकं</span> <span class="paliword" data-word="agganti">अग्गन्ति</span> <span class="paliword" data-word="evaṃ">एवं</span> <span class="paliword" data-word="bhummantaraṃ">भुम्मन्तरं</span> <span class="paliword" data-word="abhinditvā">अभिन्दित्वा</span> <span class="paliword" data-word="aggabhāvo">अग्गभावो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00207_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00207_hi">
+                            ७२.
+आठवें (सुख) के संबंध में, 'सप्रीतिक' (sa-prītika) का अर्थ प्रथम और द्वितीय ध्यान का सुख है।
+'निष्प्रीतिक' (niṣ-prītika) का अर्थ तृतीय और चतुर्थ ध्यान का सुख है।
+वहाँ, लौकिक सप्रीतिक सुख की तुलना में लौकिक निष्प्रीतिक सुख श्रेष्ठ है, और लोकोत्तर सप्रीतिक सुख की तुलना में लोकोत्तर निष्प्रीतिक सुख श्रेष्ठ है—इस प्रकार भूमियों के अंतर को बिना तोड़े (समान स्तरों पर) इनकी श्रेष्ठता समझनी चाहिए।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00155_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00155_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="73">७३.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="sātasukhañca">सातसुखञ्‍च</span> <span class="paliword" data-word="upekkhāsukhañca">उपेक्खासुखञ्‍च।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="upekkhāsukhanti">उपेक्खासुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00155_hi">
+                ७३.
+‘‘भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? ऐंद्रिक सुख और उपेक्षा का सुख।
+भिक्षुओं, ये ही वे दो सुख हैं।
+हे भिक्षुओं, इन दोनों सुखों में जो यह उपेक्षा का सुख है, वही सर्वश्रेष्ठ है।’’
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00155_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="73">७३.</span> <span class="paliword" data-word="navame">नवमे</span> <span class="paliword" data-word="sātasukhanti">सातसुखन्ति</span> <span class="paliword" data-word="tīsu">तीसु</span> <span class="paliword" data-word="jhānesu">झानेसु</span> <span class="paliword" data-word="sukhaṃ">सुखं।</span> <span class="paliword" data-word="upekkhāsukhanti">उपेक्खासुखन्ति</span> <span class="paliword" data-word="catutthajjhānasukhaṃ">चतुत्थज्झानसुखं।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00208_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00208_hi">
+                            ७३.
+नौवें प्रकार में, 'सात-सुख' (sātasukha) का अर्थ है प्रथम तीन ध्यानों (jhāna) में प्राप्त होने वाला सुख।
+'उपेक्षा-सुख' (upekkhāsukha) का अर्थ चौथे ध्यान का सुख है।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00156_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00156_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="74">७४.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="samādhisukhañca">समाधिसुखञ्‍च</span> <span class="paliword" data-word="asamādhisukhañca">असमाधिसुखञ्‍च।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="samādhisukhanti">समाधिसुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00156_hi">
+                ७४.
+“हे भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? समाधि का सुख और बिना समाधि का सुख।
+भिक्षुओं, निश्चित ही ये दो सुख हैं।
+हे भिक्षुओं, इन दोनों सुखों में से जो यह समाधि का सुख है, वही सर्वश्रेष्ठ है।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00156_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="74">७४.</span> <span class="paliword" data-word="dasame">दसमे</span> <span class="paliword" data-word="samādhisukhanti">समाधिसुखन्ति</span> <span class="paliword" data-word="appanaṃ">अप्पनं</span> <span class="paliword" data-word="vā">वा</span> <span class="paliword" data-word="upacāraṃ">उपचारं</span> <span class="paliword" data-word="vā">वा</span> <span class="paliword" data-word="pattasukhaṃ">पत्तसुखं।</span> <span class="paliword" data-word="asamādhisukhanti">असमाधिसुखन्ति</span> <span class="paliword" data-word="tadubhayaṃ">तदुभयं</span> <span class="paliword" data-word="appattasukhaṃ">अप्पत्तसुखं।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00209_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00209_hi">
+                            ७४.
+दसवें में, 'समाधि-सुख' का अर्थ है अर्पणा (appana) या उपचार (upacāra) के माध्यम से प्राप्त सुख।
+'असमाधि-सुख' का अर्थ है इन दोनों के माध्यम से अप्राप्त सुख।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00157_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00157_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="75">७५.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="sappītikārammaṇañca">सप्पीतिकारम्मणञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं</span> <span class="paliword" data-word="nippītikārammaṇañca">निप्पीतिकारम्मणञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="nippītikārammaṇaṃ">निप्पीतिकारम्मणं</span> <span class="paliword" data-word="sukhanti">सुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00157_hi">
+                ७५.
+"भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? वह सुख जिसका आधार प्रीति (उत्साह) है और वह सुख जो प्रीति से रहित है।
+भिक्षुओं, वास्तव में ये ही दो सुख हैं।
+हे भिक्षुओं, इन दोनों सुखों में से यह श्रेष्ठ है, जिसे प्रीति-रहित सुख कहा जाता है।"
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00157_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="75">७५.</span> <span class="paliword" data-word="ekādasame">एकादसमे</span> <span class="paliword" data-word="sappītikārammaṇanti">सप्पीतिकारम्मणन्ति</span> <span class="paliword" data-word="sappītikaṃ">सप्पीतिकं</span> <span class="paliword" data-word="jhānadvayaṃ">झानद्वयं</span> <span class="paliword" data-word="paccavekkhantassa">पच्‍चवेक्खन्तस्स</span> <span class="paliword" data-word="uppannasukhaṃ">उप्पन्‍नसुखं।</span> <span class="paliword" data-word="nippītikārammaṇepi">निप्पीतिकारम्मणेपि</span> <span class="paliword" data-word="eseva">एसेव</span> <span class="paliword" data-word="nayo">नयो।</span> <span class="paliword" data-word="dvādasamepi">द्वादसमेपि</span> <span class="paliword" data-word="imināva">इमिनाव</span> <span class="paliword" data-word="upāyena">उपायेन</span> <span class="paliword" data-word="attho">अत्थो</span> <span class="paliword" data-word="veditabbo">वेदितब्बो।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00210_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00210_hi">
+                            ७५.
+ग्यारहवें (अनुच्छेद) में, 'सप्रीतिक-आरम्बन' का अर्थ उस सुख से है जो प्रीति-युक्त (सप्रीतिक) दो ध्यानों का प्रत्यवेक्षण करने वाले को उत्पन्न होता है।
+'निप्रीतिक-आरम्बन' (प्रीति-रहित आलम्बन) के विषय में भी यही विधि लागू होती है।
+बारहवें (अनुच्छेद) में भी इसी पद्धति से अर्थ समझना चाहिए।
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00158_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00158_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="76">७६.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="sātārammaṇañca">सातारम्मणञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं</span> <span class="paliword" data-word="upekkhārammaṇañca">उपेक्खारम्मणञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="upekkhārammaṇaṃ">उपेक्खारम्मणं</span> <span class="paliword" data-word="sukhanti">सुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00158_hi">
+                ७६.
+‘‘भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? वह सुख जिसका आलम्बन सुखद संवेदना है और वह सुख जिसका आलम्बन उपेक्षा है।
+भिक्षुओं, वास्तव में ये ही दो सुख हैं।
+हे भिक्षुओं, इन दोनों सुखों में यह जो उपेक्षा पर आधारित सुख (upekkhārammaṇa sukha) है, वही सर्वश्रेष्ठ है।’’
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00158_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="76">७६.</span> <span class="paliword" data-word="pañcame">पञ्‍चमे</span> <span class="paliword" data-word="amaccāti">अमच्‍चाति</span> <span class="paliword" data-word="suhajjā">सुहज्‍जा।</span> <span class="paliword" data-word="ñātīti">ञातीति</span> <span class="paliword" data-word="sassusasurapakkhikā">सस्सुससुरपक्खिका।</span> <span class="paliword" data-word="sālohitāti">सालोहिताति</span> <span class="paliword" data-word="samānalohitā">समानलोहिता</span> <span class="paliword" data-word="bhātibhaginiādayo">भातिभगिनिआदयो।</span> <span class="paliword" data-word="aveccappasādeti">अवेच्‍चप्पसादेति</span> <span class="paliword" data-word="guṇe">गुणे</span> <span class="paliword" data-word="avecca">अवेच्‍च</span> <span class="paliword" data-word="jānitvā">जानित्वा</span> <span class="paliword" data-word="uppanne">उप्पन्‍ने</span> <span class="paliword" data-word="acalappasāde">अचलप्पसादे।</span> <span class="paliword" data-word="aññathattanti">अञ्‍ञथत्तन्ति</span> <span class="paliword" data-word="bhāvaññathattaṃ">भावञ्‍ञथत्तं।</span> <span class="paliword" data-word="pathavīdhātuyātiādīsu">पथवीधातुयातिआदीसु</span> <span class="paliword" data-word="vīsatiyā">वीसतिया</span> <span class="paliword" data-word="koṭṭhāsesu">कोट्ठासेसु</span> <span class="paliword" data-word="thaddhākārabhūtāya">थद्धाकारभूताय</span> <span class="paliword" data-word="pathavīdhātuyā">पथवीधातुया,</span> <span class="paliword" data-word="dvādasasu">द्वादससु</span> <span class="paliword" data-word="koṭṭhāsesu">कोट्ठासेसु</span> <span class="paliword" data-word="yūsagatāya">यूसगताय</span> <span class="paliword" data-word="ābandhanabhūtāya">आबन्धनभूताय</span> <span class="paliword" data-word="āpodhātuyā">आपोधातुया,</span> <span class="paliword" data-word="catūsu">चतूसु</span> <span class="paliword" data-word="koṭṭhāsesu">कोट्ठासेसु</span> <span class="paliword" data-word="paripācanabhūtāya">परिपाचनभूताय</span> <span class="paliword" data-word="tejodhātuyā">तेजोधातुया,</span> <span class="paliword" data-word="chasu">छसु</span> <span class="paliword" data-word="koṭṭhāsesu">कोट्ठासेसु</span> <span class="paliword" data-word="vitthambhanabhūtāya">वित्थम्भनभूताय</span> <span class="paliword" data-word="vāyodhātuyā">वायोधातुया</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="aññathattaṃ">अञ्‍ञथत्तं।</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="tvevāti">त्वेवाति</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="hi">हि</span> <span class="paliword" data-word="catunnaṃ">चतुन्‍नं</span> <span class="paliword" data-word="mahābhūtānaṃ">महाभूतानं</span> <span class="paliword" data-word="aññamaññabhāvūpagamanena">अञ्‍ञमञ्‍ञभावूपगमनेन</span> <span class="paliword" data-word="siyā">सिया</span> <span class="paliword" data-word="aññathattaṃ">अञ्‍ञथत्तं,</span> <span class="paliword" data-word="ariyasāvakassa">अरियसावकस्स</span> <span class="paliword" data-word="pana">पन</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="tveva">त्वेव</span> <span class="paliword" data-word="siyāti">सियाति</span> <span class="paliword" data-word="dasseti">दस्सेति।</span> <span class="paliword" data-word="ettha">एत्थ</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="aññathattanti">अञ्‍ञथत्तन्ति</span> <span class="paliword" data-word="pasādaññathattañca">पसादञ्‍ञथत्तञ्‍च</span> <span class="paliword" data-word="gatiaññathattañca">गतिअञ्‍ञथत्तञ्‍च।</span> <span class="paliword" data-word="tañhi">तञ्हि</span> <span class="paliword" data-word="tassa">तस्स</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="hoti">होति,</span> <span class="paliword" data-word="bhāvaññathattaṃ">भावञ्‍ञथत्तं</span> <span class="paliword" data-word="pana">पन</span> <span class="paliword" data-word="hoti">होति।</span> <span class="paliword" data-word="ariyasāvako">अरियसावको</span> <span class="paliword" data-word="hi">हि</span> <span class="paliword" data-word="manusso">मनुस्सो</span> <span class="paliword" data-word="hutvā">हुत्वा</span> <span class="paliword" data-word="devopi">देवोपि</span> <span class="paliword" data-word="hoti">होति</span> <span class="paliword" data-word="brahmāpi">ब्रह्मापि।</span> <span class="paliword" data-word="pasādo">पसादो</span> <span class="paliword" data-word="panassa">पनस्स</span> <span class="paliword" data-word="bhavantarepi">भवन्तरेपि</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="vigacchati">विगच्छति,</span> <span class="paliword" data-word="na">न</span> <span class="paliword" data-word="ca">च</span> <span class="paliword" data-word="apāyagatisaṅkhātaṃ">अपायगतिसङ्खातं</span> <span class="paliword" data-word="gatiaññathattaṃ">गतिअञ्‍ञथत्तं</span> <span class="paliword" data-word="pāpuṇāti">पापुणाति।</span> <span class="paliword" data-word="satthāpi">सत्थापि</span> <span class="paliword" data-word="tadeva">तदेव</span> <span class="paliword" data-word="dassento">दस्सेन्तो</span> <span class="paliword" data-word="tatridaṃ">तत्रिदं</span> <span class="paliword" data-word="aññathattantiādimāha">अञ्‍ञथत्तन्तिआदिमाह।</span> <span class="paliword" data-word="sesamettha">सेसमेत्थ</span> <span class="paliword" data-word="uttānatthamevāti">उत्तानत्थमेवाति।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00756_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00756_hi">
+                            ७६.
+पाँचवें स्थान पर "अमात्य" का अर्थ मित्र है।
+"ज्ञाति" का अर्थ सास-ससुर के पक्ष के संबंधी हैं।
+"सालोहित" का अर्थ समान रक्त वाले भाई-बहन आदि हैं।
+"अवेच्चप्पसाद" का अर्थ गुणों को गहराई से जानकर उत्पन्न हुई अडिग श्रद्धा है।
+"अन्यथात्व" का अर्थ अवस्था का परिवर्तन है।
+पृथ्वी धातु आदि के अंतर्गत: बीस भागों में कठोर रूप वाली पृथ्वी धातु, बारह भागों में रस रूप और बंधन का कार्य करने वाली आपो धातु, चार भागों में परिपक्व करने वाली तेजो धातु, तथा छह भागों में आधार प्रदान करने वाली वायु धातु में परिवर्तन हो सकता है।
+"परंतु ऐसा नहीं" का अर्थ है कि इन चारों महाभूतों का एक-दूसरे के स्वभाव में बदल जाने से परिवर्तन संभव है, किंतु आर्य श्रावक के लिए ऐसा (विनाशकारी परिवर्तन) नहीं होता, यही यहाँ दर्शाया गया है।
+यहाँ "अन्यथात्व" का तात्पर्य श्रद्धा में परिवर्तन और पुनर्जन्म की गति में परिवर्तन से है।
+आर्य श्रावक में ये दोनों परिवर्तन नहीं होते, परंतु केवल अस्तित्वगत अवस्था का परिवर्तन होता है।
+क्योंकि एक आर्य श्रावक मनुष्य होने के बाद देव भी हो सकता है और ब्रह्मा भी।
+उसकी श्रद्धा अगले जन्म में भी नष्ट नहीं होती, और न ही वह "अपाय गति" (दुर्गति) कहे जाने वाले गतियों के परिवर्तन को प्राप्त होता है।
+शास्ता (बुद्ध) ने भी इसी तथ्य को स्पष्ट करने के लिए "वहाँ यह अन्यथात्व है" इत्यादि कहा है।
+यहाँ शेष अंश का अर्थ स्पष्ट ही है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="6">६.</span> <span class="paliword" data-word="paṭhamabhavasuttavaṇṇanā">पठमभवसुत्तवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00757_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00757_hi">
+                            ६. प्रथम भव सूत्र की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+            <div class="pali">
+                
+            
+
+            <div class="pali">
+                <span style="float:right; cursor:pointer" 
+                      onclick="toggleHindi('s0402m1.mul_00159_hi', event)" 
+                      title="Toggle Hindi translation">📖</span>
+            
+
+                <span style="float:right; cursor:pointer; margin-right:10px" 
+                      onclick="toggleCommentary('s0402m1.mul_00159_comm', event)" 
+                      title="Toggle Pali commentary">📚</span>
+                
+
+                <span class="paliword" data-word="77">७७.</span> <span class="paliword" data-word="dvemāni">‘‘द्वेमानि,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="katamāni">कतमानि</span> <span class="paliword" data-word="dve">द्वे?</span> <span class="paliword" data-word="rūpārammaṇañca">रूपारम्मणञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं</span> <span class="paliword" data-word="arūpārammaṇañca">अरूपारम्मणञ्‍च</span> <span class="paliword" data-word="sukhaṃ">सुखं।</span> <span class="paliword" data-word="imāni">इमानि</span> <span class="paliword" data-word="kho">खो,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="dve">द्वे</span> <span class="paliword" data-word="sukhāni">सुखानि।</span> <span class="paliword" data-word="etadaggaṃ">एतदग्गं,</span> <span class="paliword" data-word="bhikkhave">भिक्खवे,</span> <span class="paliword" data-word="imesaṃ">इमेसं</span> <span class="paliword" data-word="dvinnaṃ">द्विन्‍नं</span> <span class="paliword" data-word="sukhānaṃ">सुखानं</span> <span class="paliword" data-word="yadidaṃ">यदिदं</span> <span class="paliword" data-word="arūpārammaṇaṃ">अरूपारम्मणं</span> <span class="paliword" data-word="sukhanti">सुख’’न्ति।</span>
+            </div>  <!-- close pali div -->
+            
+
+            <div class="hindi" id="s0402m1.mul_00159_hi">
+                ७७.
+“भिक्षुओं, ये दो प्रकार के सुख हैं।
+वे दो कौन से हैं? रूप-विषयक सुख और अरूप-विषयक सुख।
+भिक्षुओं, वास्तव में ये ही दो सुख हैं।
+भिक्षुओं, इन दोनों सुखों में से यह श्रेष्ठ है, जिसे अरूप-विषयक सुख कहा जाता है।”
+            </div>
+            
+
+            <div class="commentary" id="s0402m1.mul_00159_comm" style="display:none;">
+                    
+
+                        <div class="pali">
+                            <span class="paliword" data-word="77">७७.</span> <span class="paliword" data-word="terasame">तेरसमे</span> <span class="paliword" data-word="rūpārammaṇanti">रूपारम्मणन्ति</span> <span class="paliword" data-word="rūpāvacaracatutthajjhānārammaṇaṃ">रूपावचरचतुत्थज्झानारम्मणं,</span> <span class="paliword" data-word="yaṃkiñci">यंकिञ्‍चि</span> <span class="paliword" data-word="rūpaṃ">रूपं</span> <span class="paliword" data-word="ārabbha">आरब्भ</span> <span class="paliword" data-word="uppajjanakaṃ">उप्पज्‍जनकं</span> <span class="paliword" data-word="vā">वा।</span> <span class="paliword" data-word="arūpārammaṇanti">अरूपारम्मणन्ति</span> <span class="paliword" data-word="arūpāvacarajjhānārammaṇaṃ">अरूपावचरज्झानारम्मणं,</span> <span class="paliword" data-word="yaṃkiñci">यंकिञ्‍चि</span> <span class="paliword" data-word="arūpaṃ">अरूपं</span> <span class="paliword" data-word="ārabbha">आरब्भ</span> <span class="paliword" data-word="uppajjanakaṃ">उप्पज्‍जनकं</span> <span class="paliword" data-word="vāti">वाति।</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00211_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00211_hi">
+                            ७७.
+तेरहवें (विषय) में, "रूपी आलम्बन" का अर्थ रूपावचर के चतुर्थ ध्यान का आलम्बन है, अथवा वह जो किसी भी रूप (mūrti) के आश्रय से उत्पन्न होता है।
+"अरूपी आलम्बन" का अर्थ अरूपावचर ध्यान का आलम्बन है, अथवा वह जो किसी भी अरूप (amūrta) के आश्रय से उत्पन्न होता है।
+                        </div>
+                        
+
+                        <div class="pali">
+                            <span class="paliword" data-word="8">(८)</span> <span class="paliword" data-word="3">३.</span> <span class="paliword" data-word="sanimittavaggavaṇṇanā">सनिमित्तवग्गवण्णना</span>
+                            <span style="float:right; cursor:pointer" 
+                                  onclick="toggleHindi('s0402a.att_00212_hi', event)">📖</span>
+                        </div>
+                        
+
+                        <div class="hindi" id="s0402a.att_00212_hi">
+                            (८) ३. सनिमित्त वर्ग की व्याख्या
+                        </div>
+                        
+</div>
+</div>
+</div>
+</div>
+
+<div id="dictPopup"
+style="
+position:absolute;
+display:none;
+background:white;
+border:1px solid #ccc;
+padding:12px;
+max-width:380px;
+z-index:9999;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+border-radius:6px;">
+</div>
+
+</body>
+</html>
